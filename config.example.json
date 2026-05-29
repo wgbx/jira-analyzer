@@ -1,0 +1,16 @@
+{
+  "jira": {
+    "base_url": "https://your-domain.atlassian.net",
+    "email": "your-email@example.com",
+    "api_token": "YOUR_JIRA_API_TOKEN_HERE"
+  },
+  "parent_issue": "KAT-10938",
+  "assignee": "your name",
+  "output": {
+    "format": "html",
+    "path": "output/jira-report.html"
+  },
+  "filters": {
+    "exclude_keywords": ["(Done)", "(done)", "(Backlog)", "(backlog)", "(Moved)", "(moved)"]
+  }
+}

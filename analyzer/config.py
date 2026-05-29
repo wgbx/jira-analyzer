@@ -1,10 +1,13 @@
 """
 配置管理模块
 
-负责加载和管理项目的配置信息，包括 Jira 连接参数和输出设置。
+负责加载和管理项目的配置信息。
+支持从 config.json 文件和環境变量两种方式读取 Jira 凭据。
+在 GitHub Actions 中，优先使用环境变量。
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -22,18 +25,40 @@ def load_config():
     """
     加载配置文件
 
-    从项目根目录的 config.json 中读取配置信息，
-    包括 Jira 实例地址、认证凭据、父任务编号等。
+    优先级：
+    1. 环境变量 JIRA_BASE_URL / JIRA_EMAIL / JIRA_API_TOKEN（用于 GitHub Actions）
+    2. config.json 文件中的配置（用于本地运行）
 
     Returns:
         dict: 配置字典
 
     Raises:
-        SystemExit: 配置文件不存在时退出程序
+        SystemExit: 配置文件不存在且环境变量不完整时退出程序
     """
+    # 尝试从环境变量构建配置
+    env_base_url = os.environ.get('JIRA_BASE_URL')
+    env_email = os.environ.get('JIRA_EMAIL')
+    env_api_token = os.environ.get('JIRA_API_TOKEN')
+
+    if env_base_url and env_email and env_api_token:
+        return {
+            'jira': {
+                'base_url': env_base_url,
+                'email': env_email,
+                'api_token': env_api_token,
+            },
+            'parent_issue': os.environ.get('JIRA_PARENT_ISSUE', 'KAT-10938'),
+            'output': {
+                'format': 'html',
+                'path': 'output/jira-report.html',
+            },
+        }
+
+    # 从配置文件读取
     if not CONFIG_PATH.exists():
         print(f"配置文件不存在: {CONFIG_PATH}")
-        print("请复制 config.example.json 并填写你的 Jira API Token")
+        print("请复制 config.example.json 为 config.json 并填写你的 Jira API Token")
+        print("或设置环境变量: JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN")
         sys.exit(1)
 
     with open(CONFIG_PATH, 'r', encoding='utf-8') as f:

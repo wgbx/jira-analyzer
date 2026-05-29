@@ -1,0 +1,57 @@
+name: 每小时生成 Jira 分析报告
+
+on:
+  schedule:
+    # 每小时整点运行（UTC）
+    - cron: '0 * * * *'
+  # 支持手动触发
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 运行分析器
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PARENT_ISSUE: ${{ secrets.JIRA_PARENT_ISSUE }}
+        run: |
+          python jira_analyzer.py
+
+      - name: 上传报告产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
