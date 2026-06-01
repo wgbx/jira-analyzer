@@ -97,6 +97,35 @@ def _build_filter_js():
             }
         }
 
+        function sortSections(sortBy) {
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.sort-btn[data-sort="${sortBy}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const container = document.getElementById('task-container');
+            if (!container) return;
+            const sections = Array.from(container.querySelectorAll('.task-section'));
+
+            sections.sort((a, b) => {
+                const keyA = a.getAttribute('data-key') || '';
+                const keyB = b.getAttribute('data-key') || '';
+                const numA = parseInt(keyA.replace(/[^0-9]/g, '')) || 0;
+                const numB = parseInt(keyB.replace(/[^0-9]/g, '')) || 0;
+                const countA = parseInt(a.getAttribute('data-count')) || 0;
+                const countB = parseInt(b.getAttribute('data-count')) || 0;
+
+                switch (sortBy) {
+                    case 'key-desc': return numB - numA;
+                    case 'key-asc': return numA - numB;
+                    case 'count-desc': return countB - countA || numB - numA;
+                    case 'count-asc': return countA - countB || numA - numB;
+                    default: return numB - numA;
+                }
+            });
+
+            sections.forEach(section => container.appendChild(section));
+        }
+
         function filterItems(filter) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove(""" + remove_classes + """);
@@ -286,6 +315,30 @@ def generate_html_report(analysis, base_url):
             border-radius: 10px;
             margin-left: 4px;
         }}
+        .sort-bar {{
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }}
+        .sort-label {{ font-weight: 600; color: #374151; margin-right: 8px; }}
+        .sort-btn {{
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+        .sort-btn:hover {{ border-color: #667eea; color: #667eea; }}
+        .sort-btn.active {{ background: #667eea; color: white; border-color: #667eea; }}
         .empty-state {{ text-align: center; padding: 60px 20px; color: #9ca3af; }}
         .empty-icon {{ font-size: 64px; margin-bottom: 20px; }}
         .footer {{ text-align: center; color: #9ca3af; margin-top: 40px; font-size: 14px; }}
@@ -314,6 +367,14 @@ def generate_html_report(analysis, base_url):
             </div>
         </div>
 
+        <div class="sort-bar">
+            <span class="sort-label">排序方式:</span>
+            <button class="sort-btn active" data-sort="key-desc" onclick="sortSections('key-desc')">任务编号 ↓</button>
+            <button class="sort-btn" data-sort="key-asc" onclick="sortSections('key-asc')">任务编号 ↑</button>
+            <button class="sort-btn" data-sort="count-desc" onclick="sortSections('count-desc')">未处理数量 ↓</button>
+            <button class="sort-btn" data-sort="count-asc" onclick="sortSections('count-asc')">未处理数量 ↑</button>
+        </div>
+
         <div class="filter-bar">
             <span class="filter-label">筛选人员:</span>
             {filter_buttons}
@@ -321,6 +382,7 @@ def generate_html_report(analysis, base_url):
 """
 
     # 渲染各任务的未处理条目
+    html += '    <div id="task-container" class="task-container">' + "\n"
     if analysis['grouped']:
         for task_key in sorted(analysis['grouped'].keys(), reverse=True):
             task = analysis['grouped'][task_key]
@@ -330,7 +392,7 @@ def generate_html_report(analysis, base_url):
 
             summary_display = task['summary'][:50] + ('...' if len(task['summary']) > 50 else '')
             html += f"""
-        <div class="task-section">
+        <div class="task-section" data-key="{task_key}" data-count="{len(unprocessed_items)}">
             <div class="task-header">
                 <span class="task-key"><a href="{base_url}/browse/{task_key}" target="_blank">{task_key}</a></span>
                 <span class="task-summary">{summary_display}</span>
@@ -367,6 +429,7 @@ def generate_html_report(analysis, base_url):
             <h3>太棒了！</h3>
             <p>没有未处理的项目</p>
         </div>"""
+    html += "    </div>\n"
 
     html += f"""
         <div class="footer">
