@@ -40,6 +40,9 @@ jobs:
         run: |
           python jira_analyzer.py
 
+      - name: 生成 index.html 入口
+        run: cp output/jira-report.html output/index.html
+
       - name: 上传报告产物
         uses: actions/upload-pages-artifact@v3
         with:
