@@ -20,6 +20,7 @@ OWNERS = {
     'joey': ['@Joey Hou'],
     'chenglim': ['@Cheng Lim'],
     'zhengzhu': ['@Zheng Zhu'],
+    'cici': ['@cici Huang'],
 }
 
 # Owner 在 HTML 中的展示名称
@@ -36,6 +37,7 @@ OWNER_DISPLAY_NAMES = {
     'joey': 'Joey',
     'chenglim': 'Cheng Lim',
     'zhengzhu': 'Zheng Zhu',
+    'cici': 'Cici',
 }
 
 

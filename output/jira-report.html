@@ -99,30 +99,28 @@
             font-size: 11px;
             font-weight: 500;
         }
-        .owner-jayce { background: #dbeafe; color: #1e40af; }
-        .owner-zhiyong { background: #dcfce7; color: #166534; }
-        .owner-tiancheng { background: #f3e8ff; color: #6b21a8; }
-        .owner-jun { background: #fef3c7; color: #92400e; }
         .owner-jiaqi { background: #fee2e2; color: #991b1b; }
+        .owner-cici { background: #fdf2f8; color: #9d174d; }
         .owner-lory { background: #e0f2fe; color: #0c4a6e; }
-        .owner-tianye { background: #fce7f3; color: #9d174d; }
-        .owner-fengxia { background: #fef9c3; color: #854d0e; }
-        .owner-fred { background: #e2e8f0; color: #334155; }
-        .owner-joey { background: #d1fae5; color: #065f46; }
-        .owner-chenglim { background: #ede9fe; color: #5b21b6; }
         .owner-zhengzhu { background: #ffedd5; color: #9a3412; }
-        .filter-btn.active-jayce { background: #1e40af; border-color: #1e40af; color: white; }
-        .filter-btn.active-zhiyong { background: #166534; border-color: #166534; color: white; }
-        .filter-btn.active-tiancheng { background: #6b21a8; border-color: #6b21a8; color: white; }
-        .filter-btn.active-jun { background: #92400e; border-color: #92400e; color: white; }
+        .owner-fred { background: #e2e8f0; color: #334155; }
+        .owner-fengxia { background: #fef9c3; color: #854d0e; }
+        .owner-zhiyong { background: #dcfce7; color: #166534; }
+        .owner-chenglim { background: #ede9fe; color: #5b21b6; }
+        .owner-jun { background: #fef3c7; color: #92400e; }
+        .owner-jayce { background: #dbeafe; color: #1e40af; }
+        .owner-tiancheng { background: #f3e8ff; color: #6b21a8; }
         .filter-btn.active-jiaqi { background: #991b1b; border-color: #991b1b; color: white; }
+        .filter-btn.active-cici { background: #9d174d; border-color: #9d174d; color: white; }
         .filter-btn.active-lory { background: #0c4a6e; border-color: #0c4a6e; color: white; }
-        .filter-btn.active-tianye { background: #9d174d; border-color: #9d174d; color: white; }
-        .filter-btn.active-fengxia { background: #854d0e; border-color: #854d0e; color: white; }
-        .filter-btn.active-fred { background: #334155; border-color: #334155; color: white; }
-        .filter-btn.active-joey { background: #065f46; border-color: #065f46; color: white; }
-        .filter-btn.active-chenglim { background: #5b21b6; border-color: #5b21b6; color: white; }
         .filter-btn.active-zhengzhu { background: #9a3412; border-color: #9a3412; color: white; }
+        .filter-btn.active-fred { background: #334155; border-color: #334155; color: white; }
+        .filter-btn.active-fengxia { background: #854d0e; border-color: #854d0e; color: white; }
+        .filter-btn.active-zhiyong { background: #166534; border-color: #166534; color: white; }
+        .filter-btn.active-chenglim { background: #5b21b6; border-color: #5b21b6; color: white; }
+        .filter-btn.active-jun { background: #92400e; border-color: #92400e; color: white; }
+        .filter-btn.active-jayce { background: #1e40af; border-color: #1e40af; color: white; }
+        .filter-btn.active-tiancheng { background: #6b21a8; border-color: #6b21a8; color: white; }
         .filter-btn.active-unassigned {{ background: #6b7280; border-color: #6b7280; color: white; }}
 
         .filter-bar {
@@ -200,11 +198,11 @@
             </div>
             <div class="stat-card">
                 <div class="stat-label">已处理</div>
-                <div class="stat-number processed">88</div>
+                <div class="stat-number processed">89</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">未处理</div>
-                <div class="stat-number unprocessed">105</div>
+                <div class="stat-number unprocessed">104</div>
             </div>
         </div>
 
@@ -225,12 +223,11 @@
             <button class="filter-btn" data-filter="jun" onclick="filterItems('jun')">Jun<span class="filter-count" id="count-jun"></span></button>
             <button class="filter-btn" data-filter="jiaqi" onclick="filterItems('jiaqi')">Jiaqi<span class="filter-count" id="count-jiaqi"></span></button>
             <button class="filter-btn" data-filter="lory" onclick="filterItems('lory')">Lory<span class="filter-count" id="count-lory"></span></button>
-            <button class="filter-btn" data-filter="tianye" onclick="filterItems('tianye')">Tian Ye<span class="filter-count" id="count-tianye"></span></button>
             <button class="filter-btn" data-filter="fengxia" onclick="filterItems('fengxia')">Feng Xia<span class="filter-count" id="count-fengxia"></span></button>
             <button class="filter-btn" data-filter="fred" onclick="filterItems('fred')">Fred<span class="filter-count" id="count-fred"></span></button>
-            <button class="filter-btn" data-filter="joey" onclick="filterItems('joey')">Joey<span class="filter-count" id="count-joey"></span></button>
             <button class="filter-btn" data-filter="chenglim" onclick="filterItems('chenglim')">Cheng Lim<span class="filter-count" id="count-chenglim"></span></button>
             <button class="filter-btn" data-filter="zhengzhu" onclick="filterItems('zhengzhu')">Zheng Zhu<span class="filter-count" id="count-zhengzhu"></span></button>
+            <button class="filter-btn" data-filter="cici" onclick="filterItems('cici')">Cici<span class="filter-count" id="count-cici"></span></button>
             <button class="filter-btn" data-filter="unassigned" onclick="filterItems('unassigned')">未分配<span class="filter-count" id="count-unassigned"></span></button>
         </div>
     <div id="task-container" class="task-container">
@@ -256,11 +253,11 @@
                         <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="">
+                <li class="item" data-owners="cici">
                     <span class="item-index">3</span>
                     <span class="item-content">
                         <span class="item-text">(Demi)When some headlines/talents have an introduction, and some headlines/talents do not have an introduction, the headlines/talents are not aligned  @cici Huang</span>
-                        <div class="item-owners"></div>
+                        <div class="item-owners"><span class="owner-tag owner-cici">Cici</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="tiancheng">
@@ -490,11 +487,11 @@
                 <span class="task-count">2 个未处理</span>
             </div>
             <ul class="item-list">
-                <li class="item" data-owners="">
+                <li class="item" data-owners="jiaqi">
                     <span class="item-index">6</span>
                     <span class="item-content">
-                        <span class="item-text">(Lury)The not available item should show on storefront page for partner  @Neo Wang</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">(Lury)The not available item should show on storefront page for partner  @Jiaqi Yu   @Neo Wang</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="lory">
@@ -520,11 +517,11 @@
                         <div class="item-owners"><span class="owner-tag owner-fengxia">Feng Xia</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="">
+                <li class="item" data-owners="jiaqi">
                     <span class="item-index">2</span>
                     <span class="item-content">
-                        <span class="item-text">(From Melody)  If the Post tab is hidden, posts that have not been added to any module will not be displayed on the co-seller’s Explore page when resell settings are enabled.</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">(From Melody)  If the Post tab is hidden, posts that have not been added to any module will not be displayed on the co-seller’s Explore page when resell settings are enabled. @Jiaqi Yu</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
             </ul>
@@ -573,18 +570,18 @@
                 <span class="task-count">2 个未处理</span>
             </div>
             <ul class="item-list">
-                <li class="item" data-owners="">
+                <li class="item" data-owners="tiancheng">
                     <span class="item-index">2</span>
                     <span class="item-content">
-                        <span class="item-text">please make sure the these media (event media / post media / post card media) are synced for auto-sync event post. @Yuxiao Zhu   If the post media is different (maybe it’s a video), show a window to ask users if they want to apply the new event media to the posts and post card.</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">please make sure the these media (event media / post media / post card media) are synced for auto-sync event post. @Tiancheng Tang   @Yuxiao Zhu   If the post media is different (maybe it’s a video), show a window to ask users if they want to apply the new event media to the posts and post card.</span>
+                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="tiancheng">
+                <li class="item" data-owners="jiaqi">
                     <span class="item-index">4</span>
                     <span class="item-content">
-                        <span class="item-text">When customizing a store front the font weight is all the same, should be different in the drop down to see the different weights    @Tiancheng Tang   @Yuxiao Zhu</span>
-                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
+                        <span class="item-text">When customizing a store front the font weight is all the same, should be different in the drop down to see the different weights  @Jiaqi Yu   @Yuxiao Zhu</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
             </ul>
@@ -677,11 +674,11 @@
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="">
+                <li class="item" data-owners="tiancheng">
                     <span class="item-index">5</span>
                     <span class="item-content">
-                        <span class="item-text">The context menu is missing    @Yuxiao Zhu</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">The context menu is missing    @Tiancheng Tang   @Yuxiao Zhu</span>
+                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
@@ -932,11 +929,11 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section" data-key="KAT-11075" data-count="7">
+        <div class="task-section" data-key="KAT-11075" data-count="6">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11075" target="_blank">KAT-11075</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-18</span>
-                <span class="task-count">7 个未处理</span>
+                <span class="task-count">6 个未处理</span>
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="chenglim">
@@ -958,13 +955,6 @@
                     <span class="item-content">
                         <span class="item-text">Add percentage of the progress in the goal tracking table. One example is given.  @Cheng Lim   @Jiangtian Hou    @Yuxiao Zhu</span>
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="">
-                    <span class="item-index">4</span>
-                    <span class="item-content">
-                        <span class="item-text">Unable to save QR Redemption product    @Xuan Hu</span>
-                        <div class="item-owners"></div>
                     </span>
                 </li>
                 <li class="item" data-owners="lory">
@@ -1135,17 +1125,18 @@
 
         <div class="footer">
             <p>Generated by Jira Analyzer</p>
-            <p class="timestamp">更新时间: 2026-06-01 17:47:09</p>
+            <p class="timestamp">更新时间: 2026-06-01 18:40:24</p>
         </div>
     </div>
 
     <script>
         function updateCounts() {
             const allItems = document.querySelectorAll('li[data-owners]');
-            const counts = { all: 0, jayce: 0, zhiyong: 0, tiancheng: 0, jun: 0, jiaqi: 0, lory: 0, tianye: 0, fengxia: 0, fred: 0, joey: 0, chenglim: 0, zhengzhu: 0, unassigned: 0 };
+            const counts = { all: 0, jayce: 0, zhiyong: 0, tiancheng: 0, jun: 0, jiaqi: 0, lory: 0, fengxia: 0, fred: 0, chenglim: 0, zhengzhu: 0, cici: 0, unassigned: 0 };
             allItems.forEach(li => {
                 counts.all++;
                 const owners = li.getAttribute('data-owners');
+
                 if (!owners) {
                     counts.unassigned++;
                 } else {
@@ -1156,12 +1147,11 @@
                     if (ownerList.includes('jun')) counts.jun++;
                     if (ownerList.includes('jiaqi')) counts.jiaqi++;
                     if (ownerList.includes('lory')) counts.lory++;
-                    if (ownerList.includes('tianye')) counts.tianye++;
                     if (ownerList.includes('fengxia')) counts.fengxia++;
                     if (ownerList.includes('fred')) counts.fred++;
-                    if (ownerList.includes('joey')) counts.joey++;
                     if (ownerList.includes('chenglim')) counts.chenglim++;
                     if (ownerList.includes('zhengzhu')) counts.zhengzhu++;
+                    if (ownerList.includes('cici')) counts.cici++;
                 }
             });
             for (const [key, count] of Object.entries(counts)) {
@@ -1201,7 +1191,7 @@
 
         function filterItems(filter) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active-jayce', 'active-zhiyong', 'active-tiancheng', 'active-jun', 'active-jiaqi', 'active-lory', 'active-tianye', 'active-fengxia', 'active-fred', 'active-joey', 'active-chenglim', 'active-zhengzhu', 'active-unassigned', 'active');
+                btn.classList.remove('active-jayce', 'active-zhiyong', 'active-tiancheng', 'active-jun', 'active-jiaqi', 'active-lory', 'active-fengxia', 'active-fred', 'active-chenglim', 'active-zhengzhu', 'active-cici', 'active-unassigned', 'active');
             });
             const activeBtn = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
             if (activeBtn) {

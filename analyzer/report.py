@@ -28,53 +28,122 @@ OWNER_COLORS = {
     'joey': ('#d1fae5', '#065f46'),
     'chenglim': ('#ede9fe', '#5b21b6'),
     'zhengzhu': ('#ffedd5', '#9a3412'),
+    'cici': ('#fdf2f8', '#9d174d'),
 }
 
+_DEFAULT_OWNER_COLOR = ('#f3f4f6', '#374151')
 
-def _build_owner_css():
+
+def _owner_color(owner):
+    return OWNER_COLORS.get(owner, _DEFAULT_OWNER_COLOR)
+
+
+def _count_unprocessed_by_owner(analysis):
+    """
+    统计未处理条目中各 owner 的条目数（一条含多人时分别计入各 owner）
+    """
+    counts = {owner: 0 for owner in OWNERS}
+    counts['unassigned'] = 0
+    counts['all'] = 0
+
+    for task in analysis.get('grouped', {}).values():
+        for item in task.get('items', []):
+            if item.get('is_processed'):
+                continue
+            counts['all'] += 1
+            owners = item.get('owners') or []
+            if not owners:
+                counts['unassigned'] += 1
+            else:
+                for o in owners:
+                    if o in counts:
+                        counts[o] += 1
+    return counts
+
+
+def _visible_filter_owners(analysis):
+    """返回在未处理条目中有数量的 owner 标识列表"""
+    counts = _count_unprocessed_by_owner(analysis)
+    return [o for o in OWNERS if counts.get(o, 0) > 0]
+
+
+def _owners_needing_css(analysis, visible_owners):
+    """条目标签与筛选按钮所需的 owner 样式集合"""
+    needed = set(visible_owners)
+    for task in analysis.get('grouped', {}).values():
+        for item in task.get('items', []):
+            if item.get('is_processed'):
+                continue
+            needed.update(item.get('owners') or [])
+    return needed
+
+
+def _build_owner_css(owners):
     """生成 owner 标签和筛选按钮的 CSS 样式"""
     css = ""
     # owner 标签样式
-    for owner, (bg, color) in OWNER_COLORS.items():
+    for owner in owners:
+        bg, color = _owner_color(owner)
         css += f"        .owner-{owner} {{ background: {bg}; color: {color}; }}\n"
     # 筛选按钮激活样式
-    for owner, (_, color) in OWNER_COLORS.items():
+    for owner in owners:
+        _, color = _owner_color(owner)
         css += f"        .filter-btn.active-{owner} {{ background: {color}; border-color: {color}; color: white; }}\n"
     css += "        .filter-btn.active-unassigned {{ background: #6b7280; border-color: #6b7280; color: white; }}\n"
     return css
 
 
-def _build_filter_buttons():
-    """生成筛选栏按钮 HTML"""
+def _build_filter_buttons(visible_owners, show_unassigned):
+    """生成筛选栏按钮 HTML（仅包含有未处理条目的 owner）"""
     buttons = [
         '<button class="filter-btn active" data-filter="all" '
         'onclick="filterItems(\'all\')">全部<span class="filter-count" id="count-all"></span></button>',
     ]
-    for owner in OWNERS:
+    for owner in visible_owners:
         display = OWNER_DISPLAY_NAMES[owner]
         buttons.append(
             f'<button class="filter-btn" data-filter="{owner}" '
             f'onclick="filterItems(\'{owner}\')">{display}'
             f'<span class="filter-count" id="count-{owner}"></span></button>'
         )
-    buttons.append(
-        '<button class="filter-btn" data-filter="unassigned" '
-        'onclick="filterItems(\'unassigned\')">未分配'
-        '<span class="filter-count" id="count-unassigned"></span></button>'
-    )
+    if show_unassigned:
+        buttons.append(
+            '<button class="filter-btn" data-filter="unassigned" '
+            'onclick="filterItems(\'unassigned\')">未分配'
+            '<span class="filter-count" id="count-unassigned"></span></button>'
+        )
     return '\n            '.join(buttons)
 
 
-def _build_filter_js():
+def _build_filter_js(visible_owners, show_unassigned):
     """生成筛选功能的 JavaScript 代码"""
-    # 动态生成 owner 列表（从 OWNERS 字典读取，避免硬编码）
-    owner_keys = list(OWNERS.keys())
-    counts_init = ', '.join([f'{k}: 0' for k in ['all'] + owner_keys + ['unassigned']])
+    owner_keys = list(visible_owners)
+    count_keys = ['all'] + owner_keys + (['unassigned'] if show_unassigned else [])
+    counts_init = ', '.join([f'{k}: 0' for k in count_keys])
     counts_checks = '\n'.join([
         f"                    if (ownerList.includes('{k}')) counts.{k}++;"
         for k in owner_keys
     ])
-    remove_classes = ', '.join([f"'active-{k}'" for k in owner_keys] + ["'active-unassigned'", "'active'"])
+    remove_class_parts = [f"'active-{k}'" for k in owner_keys]
+    if show_unassigned:
+        remove_class_parts.append("'active-unassigned'")
+    remove_class_parts.append("'active'")
+    remove_classes = ', '.join(remove_class_parts)
+
+    if show_unassigned:
+        count_loop = """
+                if (!owners) {
+                    counts.unassigned++;
+                } else {
+                    const ownerList = owners.split(',');
+""" + counts_checks + """
+                }"""
+    else:
+        count_loop = """
+                if (owners) {
+                    const ownerList = owners.split(',');
+""" + counts_checks + """
+                }"""
 
     return """
     <script>
@@ -84,12 +153,7 @@ def _build_filter_js():
             allItems.forEach(li => {
                 counts.all++;
                 const owners = li.getAttribute('data-owners');
-                if (!owners) {
-                    counts.unassigned++;
-                } else {
-                    const ownerList = owners.split(',');
-""" + counts_checks + """
-                }
+""" + count_loop + """
             });
             for (const [key, count] of Object.entries(counts)) {
                 const el = document.getElementById('count-' + key);
@@ -178,9 +242,12 @@ def generate_html_report(analysis, base_url):
         str: 完整的 HTML 文档字符串
     """
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    owner_css = _build_owner_css()
-    filter_buttons = _build_filter_buttons()
-    filter_js = _build_filter_js()
+    owner_counts = _count_unprocessed_by_owner(analysis)
+    visible_owners = _visible_filter_owners(analysis)
+    show_unassigned = owner_counts.get('unassigned', 0) > 0
+    owner_css = _build_owner_css(_owners_needing_css(analysis, visible_owners))
+    filter_buttons = _build_filter_buttons(visible_owners, show_unassigned)
+    filter_js = _build_filter_js(visible_owners, show_unassigned)
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
