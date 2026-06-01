@@ -185,6 +185,11 @@
         </div>
 
         <div class="filter-bar">
+            <span class="filter-label">排序:</span>
+            <button class="filter-btn sort-btn" id="sort-asc" onclick="sortSections('asc')">未处理 ↑</button>
+            <button class="filter-btn sort-btn" id="sort-desc" onclick="sortSections('desc')">未处理 ↓</button>
+            <button class="filter-btn sort-btn" id="sort-default" onclick="sortSections('default')">默认</button>
+            <span style="width: 1px; height: 24px; background: #e5e7eb; margin: 0 8px;"></span>
             <span class="filter-label">筛选人员:</span>
             <button class="filter-btn active" data-filter="all" onclick="filterItems('all')">全部<span class="filter-count" id="count-all"></span></button>
             <button class="filter-btn" data-filter="jayce" onclick="filterItems('jayce')">Jayce<span class="filter-count" id="count-jayce"></span></button>
@@ -1245,6 +1250,49 @@
                 const visibleItems = section.querySelectorAll('li[data-owners]:not([style*="display: none"])');
                 section.style.display = visibleItems.length > 0 ? '' : 'none';
             });
+        }
+
+        let currentSort = 'default';
+
+        function sortSections(order) {
+            currentSort = order;
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('sort-' + order).classList.add('active');
+
+            const container = document.querySelector('.container');
+            const sections = Array.from(container.querySelectorAll('.task-section'));
+            const footer = container.querySelector('.footer');
+
+            const countMap = {};
+            sections.forEach(section => {
+                const countText = section.querySelector('.task-count')?.textContent || '';
+                const match = countText.match(/(\d+)/);
+                countMap[section.dataset.sortId || section.querySelector('.task-key a')?.textContent] = match ? parseInt(match[1]) : 0;
+            });
+
+            if (order === 'default') {
+                sections.sort((a, b) => {
+                    const keyA = a.querySelector('.task-key a')?.textContent || '';
+                    const keyB = b.querySelector('.task-key a')?.textContent || '';
+                    const numA = parseInt(keyA.split('-')[1]) || 0;
+                    const numB = parseInt(keyB.split('-')[1]) || 0;
+                    return numB - numA;
+                });
+            } else if (order === 'asc') {
+                sections.sort((a, b) => {
+                    const ca = parseInt((a.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
+                    const cb = parseInt((b.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
+                    return ca - cb;
+                });
+            } else if (order === 'desc') {
+                sections.sort((a, b) => {
+                    const ca = parseInt((a.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
+                    const cb = parseInt((b.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
+                    return cb - ca;
+                });
+            }
+
+            sections.forEach(section => container.insertBefore(section, footer));
         }
 
         updateCounts();
