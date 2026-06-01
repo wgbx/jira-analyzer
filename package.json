@@ -1,0 +1,16 @@
+{
+  "name": "jira-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "分析 Jira 父任务子项列表，生成可筛选的 HTML 报告",
+  "scripts": {
+    "setup": "python3 -m pip install -r requirements.txt",
+    "start": "python3 jira_analyzer.py",
+    "analyze": "python3 jira_analyzer.py",
+    "serve": "python3 scripts/serve.py",
+    "dev": "npm run start && npm run serve"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

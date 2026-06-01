@@ -156,6 +156,30 @@
             border-radius: 10px;
             margin-left: 4px;
         }
+        .sort-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .sort-label { font-weight: 600; color: #374151; margin-right: 8px; }
+        .sort-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sort-btn:hover { border-color: #667eea; color: #667eea; }
+        .sort-btn.active { background: #667eea; color: white; border-color: #667eea; }
         .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
         .empty-icon { font-size: 64px; margin-bottom: 20px; }
         .footer { text-align: center; color: #9ca3af; margin-top: 40px; font-size: 14px; }
@@ -172,24 +196,27 @@
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-label">总条目数</div>
-                <div class="stat-number total">245</div>
+                <div class="stat-number total">193</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">已处理</div>
-                <div class="stat-number processed">134</div>
+                <div class="stat-number processed">88</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">未处理</div>
-                <div class="stat-number unprocessed">111</div>
+                <div class="stat-number unprocessed">105</div>
             </div>
         </div>
 
+        <div class="sort-bar">
+            <span class="sort-label">排序方式:</span>
+            <button class="sort-btn active" data-sort="key-desc" onclick="sortSections('key-desc')">任务编号 ↓</button>
+            <button class="sort-btn" data-sort="key-asc" onclick="sortSections('key-asc')">任务编号 ↑</button>
+            <button class="sort-btn" data-sort="count-desc" onclick="sortSections('count-desc')">未处理数量 ↓</button>
+            <button class="sort-btn" data-sort="count-asc" onclick="sortSections('count-asc')">未处理数量 ↑</button>
+        </div>
+
         <div class="filter-bar">
-            <span class="filter-label">排序:</span>
-            <button class="filter-btn sort-btn" id="sort-asc" onclick="sortSections('asc')">未处理 ↑</button>
-            <button class="filter-btn sort-btn" id="sort-desc" onclick="sortSections('desc')">未处理 ↓</button>
-            <button class="filter-btn sort-btn" id="sort-default" onclick="sortSections('default')">默认</button>
-            <span style="width: 1px; height: 24px; background: #e5e7eb; margin: 0 8px;"></span>
             <span class="filter-label">筛选人员:</span>
             <button class="filter-btn active" data-filter="all" onclick="filterItems('all')">全部<span class="filter-count" id="count-all"></span></button>
             <button class="filter-btn" data-filter="jayce" onclick="filterItems('jayce')">Jayce<span class="filter-count" id="count-jayce"></span></button>
@@ -206,55 +233,70 @@
             <button class="filter-btn" data-filter="zhengzhu" onclick="filterItems('zhengzhu')">Zheng Zhu<span class="filter-count" id="count-zhengzhu"></span></button>
             <button class="filter-btn" data-filter="unassigned" onclick="filterItems('unassigned')">未分配<span class="filter-count" id="count-unassigned"></span></button>
         </div>
+    <div id="task-container" class="task-container">
 
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11330" data-count="5">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11330" target="_blank">KAT-11330</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-26</span>
-                <span class="task-count">2 个未处理</span>
+                <span class="task-count">5 个未处理</span>
             </div>
             <ul class="item-list">
-                <li class="item" data-owners="">
+                <li class="item" data-owners="tiancheng">
                     <span class="item-index">1</span>
                     <span class="item-content">
-                        <span class="item-text">The order confirmation page - the QR code for QR redemption product doesn’t have any context: what is the product, what does the qR code mean here. how to pick it up  @Yizhen Xin   This is is order P155060 on the release branch</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">The order confirmation page - the QR code for QR redemption product doesn’t have any context: what is the product, what does the qR code mean here. how to pick it up  @Yizhen Xin   This is is order P155060 on the release branch。  @Yuxiao Zhu   @Tiancheng Tang</span>
+                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="lory">
                     <span class="item-index">2</span>
                     <span class="item-content">
-                        <span class="item-text">It is rather hard to tell the product boundary in the current order detail page  @Chow Xia   @Lory Jiang</span>
+                        <span class="item-text">It is rather hard to tell the product boundary in the current order detail page  @Chow Xia   @Lory Jiang   @Dian Yuhong</span>
                         <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
+                    </span>
+                </li>
+                <li class="item" data-owners="">
+                    <span class="item-index">3</span>
+                    <span class="item-content">
+                        <span class="item-text">(Demi)When some headlines/talents have an introduction, and some headlines/talents do not have an introduction, the headlines/talents are not aligned  @cici Huang</span>
+                        <div class="item-owners"></div>
+                    </span>
+                </li>
+                <li class="item" data-owners="tiancheng">
+                    <span class="item-index">4</span>
+                    <span class="item-content">
+                        <span class="item-text">(Lury)There are two issues if delete item too fast @Tiancheng Tang</span>
+                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
+                    </span>
+                </li>
+                <li class="item" data-owners="jiaqi">
+                    <span class="item-index">5</span>
+                    <span class="item-content">
+                        <span class="item-text">(Report by Linda)Go to the ticket details and nothing update, click “x“, no need to pop up window “Leave this page“.  @Jiaqi Yu</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11324" data-count="4">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11324" target="_blank">KAT-11324</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-24</span>
-                <span class="task-count">6 个未处理</span>
+                <span class="task-count">4 个未处理</span>
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="fengxia">
                     <span class="item-index">3</span>
                     <span class="item-content">
-                        <span class="item-text">Need to address the email normalization problem.  @Feng Xia   @Xuan Hu   Customer support ticket what happened</span>
+                        <span class="item-text">Need to address the email normalization problem.  @Feng Xia   @Xuan Hu</span>
                         <div class="item-owners"><span class="owner-tag owner-fengxia">Feng Xia</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="lory,tianye">
-                    <span class="item-index">4</span>
-                    <span class="item-content">
-                        <span class="item-text">(Linda)When create a new ticket with my revenue price is $0, the fee and retail price all need to display $0   @Tian Ye   @Lory Jiang</span>
-                        <div class="item-owners"><span class="owner-tag owner-lory">Lory</span><span class="owner-tag owner-tianye">Tian Ye</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="zhiyong">
                     <span class="item-index">5</span>
                     <span class="item-content">
-                        <span class="item-text">(Reported by  @Melody Zhang  )  @zhiyong song   @Neo Wang   @Xuan Hu  When using the “Create Partner Shop” tool, we noticed that, if only an IG handle is entered (without a Linktree or Komi link), sometimes it generates a valid URL, but sometimes it falls back to:  pear.us/your-business-name . Could you help check: ( Hui’s comment : just let Ops team enter the vanity url in the Create Partner Shop window. There is no point to introduce complex logic to try to save 10 seconds) Under what conditions does this happen? What is the current URL generation logic? Suggested priority: If Linktree / Komi is entered → use that handle If only IG is entered → use IG handle If none are entered → use your-business-name</span>
+                        <span class="item-text">(Reported by  @Melody Zhang  )  @zhiyong song   @Neo Wang   @Yuxiao Zhu  When using the “Create Partner Shop” tool, we noticed that, if only an IG handle is entered (without a Linktree or Komi link), sometimes it generates a valid URL, but sometimes it falls back to:  pear.us/your-business-name . Could you help check: ( Hui’s comment : just let Ops team enter the vanity url in the Create Partner Shop window. There is no point to introduce complex logic to try to save 10 seconds) Under what conditions does this happen? What is the current URL generation logic? Suggested priority:</span>
                         <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
@@ -268,31 +310,24 @@
                 <li class="item" data-owners="jun">
                     <span class="item-index">7</span>
                     <span class="item-content">
-                        <span class="item-text">@Xuan Hu   @Jun Li   improve the total item sold display (design:   )</span>
+                        <span class="item-text">@Yuxiao Zhu    @Jun Li   improve the total item sold display (design:   )</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="tiancheng">
-                    <span class="item-index">8</span>
-                    <span class="item-content">
-                        <span class="item-text">(Demi)  @Tiancheng Tang  After creating a new event in the mobile mode, it needs to refresh the page, then the new event will be displayed in the event list</span>
-                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
                     </span>
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11292" data-count="6">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11292" target="_blank">KAT-11292</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-20</span>
                 <span class="task-count">6 个未处理</span>
             </div>
             <ul class="item-list">
-                <li class="item" data-owners="">
+                <li class="item" data-owners="jun">
                     <span class="item-index">2</span>
                     <span class="item-content">
-                        <span class="item-text">Add a proper error message for unsupported HEIC files when uploading cover or logo images.   ( use “HEIC files are not supported. Please use JPG or PNG.”)  @Xuan Hu</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">Add a proper error message for unsupported HEIC files when uploading cover or logo images.   ( use “HEIC files are not supported. Please use JPG or PNG.”)  @Xuan Hu   @Jun Li</span>
+                        <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="chenglim">
@@ -302,11 +337,11 @@
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="">
+                <li class="item" data-owners="jiaqi">
                     <span class="item-index">9</span>
                     <span class="item-content">
-                        <span class="item-text">(Demi) In wholesale mode, edit the ticket price, the new fees and cost price should not update from the co-seller view</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">(Demi) In wholesale mode, edit the ticket price, the new fees and cost price should not update from the co-seller view  @Jiaqi Yu</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jun">
@@ -326,13 +361,13 @@
                 <li class="item" data-owners="jun">
                     <span class="item-index">15</span>
                     <span class="item-content">
-                        <span class="item-text">(YuXiao)When the Affiliate is deleted by the system, there should be no traces left here.  @June Teng</span>
+                        <span class="item-text">(YuXiao)When the Affiliate is deleted by the system, there should be no traces left here.  @June Teng   @Jun Li</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11278" data-count="9">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11278" target="_blank">KAT-11278</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-17</span>
@@ -342,7 +377,7 @@
                 <li class="item" data-owners="">
                     <span class="item-index">1</span>
                     <span class="item-content">
-                        <span class="item-text">@Xuan Hu  Verify the sales notification settings: SMS notification setting for all new accounts should be default to daily. Even if the account is consumer, must set this setting to daily. Otherwise, when a user signs up, there needs to be a code logic to remember to change the setting, which is error-prone. Email notification setting for all new accounts should be default to every sale. Provide users instructions how to change the setting in the sales email  @Yizhen Xin</span>
+                        <span class="item-text">@Xuan Hu  Verify the sales notification settings:</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
@@ -367,13 +402,6 @@
                         <div class="item-owners"></div>
                     </span>
                 </li>
-                <li class="item" data-owners="tiancheng">
-                    <span class="item-index">6</span>
-                    <span class="item-content">
-                        <span class="item-text">How are the font size decided? Seems random. 30 - 28 = 2; 32 - 30 = 2, and the rest’s difference is 4.  Let’s change them to  16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 40  @Tiancheng Tang   @Yuxiao Zhu</span>
-                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
-                    </span>
-                </li>
                 <li class="item" data-owners="">
                     <span class="item-index">7</span>
                     <span class="item-content">
@@ -389,22 +417,29 @@
                     </span>
                 </li>
                 <li class="item" data-owners="zhengzhu">
-                    <span class="item-index">11</span>
+                    <span class="item-index">12</span>
                     <span class="item-content">
                         <span class="item-text">(Lury)The email campaign input box bug  @Zheng Zhu</span>
                         <div class="item-owners"><span class="owner-tag owner-zhengzhu">Zheng Zhu</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jun">
-                    <span class="item-index">13</span>
+                    <span class="item-index">14</span>
                     <span class="item-content">
                         <span class="item-text">(Lury)The page is jumping  @Jun Li</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
+                <li class="item" data-owners="">
+                    <span class="item-index">15</span>
+                    <span class="item-content">
+                        <span class="item-text">Can we avoid flashing? the background outside this view is also reloaded - unpleasant experience   @Xuan Hu</span>
+                        <div class="item-owners"></div>
+                    </span>
+                </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11267" data-count="5">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11267" target="_blank">KAT-11267</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-15</span>
@@ -412,35 +447,35 @@
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="zhiyong">
-                    <span class="item-index">4</span>
+                    <span class="item-index">3</span>
                     <span class="item-content">
                         <span class="item-text">Reported by Thomas: “when bulk import existing linktree links it ends up creating multiple modules. A default mix content module that house all the links is prolly better for this use case”  @zhiyong song   @Neo Wang   @Yuxiao Zhu</span>
                         <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="lory">
-                    <span class="item-index">5</span>
+                    <span class="item-index">4</span>
                     <span class="item-content">
                         <span class="item-text">KAT 11220 issue: the following is the credit card statement descriptor from a real transaction. What logic caused the incomplete store name? The store name is “Featured by Pear”  @Lory Jiang   @Dian Yuhong</span>
                         <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="zhiyong">
-                    <span class="item-index">6</span>
+                    <span class="item-index">5</span>
                     <span class="item-content">
                         <span class="item-text">Reduce buttons on an image as much as possible  @Yizhen Xin   @zhiyong song   @Xuan Hu</span>
                         <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="chenglim">
-                    <span class="item-index">7</span>
+                    <span class="item-index">6</span>
                     <span class="item-content">
                         <span class="item-text">Event start time is wrong. Need to use the display time  @Cheng Lim   @Jiangtian Hou   @Xuan Hu</span>
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="chenglim">
-                    <span class="item-index">9</span>
+                    <span class="item-index">8</span>
                     <span class="item-content">
                         <span class="item-text">Remove tips row if the total tips is $0  @Cheng Lim   @Jiangtian Hou   @Yuxiao Zhu</span>
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
@@ -448,11 +483,11 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11244" data-count="2">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11244" target="_blank">KAT-11244</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-13</span>
-                <span class="task-count">3 个未处理</span>
+                <span class="task-count">2 个未处理</span>
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="">
@@ -469,26 +504,19 @@
                         <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="tiancheng">
-                    <span class="item-index">11</span>
-                    <span class="item-content">
-                        <span class="item-text">(Reported by Demi)Click “View sales metrics“ on the Post&gt;Event page, then close the sales page, it should turn back to Post&gt;Event page  @Tiancheng Tang</span>
-                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
-                    </span>
-                </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11230" data-count="2">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11230" target="_blank">KAT-11230</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-11</span>
-                <span class="task-count">3 个未处理</span>
+                <span class="task-count">2 个未处理</span>
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="fengxia">
                     <span class="item-index">1</span>
                     <span class="item-content">
-                        <span class="item-text">(Critical bug. Need hotfix)   @Feng Xia   @Xuan Hu  When creating an affiliate link, if there is already an account, do NOT create another new account. When debugging an issue why a new affiliate account was created, this bug comes back again.  For emails or phone number, when it is used to do look up or query, it must be normalized.  Need to have a scalable way to make sure such bugs won’t happen again. Fix the bug and move all data from the affiliate account to the partner account Build a tool to consolidate two accounts into one. To simplify: fail the tool if there are data the tool doesn’t know how to merge. The most important thing is to move the orders, merchant orders, promoter orders , payout etc correctly.</span>
+                        <span class="item-text">(Critical bug. Need hotfix)   @Feng Xia   @Xuan Hu  When creating an affiliate link, if there is already an account, do NOT create another new account. When debugging an issue why a new affiliate account was created, this bug comes back again.  For emails or phone number, when it is used to do look up or query, it must be normalized.  Need to have a scalable way to make sure such bugs won’t happen again.</span>
                         <div class="item-owners"><span class="owner-tag owner-fengxia">Feng Xia</span></div>
                     </span>
                 </li>
@@ -499,39 +527,9 @@
                         <div class="item-owners"></div>
                     </span>
                 </li>
-                <li class="item" data-owners="jayce">
-                    <span class="item-index">4</span>
-                    <span class="item-content">
-                        <span class="item-text">(reported by YuXiao)When duplicating an event, it is necessary to also copy the option "Exclude    Venue app sales from sales report"  @jayce chen   @Neo Wang</span>
-                        <div class="item-owners"><span class="owner-tag owner-jayce">Jayce</span></div>
-                    </span>
-                </li>
             </ul>
         </div>
-        <div class="task-section">
-            <div class="task-header">
-                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11216" target="_blank">KAT-11216</a></span>
-                <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-09</span>
-                <span class="task-count">2 个未处理</span>
-            </div>
-            <ul class="item-list">
-                <li class="item" data-owners="zhiyong">
-                    <span class="item-index">2</span>
-                    <span class="item-content">
-                        <span class="item-text">We should have consistent banner messages now  @Yizhen Xin   @Xuan Hu   @zhiyong song</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="chenglim">
-                    <span class="item-index">7</span>
-                    <span class="item-content">
-                        <span class="item-text">Rearrange User profile fields in admin tool  @Jiangtian Hou  (cc  @Cheng Lim  )</span>
-                        <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11206" data-count="4">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11206" target="_blank">KAT-11206</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-08</span>
@@ -568,7 +566,7 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11194" data-count="2">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11194" target="_blank">KAT-11194</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-07</span>
@@ -582,16 +580,16 @@
                         <div class="item-owners"></div>
                     </span>
                 </li>
-                <li class="item" data-owners="">
+                <li class="item" data-owners="tiancheng">
                     <span class="item-index">4</span>
                     <span class="item-content">
-                        <span class="item-text">When customizing a store front the font weight is all the same, should be different in the drop down to see the different weights    @Yuxiao Zhu</span>
-                        <div class="item-owners"></div>
+                        <span class="item-text">When customizing a store front the font weight is all the same, should be different in the drop down to see the different weights    @Tiancheng Tang   @Yuxiao Zhu</span>
+                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
                     </span>
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11158" data-count="3">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11158" target="_blank">KAT-11158</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-05</span>
@@ -621,7 +619,7 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11152" data-count="5">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11152" target="_blank">KAT-11152</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-05-02</span>
@@ -629,35 +627,35 @@
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="chenglim">
-                    <span class="item-index">2</span>
+                    <span class="item-index">1</span>
                     <span class="item-content">
                         <span class="item-text">The event start time is incorrect which will confuse Ops team. Use the event display time (Event.start_date_display) to display the event’s local time accurately.  @Cheng Lim   @Jiangtian Hou   @Xuan Hu</span>
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="chenglim">
-                    <span class="item-index">3</span>
+                    <span class="item-index">2</span>
                     <span class="item-content">
                         <span class="item-text">Unable to search by event id. Try 741a6738-afb5-47ff-acd9-fe8c9863123e  @Cheng Lim   @Xuan Hu</span>
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="chenglim">
-                    <span class="item-index">4</span>
+                    <span class="item-index">3</span>
                     <span class="item-content">
                         <span class="item-text">When changing an event to “UPCOMING” status in admin tool, the associated tickets’ lifecycle_status is not updated. Need to make sure the logic is the same as Pear web.  @Cheng Lim @Xuan Hu    Best to use the same API instead of copy&amp;paste code - to make sure the business logic is consistent.</span>
                         <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
-                    <span class="item-index">5</span>
+                    <span class="item-index">1</span>
                     <span class="item-content">
                         <span class="item-text">Production: when the product has orders, variants edit is disabled</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
-                    <span class="item-index">6</span>
+                    <span class="item-index">2</span>
                     <span class="item-content">
                         <span class="item-text">To change: when the product has orders, only changing the variant with orders is disabled. Users can still add new variant, edit or delete variants that do not have orders.</span>
                         <div class="item-owners"></div>
@@ -665,7 +663,7 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11137" data-count="3">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11137" target="_blank">KAT-11137</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-29</span>
@@ -675,7 +673,7 @@
                 <li class="item" data-owners="jun">
                     <span class="item-index">4</span>
                     <span class="item-content">
-                        <span class="item-text">@Jun Li  Admin Music Widget 导入工具有两个问题。 不能区分YouTube 和 YouTube Music, 都显示为YouTube Music，但是事实上一个是YouTube video 和 YouTube Music； 当删除其中一个的时候，两个全部都删除了。</span>
+                        <span class="item-text">@Jun Li  Admin Music Widget 导入工具有两个问题。</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
@@ -695,13 +693,20 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11113" data-count="5">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11113" target="_blank">KAT-11113</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-26</span>
-                <span class="task-count">4 个未处理</span>
+                <span class="task-count">5 个未处理</span>
             </div>
             <ul class="item-list">
+                <li class="item" data-owners="jiaqi">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">(Reported by  @Melody Zhang  )    @Jiaqi Yu    @Xuan Hu</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                    </span>
+                </li>
                 <li class="item" data-owners="fengxia">
                     <span class="item-index">3</span>
                     <span class="item-content">
@@ -719,7 +724,7 @@
                 <li class="item" data-owners="">
                     <span class="item-index">8</span>
                     <span class="item-content">
-                        <span class="item-text">Help tweak the following feature flag UI  @Jiangtian Hou   Shorten the description for enableEventLineupPayout Move the checkbox column to the first column (when the screen is wide, not easy to align which is which)</span>
+                        <span class="item-text">Help tweak the following feature flag UI  @Jiangtian Hou</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
@@ -732,7 +737,7 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11111" data-count="4">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11111" target="_blank">KAT-11111</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-25</span>
@@ -769,7 +774,7 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11109" data-count="9">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11109" target="_blank">KAT-11109</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-24</span>
@@ -793,7 +798,7 @@
                 <li class="item" data-owners="">
                     <span class="item-index">3</span>
                     <span class="item-content">
-                        <span class="item-text">On-site staffs are often confused about the # of tickets shown in this UI. Some assume that one scan is good for all tickets in this order because the UI is confusing.  Both Web and Venue app need fix (Venue app fix will be done in KAT 11070).   @Le Gong   @Yuxiao Zhu   Add “(x of N)” next to the ticket # Add a very visible footnote under the ticket “Scan each ticket in this order individually.” Avoid two “Redeemed” buttons.</span>
+                        <span class="item-text">On-site staffs are often confused about the # of tickets shown in this UI. Some assume that one scan is good for all tickets in this order because the UI is confusing.  Both Web and Venue app need fix (Venue app fix will be done in KAT 11070).   @Le Gong   @Yuxiao Zhu</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
@@ -841,11 +846,11 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11098" data-count="11">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11098" target="_blank">KAT-11098</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-22</span>
-                <span class="task-count">10 个未处理</span>
+                <span class="task-count">11 个未处理</span>
             </div>
             <ul class="item-list">
                 <li class="item" data-owners="zhiyong">
@@ -856,71 +861,78 @@
                     </span>
                 </li>
                 <li class="item" data-owners="jun">
-                    <span class="item-index">6</span>
+                    <span class="item-index">7</span>
                     <span class="item-content">
                         <span class="item-text">(reported by Demi) After adding one post to the shop, this post is not displayed in the storefront&gt;Posts tab immediately; the post is displayed after refreshing the page  @Jun Li</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
-                    <span class="item-index">9</span>
+                    <span class="item-index">10</span>
                     <span class="item-content">
                         <span class="item-text">(reported by YuXiao)If a partner synchronizes their media to the co-seller, then the media uploaded by the co-seller themselves will be lost.</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
                 <li class="item" data-owners="tiancheng">
-                    <span class="item-index">10</span>
+                    <span class="item-index">11</span>
                     <span class="item-content">
                         <span class="item-text">(reported by YuXiao)When a users duplicates a post, they still end up using the old route.  @Tiancheng Tang</span>
                         <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi">
-                    <span class="item-index">11</span>
+                    <span class="item-index">12</span>
                     <span class="item-content">
                         <span class="item-text">(reported by YuXiao)Clicking "Change layout" no longer has any effect.  @Jiaqi Yu</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
-                    <span class="item-index">12</span>
+                    <span class="item-index">13</span>
                     <span class="item-content">
                         <span class="item-text">(reported by Demi) Edit the media in RTE, upload a new media, Update it, the new media is not displayed in RTE</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi">
-                    <span class="item-index">13</span>
+                    <span class="item-index">14</span>
                     <span class="item-content">
                         <span class="item-text">(reported by YuXiao)The "Reset colors and fonts" option in Post should reset according to the post's theme rather than the store's theme.  @Jiaqi Yu</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="zhengzhu">
-                    <span class="item-index">14</span>
+                    <span class="item-index">15</span>
                     <span class="item-content">
                         <span class="item-text">(Lury)The page is flickering when offer post coupon to specific customers  @Zheng Zhu</span>
                         <div class="item-owners"><span class="owner-tag owner-zhengzhu">Zheng Zhu</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
-                    <span class="item-index">15</span>
+                    <span class="item-index">16</span>
                     <span class="item-content">
                         <span class="item-text">(Lury) The not available item should not display on visitor view</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
                 <li class="item" data-owners="">
-                    <span class="item-index">16</span>
+                    <span class="item-index">17</span>
                     <span class="item-content">
                         <span class="item-text">Users are confused why the note cannot be changed and save  @Yizhen Xin</span>
                         <div class="item-owners"></div>
                     </span>
                 </li>
+                <li class="item" data-owners="jun">
+                    <span class="item-index">19</span>
+                    <span class="item-content">
+                        <span class="item-text">(Lury)The copied post URL is not subdomain  @Jun Li</span>
+                        <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
+                    </span>
+                </li>
             </ul>
         </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-11075" data-count="7">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11075" target="_blank">KAT-11075</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-18</span>
@@ -978,213 +990,152 @@
                 </li>
             </ul>
         </div>
-        <div class="task-section">
-            <div class="task-header">
-                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11062" target="_blank">KAT-11062</a></span>
-                <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-16</span>
-                <span class="task-count">2 个未处理</span>
-            </div>
-            <ul class="item-list">
-                <li class="item" data-owners="chenglim">
-                    <span class="item-index">3</span>
-                    <span class="item-content">
-                        <span class="item-text">（moved 11325 No.4） Change the access control of this Admin Tool “Pear owned”  @Cheng Lim   @Jiangtian Hou   Only b@1m.app and hui@1m.app can disable this option, once enabled. When an Ops team member is to make changes from checked to unchecked: Show a drawer “You are not authorized to make this setting change. Please contact hui@1m.app or b@1m.app CTA “Got it”</span>
-                        <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="zhiyong">
-                    <span class="item-index">12</span>
-                    <span class="item-content">
-                        <span class="item-text">SMS URL shorten tool fix - problem: 1. users didn't know it was a tool 2. If I use it, users assume that the URL will be automatically added to the text content.    @Yuxiao Zhu   @zhiyong song</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="task-section">
-            <div class="task-header">
-                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11047" target="_blank">KAT-11047</a></span>
-                <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-14</span>
-                <span class="task-count">4 个未处理</span>
-            </div>
-            <ul class="item-list">
-                <li class="item" data-owners="chenglim">
-                    <span class="item-index">3</span>
-                    <span class="item-content">
-                        <span class="item-text">Ops team should be able to change an event status to canceled.  @Cheng Lim  (example event ID: d72d3db0-75ea-4c64-8bfb-b5ac4328a418)    @Xuan Hu</span>
-                        <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="zhiyong">
-                    <span class="item-index">7</span>
-                    <span class="item-content">
-                        <span class="item-text">Post landing page UI tweak. Remove “Show all”. move “V” next to Event description.     @Xuan Hu   @zhiyong song</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="lory">
-                    <span class="item-index">13</span>
-                    <span class="item-content">
-                        <span class="item-text">this post is selling tickets like crazy, but analytics shows 0 traffic    @Lory Jiang   @Dian Yuhong</span>
-                        <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="jun">
-                    <span class="item-index">15</span>
-                    <span class="item-content">
-                        <span class="item-text">(Lury)The copied post URL is not subdomain  @Jun Li</span>
-                        <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="task-section">
-            <div class="task-header">
-                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11003" target="_blank">KAT-11003</a></span>
-                <span class="task-summary">Daily UI tweaks and bug fixes 2026-04-08</span>
-                <span class="task-count">2 个未处理</span>
-            </div>
-            <ul class="item-list">
-                <li class="item" data-owners="tiancheng">
-                    <span class="item-index">4</span>
-                    <span class="item-content">
-                        <span class="item-text">( Done Post/Product ) Need to remind users about unsaved changes. This is an important UX.  @Tiancheng Tang    @Xuan Hu</span>
-                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
-                    </span>
-                </li>
-                <li class="item" data-owners="zhiyong">
-                    <span class="item-index">15</span>
-                    <span class="item-content">
-                        <span class="item-text">Duplicate a ticket from another event, the ticket’s cover is missing  @zhiyong song   @Neo Wang</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="task-section">
+        <div class="task-section" data-key="KAT-10975" data-count="19">
             <div class="task-header">
                 <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-10975" target="_blank">KAT-10975</a></span>
                 <span class="task-summary">Daily UI tweaks and bug fixes from 2026-Q1</span>
-                <span class="task-count">16 个未处理</span>
+                <span class="task-count">19 个未处理</span>
             </div>
             <ul class="item-list">
+                <li class="item" data-owners="fred">
+                    <span class="item-index">1</span>
+                    <span class="item-content">
+                        <span class="item-text">Remaining issues from 10445 “Daily UI tweaks and bug fixes 2026-01-23 (RTE focused)”   @Fred Steger   @Xuan Hu</span>
+                        <div class="item-owners"><span class="owner-tag owner-fred">Fred</span></div>
+                    </span>
+                </li>
                 <li class="item" data-owners="jun">
                     <span class="item-index">2</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10532 “Daily UI tweaks and bug fixes 2026-01-29“   (6) (Reported by YuXiao)Guest perspective: When the shop page is loading, the bottom menu bar should not be displayed. @Jun Li</span>
+                        <span class="item-text">Remaining issues from 10532 “Daily UI tweaks and bug fixes 2026-01-29“</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi">
                     <span class="item-index">3</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10584 “Daily UI tweaks and bug fixes 2026-02-04“   (13) partners cannot change the color. Note is typically important and they don’t like too grey color. It meant to be visible. add color control for event note in post style color settings. this note is displayed both post and product pages.  @Jiaqi Yu   (20) It is better to display the disabled reason below the horizontal ticket banner in the mobile mode  @Aric zheng</span>
+                        <span class="item-text">Remaining issues from 10584 “Daily UI tweaks and bug fixes 2026-02-04“</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                    </span>
+                </li>
+                <li class="item" data-owners="chenglim">
+                    <span class="item-index">4</span>
+                    <span class="item-content">
+                        <span class="item-text">Remaining issues from 10602 “Daily UI tweaks and bug fixes 2026-02-06“</span>
+                        <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
+                    </span>
+                </li>
+                <li class="item" data-owners="chenglim,zhiyong,jun">
+                    <span class="item-index">5</span>
+                    <span class="item-content">
+                        <span class="item-text">Remaining issues from 10624 “Daily UI tweaks and bug fixes 2026-02-09“</span>
+                        <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span><span class="owner-tag owner-zhiyong">Zhiyong</span><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jun">
                     <span class="item-index">6</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10666 “Daily UI tweaks and bug fixes 2026-02-13“  (7) This UX is very problematic and not well thought.   There is no visual indicator on the storefront  to tell users which module is shown or hide. In addition to the Hide/Show module menu items, the control should be duplicated at the most natural place Edit Module window too.    @Jun Li</span>
+                        <span class="item-text">Remaining issues from 10666 “Daily UI tweaks and bug fixes 2026-02-13“</span>
                         <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="jun,chenglim">
+                <li class="item" data-owners="chenglim,jun">
                     <span class="item-index">8</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10683 “Daily UI tweaks and bug fixes 2026-02-14“  (1) All events should be sorted from the most to least recent, under every tab.  @Cheng Lim   @Jiangtian Hou    @Xuan Hu (3) When adding a post to shop, the post cover logic is wrong   @Yuxiao Zhu   @Jun Li Actual: asking about the post card thumbnail Expected: asking if post cover media should be customized.</span>
-                        <div class="item-owners"><span class="owner-tag owner-jun">Jun</span><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
+                        <span class="item-text">Remaining issues from 10683 “Daily UI tweaks and bug fixes 2026-02-14“</span>
+                        <div class="item-owners"><span class="owner-tag owner-chenglim">Cheng Lim</span><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi">
                     <span class="item-index">9</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10695 “Daily UI tweaks and bug fixes 2026-02-24“  (2) (Reported by YuXiao) After the color of the postcard title is customized by the user, it should not be clickable by the user in the simulator.  @Jiaqi Yu</span>
+                        <span class="item-text">Remaining issues from 10695 “Daily UI tweaks and bug fixes 2026-02-24“</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="zhiyong">
                     <span class="item-index">10</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10742 “Daily UI tweaks and bug fixes 2026-03-01“  (1) The back routing is incorrect.  @Yuxiao Zhu   @zhiyong song</span>
+                        <span class="item-text">Remaining issues from 10742 “Daily UI tweaks and bug fixes 2026-03-01“</span>
                         <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="zhiyong,jiaqi">
+                <li class="item" data-owners="jiaqi,zhiyong">
                     <span class="item-index">11</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10788 “Daily UI tweaks and bug fixes 2026-03-06“  (6) (Reported by YuXiao)The "Or select from" section of "Manage post card media" should have duplicate content removed. @Jiaqi Yu   (9) (Report by linda) New partner &gt; create a post, nothing edit then back, it no need to pop up the “Save changes“ window  @zhiyong song   (12) Edit an event &gt;  nothing edit then back, it no need to pop up the “Save changes“ window  @zhiyong song</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                        <span class="item-text">Remaining issues from 10788 “Daily UI tweaks and bug fixes 2026-03-06“</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi">
                     <span class="item-index">12</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10803 “Daily UI tweaks and bug fixes 2026-03-10“  (8)  A partner expressed that they really want to upload IG reels to their storefront.Add IG reels in video links. @Le Gong   @Jiaqi Yu   @Yuxiao Zhu</span>
+                        <span class="item-text">Remaining issues from 10803 “Daily UI tweaks and bug fixes 2026-03-10“</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi">
                     <span class="item-index">13</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10813 “Daily UI tweaks and bug fixes 2026-03-11“   @Jiaqi Yu   (2) Does the checkout page use the correct color?  It says Post main text is used But the Post main text should look like this (4) (Reported by Lury) The post card and button becomes wider after editing post and back to storefront page</span>
+                        <span class="item-text">Remaining issues from 10813 “Daily UI tweaks and bug fixes 2026-03-11“   @Jiaqi Yu</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="zhiyong,tiancheng">
+                <li class="item" data-owners="tiancheng,zhiyong">
                     <span class="item-index">14</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10827 “Daily UI tweaks and bug fixes 2026-03-12“ (2) (Report by linda)Turn off the “auto-sync“ and setting the retail price is “$0.6“, preview the post, the button shouldn’t display “RSVP“ because is not free.   @Tiancheng Tang       (3) (Report by linda) “ Custimze Prices in this post”  setting whether need to control the minimum control value is 1.11?  Now the  Net Earning  is  -$0.46.   @zhiyong song   (4) If the event title is repeatedly modified during the creation of the event, the post title will only synchronize with the initial value. The expectation is that synchronization will occur throughout the creation process, and it will not occur after the creation is completed.  @Xuan Hu   @Neo Wang   @zhiyong song</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span><span class="owner-tag owner-tiancheng">Tiancheng</span></div>
+                        <span class="item-text">Remaining issues from 10827 “Daily UI tweaks and bug fixes 2026-03-12“</span>
+                        <div class="item-owners"><span class="owner-tag owner-tiancheng">Tiancheng</span><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="zhiyong,jun,jiaqi,chenglim">
+                <li class="item" data-owners="jiaqi,chenglim,zhiyong,jun">
                     <span class="item-index">15</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10839 “Daily UI tweaks and bug fixes 2026-03-16“ (1) Visiting  pear.us  should always go to My Shop page.  Reproduce : closing all browser windows with Pear, and wait for long enough (like several hours or a day), open browser window and type “ pear.us ”, it redirects to Explore page. @Jiaqi Yu   @Xuan Hu (4) (Reported by YuXiao) When the same order is associated with different events, the earnings should be displayed separately according to the corresponding prices. @Rui Cai   @Cheng Lim   @Jiangtian Hou   @Yuxiao Zhu (5) It’s better display “$29.80“ not “$29.8”  @zhiyong song   (6) Add one post to a co-seller’s shop, it is not displayed in the list immediately  @Jun Li</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span><span class="owner-tag owner-jun">Jun</span><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
+                        <span class="item-text">Remaining issues from 10839 “Daily UI tweaks and bug fixes 2026-03-16“</span>
+                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-chenglim">Cheng Lim</span><span class="owner-tag owner-zhiyong">Zhiyong</span><span class="owner-tag owner-jun">Jun</span></div>
                     </span>
                 </li>
                 <li class="item" data-owners="jiaqi,chenglim">
                     <span class="item-index">16</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10858 “Daily UI tweaks and bug fixes 2026-03-19“ (7) (Reported by YuXiao)When the network speed or the API response speed is slow, switching from "Storefront" to another tab will result in the "Publish" button being disabled.  @Jiaqi Yu (8) (Reported by linda)It’s better add Promotion “discounted orders” on the admin tools. (From 10761)   https://admin.pear.us/user/events/620d5208-217c-4990-9ebc-de86d45627bc?tab=report @Cheng Lim</span>
+                        <span class="item-text">Remaining issues from 10858 “Daily UI tweaks and bug fixes 2026-03-19“</span>
                         <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="zhiyong,jun,jiaqi">
+                <li class="item" data-owners="jun,jiaqi,zhiyong">
                     <span class="item-index">17</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10896 “Daily UI tweaks and bug fixes 2026-03-23“ (5) (Report by linda)on the subdomian shop &gt; click login &gt; Visit as a guest, no response.          @Jun Li (6) (Reported by YuXiao)When the title of the postcard consists of two lines, a large space will be left at the bottom. @Le Gong   @Jiaqi Yu (8) (Report by linda)The co-seller which no exist “events“ route, to visit   https://pear.us/events , it should display 404, now it can create event.  @zhiyong song   (9) (Reported by Lury) Guest visit the post that enabled A/B testing should go to the same post on subdomain  @Jun Li (15) (Reported by Lury) There is no post level limit info in post when set purchase limit per customer in post  @Jun Li (18) (Reported by YuXiao)For newly registered accounts, switching the tap without modifying any information should not trigger a warning pop-up.  @Jiaqi Yu   @Yuxiao Zhu</span>
-                        <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span><span class="owner-tag owner-jun">Jun</span><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                        <span class="item-text">Remaining issues from 10896 “Daily UI tweaks and bug fixes 2026-03-23“</span>
+                        <div class="item-owners"><span class="owner-tag owner-jun">Jun</span><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="jiaqi,fred,chenglim">
+                <li class="item" data-owners="fred,jiaqi,chenglim">
                     <span class="item-index">18</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10905 “Daily UI tweaks and bug fixes 2026-03-24“ (1) If On-hold event’s start time is in the past, they should be marked as Canceled.  This should be done by a safe offline daily job   @Xuan Hu   @Rui Cai (5) ( @Cynthia Yueh   @Fred Steger @Xuan Hu   ) RTE: In the ticket product banner setting window, add an option to allow users to choose if specific fees will be displayed. i..e, to choose between “Incl. $x fees” vs. “Incl. fees”. This setting should be available and apply to both center (7) This is the required info viewer. The questions' colors are white, so they are invisible. What colors are used to render the question texts?!  It is unsafe.  @Yizhen Xin   Post to test:    Click the tiger product, add to cart.     @Dian Yuhong   @Jiaqi Yu (8) (Reported by Demi) It should not have “1“ on the default Order filters  @Jiaqi Yu (9) Campaign city filter logic needs to close the loop  @Rui Cai   @Yuxiao Zhu  Choose one of the two options to fix City definition 1: customers bought tickets of events located in the city City definition 2: customers bought tickets of events located in the city OR customers' shipping address is in this city (10) Add a field in User table to record if the user is created by Pear  @Cheng Lim   @Jiangtian Hou   @Xuan Hu as an affiliate co-seller as a follower imported or added eng: make the User table field name readable and scalable, such as User.auto_created If User.auto_created is not null, then display the information as follows to help Ops team as a follower of &lt;shop name&gt;, OR as an affiliate of &lt;shop name&gt; (11) The images aren't showing up on IG when event links are sent on the Ins        @binmax huang   @Yuxiao Zhu</span>
-                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-fred">Fred</span><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
+                        <span class="item-text">Remaining issues from 10905 “Daily UI tweaks and bug fixes 2026-03-24“</span>
+                        <div class="item-owners"><span class="owner-tag owner-fred">Fred</span><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-chenglim">Cheng Lim</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="jiaqi,lory">
+                <li class="item" data-owners="lory,jiaqi">
                     <span class="item-index">19</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10928 “Daily UI tweaks and bug fixes 2026-03-26“ (2) If the order is placed from Venue App, we don’t have customer info. Is there a field in the order telling the fact the order was placed on  Pear.Us  Venue App?  If not, need to add.  Then, in the order list, add ( Pear.Us  Venue App) as the customer info.  @Lory Jiang   @Rui Cai (3) (Reported by linda )New partner signup on Iphone 12 and upload shop cover image ratio is 4:5 , after signup, click “Next“ on the magic button, page is flash.   https://pear.us/linda40-hello-and-happy     token:   K4ZwpgTgkgJgXAYwEYDMAsBGJSCsBaATgxwHY80AOAZjT2pxUIDYAmJimMMApgBjAA0ASwCGAFzgYSJNHxbyKAsAA8ADpIq8mxAhRYUgA.KQ16gLPUQGyB7woa35fvCzvfA6QBmMNdqH6up53NQlY   @Jiaqi Yu   (5) The order list is incorrect. it should show 4 orders and 2 orders respectively.  @Lory Jiang (6) Pear owned accounts do not allow withdrawal. Does not allow adding bank accounts for withdraw, and should not have withdraw button.  API should also have the logic that withdrawal will fail if the account is “Pear owned” (User.pear_owned == true). example below: user id is ‘7b7fddb2-9d28-4bb1-bf4f-702df675e67d’  @Lory Jiang (7) The later stage stats should never be larger than an earlier stage’s. It is a funnel. URL:  https://pear.us/ifytdb2jky/post/midnight-club-vol-2   Need to find what this bug is - why the # of initiated checkout can be larger than added to cart.   @Lory Jiang (9) (Reported by YuXiao )The supported social types in the form should be consistent with those of the storefront.  @Aric zheng</span>
-                        <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-lory">Lory</span></div>
+                        <span class="item-text">Remaining issues from 10928 “Daily UI tweaks and bug fixes 2026-03-26“</span>
+                        <div class="item-owners"><span class="owner-tag owner-lory">Lory</span><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
                     </span>
                 </li>
-                <li class="item" data-owners="jayce,tiancheng,jun,jiaqi,fred,joey,zhengzhu">
+                <li class="item" data-owners="jayce,fred,jun,jiaqi,tiancheng,zhengzhu">
                     <span class="item-index">20</span>
                     <span class="item-content">
-                        <span class="item-text">Remaining issues from 10951 “Daily UI tweaks and bug fixes 2026-03-30“ (1)  (Critical issue)  There are serious inefficiencies in the Post code. It is not usable - must be addressed urgently. Try this post:  https://pear.us/poorguyshop/post/springnailbigsale    @jayce chen   @Fred Steger   @Dian Yuhong After everything is loaded, it becomes slower After scrolling up and down, it becomes frozen The post has a bit more products, but only 68 - a tiny number (2) The apple podcast icon is not displaying on the store front even though its filled out in the "socials".The number of social icons displayed in the storefront needs to be increased.  @Yuxiao Zhu Shop:    (   ) (3) Unable to add groups on the event before click “X“     @Jun Li   @Xuan Hu   K4ZwpgTgkgJgXAFgExIOwDYDMSCMBaDGTPBATh1LwA4AjAY3TzoFYaax2cqAGOmgGgCWAQwAucHKlRlMzKggT8wADwAOEnuhkKEQA.CzUkwtcUCLVGDTnEmJ_Gmn0h2h9ZSQdGmEIQEqFzVmk (5) Midnight glow icons are inconsistent between storefront and post  @Jiaqi Yu   @Yuxiao Zhu (6) (reported by Joey Fleming) When rearranging events, it's imperative that we have the date showing on this view so we know which events need to go first. Can we please add the event dates to this view? that makes sense.    @Yuxiao Zhu   @Tiancheng Tang (9) (Reported by Lury)There is no USER_ACTIVITY_POST_ACCESS ua after accepting cookie and reloading post detail page  @Aric zheng (10) (Reported by YuXiao)For overly long names, it is recommended that the full name be displayed when the cursor moves over it.  @Aric zheng (11) (Reported by Lury)The post itself url is dispalyed in alternate post url dropdown option when enable A/B testing  @Rui Cai   @Zheng Zhu (12) Create an event, repeatedly modify the event title. Until the event is fully created, the event title should always be updated synchronously with the post title. (13) (Reported by Lury) “Something went wrong” page is displayed after creating form on safari browser  @Aric zheng (14) (Reported by Lury) UA is USER_ACTIVITY_CHECKOUT_INTERACTION when input info in form in post  @Aric zheng (15) There should be no back button on the first-level page.  @Tiancheng Tang</span>
-                        <div class="item-owners"><span class="owner-tag owner-jayce">Jayce</span><span class="owner-tag owner-tiancheng">Tiancheng</span><span class="owner-tag owner-jun">Jun</span><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-fred">Fred</span><span class="owner-tag owner-joey">Joey</span><span class="owner-tag owner-zhengzhu">Zheng Zhu</span></div>
+                        <span class="item-text">Remaining issues from 10951 “Daily UI tweaks and bug fixes 2026-03-30“</span>
+                        <div class="item-owners"><span class="owner-tag owner-jayce">Jayce</span><span class="owner-tag owner-fred">Fred</span><span class="owner-tag owner-jun">Jun</span><span class="owner-tag owner-jiaqi">Jiaqi</span><span class="owner-tag owner-tiancheng">Tiancheng</span><span class="owner-tag owner-zhengzhu">Zheng Zhu</span></div>
                     </span>
                 </li>
             </ul>
-        </div>
+        </div>    </div>
+
         <div class="footer">
             <p>Generated by Jira Analyzer</p>
-            <p class="timestamp">更新时间: 2026-05-29 15:09:23</p>
+            <p class="timestamp">更新时间: 2026-06-01 17:47:09</p>
         </div>
     </div>
 
@@ -1219,6 +1170,35 @@
             }
         }
 
+        function sortSections(sortBy) {
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.sort-btn[data-sort="${sortBy}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const container = document.getElementById('task-container');
+            if (!container) return;
+            const sections = Array.from(container.querySelectorAll('.task-section'));
+
+            sections.sort((a, b) => {
+                const keyA = a.getAttribute('data-key') || '';
+                const keyB = b.getAttribute('data-key') || '';
+                const numA = parseInt(keyA.replace(/[^0-9]/g, '')) || 0;
+                const numB = parseInt(keyB.replace(/[^0-9]/g, '')) || 0;
+                const countA = parseInt(a.getAttribute('data-count')) || 0;
+                const countB = parseInt(b.getAttribute('data-count')) || 0;
+
+                switch (sortBy) {
+                    case 'key-desc': return numB - numA;
+                    case 'key-asc': return numA - numB;
+                    case 'count-desc': return countB - countA || numB - numA;
+                    case 'count-asc': return countA - countB || numA - numB;
+                    default: return numB - numA;
+                }
+            });
+
+            sections.forEach(section => container.appendChild(section));
+        }
+
         function filterItems(filter) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active-jayce', 'active-zhiyong', 'active-tiancheng', 'active-jun', 'active-jiaqi', 'active-lory', 'active-tianye', 'active-fengxia', 'active-fred', 'active-joey', 'active-chenglim', 'active-zhengzhu', 'active-unassigned', 'active');
@@ -1250,49 +1230,6 @@
                 const visibleItems = section.querySelectorAll('li[data-owners]:not([style*="display: none"])');
                 section.style.display = visibleItems.length > 0 ? '' : 'none';
             });
-        }
-
-        let currentSort = 'default';
-
-        function sortSections(order) {
-            currentSort = order;
-            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('sort-' + order).classList.add('active');
-
-            const container = document.querySelector('.container');
-            const sections = Array.from(container.querySelectorAll('.task-section'));
-            const footer = container.querySelector('.footer');
-
-            const countMap = {};
-            sections.forEach(section => {
-                const countText = section.querySelector('.task-count')?.textContent || '';
-                const match = countText.match(/(\d+)/);
-                countMap[section.dataset.sortId || section.querySelector('.task-key a')?.textContent] = match ? parseInt(match[1]) : 0;
-            });
-
-            if (order === 'default') {
-                sections.sort((a, b) => {
-                    const keyA = a.querySelector('.task-key a')?.textContent || '';
-                    const keyB = b.querySelector('.task-key a')?.textContent || '';
-                    const numA = parseInt(keyA.split('-')[1]) || 0;
-                    const numB = parseInt(keyB.split('-')[1]) || 0;
-                    return numB - numA;
-                });
-            } else if (order === 'asc') {
-                sections.sort((a, b) => {
-                    const ca = parseInt((a.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
-                    const cb = parseInt((b.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
-                    return ca - cb;
-                });
-            } else if (order === 'desc') {
-                sections.sort((a, b) => {
-                    const ca = parseInt((a.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
-                    const cb = parseInt((b.querySelector('.task-count')?.textContent || '0').match(/(\d+)/)?.[1]) || 0;
-                    return cb - ca;
-                });
-            }
-
-            sections.forEach(section => container.insertBefore(section, footer));
         }
 
         updateCounts();

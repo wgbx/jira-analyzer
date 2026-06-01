@@ -15,7 +15,8 @@
 
 ```
 jira-analyzer/
-├── jira_analyzer.py           # 入口脚本
+├── package.json                # npm 脚本入口（推荐本地启动方式）
+├── jira_analyzer.py            # Python 入口脚本
 ├── analyzer/                   # 核心模块
 │   ├── config.py              # 配置管理（支持环境变量）
 │   ├── owners.py              # 团队成员定义与匹配
@@ -24,16 +25,21 @@ jira-analyzer/
 │   └── report.py              # HTML/Markdown 报告生成
 ├── config.example.json         # 配置模板
 ├── requirements.txt            # Python 依赖
+├── output/                     # 报告与定时任务日志（git 忽略）
 └── .github/workflows/          # GitHub Actions 工作流
 ```
 
 ## 本地运行
 
+需要本机已安装 **Node.js 18+** 与 **Python 3**。
+
 ### 1. 安装依赖
 
 ```bash
-pip install -r requirements.txt
+npm run setup
 ```
+
+等价于 `pip install -r requirements.txt`。
 
 ### 2. 配置
 
@@ -48,14 +54,23 @@ API Token 获取地址：https://id.atlassian.net/manage-profile/security/api-to
 ### 3. 运行
 
 ```bash
-python jira_analyzer.py
+npm start
 ```
 
-报告会自动生成到 `output/jira-report.html` 并在浏览器中打开。
+报告会生成到 `output/jira-report.html`，并在本地自动用浏览器打开。
+
+### 常用脚本
+
+| 命令 | 说明 |
+|------|------|
+| `npm start` | 拉取 Jira 数据并生成报告（默认） |
+| `npm run analyze` | 同 `npm start` |
+| `npm run serve` | 预览 `output/` 报告（默认 8080，被占用时自动换端口；可用 `PORT=9000 npm run serve` 指定起始端口） |
+| `npm run dev` | 先生成报告，再启动本地预览服务 |
 
 ## GitHub 部署
 
-项目使用 GitHub Actions 每小时自动运行，并将报告部署到 GitHub Pages。
+项目使用 GitHub Actions 每 4 小时自动运行（与本地相同：`npm run setup` → `npm start`），并将报告部署到 GitHub Pages。
 
 ### 1. 创建仓库
 

@@ -25,13 +25,18 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: 设置 Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: 安装依赖
-        run: pip install -r requirements.txt
+        run: npm run setup
 
       - name: 运行分析器
         env:
@@ -39,8 +44,8 @@ jobs:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           JIRA_PARENT_ISSUE: ${{ secrets.JIRA_PARENT_ISSUE }}
-        run: |
-          python jira_analyzer.py
+          CI: true
+        run: npm start
 
       - name: 生成 index.html 入口
         run: cp output/jira-report.html output/index.html
