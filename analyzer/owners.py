@@ -6,20 +6,20 @@ Owner 识别模块
 """
 
 # 团队成员及其匹配关键词
-# 每个 key 是内部标识符，value 列表是文本中可能出现的各种写法
+# 每个 key 是内部标识符，value 为 Jira @mention 中的标准写法
 OWNERS = {
-    'jayce': ['Jayce', 'jayce', '@Jayce', '@jayce chen'],
-    'zhiyong': ['Zhiyong', 'zhiyong', 'Song', 'song', '@Zhiyong', '@zhiyong', '@zhiyong song'],
-    'tiancheng': ['Tiancheng', 'tiancheng', '@Tiancheng', '@tiancheng', 'Tiancheng Tang', '@Tiancheng Tang'],
-    'jun': ['Jun', 'jun', '@Jun', '@jun', 'Jun Li', '@Jun Li'],
-    'jiaqi': ['Jiaqi', 'jiaqi', '@Jiaqi', '@jiaqi', 'Jiaqi Yu', '@Jiaqi Yu'],
-    'lory': ['Lory', 'lory', '@Lory', '@lory', 'Lory Jiang', '@Lory Jiang'],
-    'tianye': ['Tian Ye', 'tian ye', '@Tian Ye'],
-    'fengxia': ['Feng Xia', 'feng xia', '@Feng Xia'],
-    'fred': ['Fred', 'fred', '@Fred', '@Fred Steger'],
-    'joey': ['Joey', 'joey', '@Joey', '@Joey Hou'],
-    'chenglim': ['Cheng Lim', 'cheng lim', '@Cheng Lim'],
-    'zhengzhu': ['Zheng Zhu', 'zheng zhu', '@Zheng Zhu'],
+    'jayce': ['@Jayce'],
+    'zhiyong': ['@zhiyong song'],
+    'tiancheng': ['@Tiancheng Tang'],
+    'jun': ['@Jun Li'],
+    'jiaqi': ['@Jiaqi Yu'],
+    'lory': ['@Lory Jiang'],
+    'tianye': ['@Tian Ye'],
+    'fengxia': ['@Feng Xia'],
+    'fred': ['@Fred Steger'],
+    'joey': ['@Joey Hou'],
+    'chenglim': ['@Cheng Lim'],
+    'zhengzhu': ['@Zheng Zhu'],
 }
 
 # Owner 在 HTML 中的展示名称
