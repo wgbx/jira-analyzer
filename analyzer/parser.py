@@ -134,68 +134,123 @@ def _detect_item_owners(item_content, full_text):
     return owners
 
 
+def _extract_list_item_direct_text(list_item):
+    """
+    提取 listItem 的直接文本（不含嵌套 orderedList 内的条目）。
+
+    Jira 中嵌套子列表会单独编号；若把子列表文字合并进父条目，
+    会导致序号与 Jira 界面不一致。
+    """
+    parts = []
+    for child in list_item.get('content', []):
+        if child.get('type') == 'orderedList':
+            continue
+        parts.extend(extract_text_from_adf(child))
+    return parts
+
+
+def _make_parsed_item(jira_index, full_text, list_item_content, is_strikethrough):
+    """构建单条解析结果。"""
+    is_done, is_backlog, is_moved = _check_status_flags(full_text)
+    owners = _detect_item_owners(list_item_content, full_text)
+    return {
+        'index': jira_index,
+        'text': full_text,
+        'is_done': is_done,
+        'is_backlog': is_backlog,
+        'is_moved': is_moved,
+        'is_strikethrough': is_strikethrough,
+        'is_processed': is_done or is_backlog or is_moved or is_strikethrough,
+        'owners': owners,
+    }
+
+
+def _parse_ordered_list(ordered_list):
+    """
+    解析有序列表，序号与 Jira 一致：orderedList.attrs.order + 段内位置。
+    """
+    items = []
+    start_order = ordered_list.get('attrs', {}).get('order', 1)
+
+    for position, child in enumerate(ordered_list.get('content', [])):
+        if child.get('type') != 'listItem':
+            continue
+
+        jira_index = start_order + position
+        parts = _extract_list_item_direct_text(child)
+        full_text = ' '.join(t[0] for t in parts).strip()
+        is_strikethrough = any(t[1] for t in parts)
+
+        if full_text:
+            items.append(_make_parsed_item(
+                jira_index, full_text, child.get('content', []), is_strikethrough,
+            ))
+
+        # 嵌套子列表在 Jira 中通常不占全局编号，不单独成条，避免与父级 order 冲突
+
+    return items
+
+
+def _parse_bullet_list(bullet_list, start_index):
+    """无序列表无 order 属性，按文档内顺序从 start_index 递增编号。"""
+    items = []
+    index = start_index
+    for child in bullet_list.get('content', []):
+        if child.get('type') != 'listItem':
+            continue
+        parts = _extract_list_item_direct_text(child)
+        full_text = ' '.join(t[0] for t in parts).strip()
+        is_strikethrough = any(t[1] for t in parts)
+        if full_text:
+            items.append(_make_parsed_item(
+                index, full_text, child.get('content', []), is_strikethrough,
+            ))
+            index += 1
+    return items, index
+
+
+def _walk_adf_for_list_items(node, items, bullet_start_index):
+    """遍历 ADF，遇到 orderedList / bulletList 时解析列表项。"""
+    if isinstance(node, list):
+        next_bullet = bullet_start_index
+        for child in node:
+            next_bullet = _walk_adf_for_list_items(child, items, next_bullet)
+        return next_bullet
+
+    if not isinstance(node, dict):
+        return bullet_start_index
+
+    node_type = node.get('type', '')
+    if node_type == 'orderedList':
+        items.extend(_parse_ordered_list(node))
+        return bullet_start_index
+    if node_type == 'bulletList':
+        sub_items, next_index = _parse_bullet_list(node, bullet_start_index)
+        items.extend(sub_items)
+        return next_index
+    if 'content' in node and node_type != 'listItem':
+        return _walk_adf_for_list_items(node['content'], items, bullet_start_index)
+
+    return bullet_start_index
+
+
 def parse_list_items(content, index=1):
     """
     解析 ADF 中的列表项
 
-    递归遍历 ADF 结构，提取所有 listItem 类型的节点，
-    识别每个条目的处理状态和负责人。
+    有序列表条目序号取自 Jira ADF 的 orderedList.attrs.order（与 Jira 界面一致）。
+    嵌套在 listItem 内的子列表单独成条，不再合并进父条目文本。
 
     Args:
         content: ADF 内容（list 或 dict）
-        index: 当前条目编号（用于递归时传递计数）
+        index: 无序列表的起始编号（orderedList 不使用此参数）
 
     Returns:
         tuple[list[dict], int]:
-            - items: 解析后的条目列表，每条包含:
-                - index: 序号
-                - text: 文本内容
-                - is_done/is_backlog/is_moved: 各种状态标记
-                - is_strikethrough: 是否有删除线
-                - is_processed: 是否已处理（任一状态为 True）
-                - owners: 负责人列表
-            - next_index: 下一个可用的序号
+            - items: 解析后的条目列表
+            - next_index: 供无序列表续编的最大序号 + 1
     """
     items = []
-
-    if isinstance(content, list):
-        for item in content:
-            if not isinstance(item, dict):
-                continue
-
-            item_type = item.get('type', '')
-
-            if item_type == 'listItem':
-                # 提取列表项的文本内容
-                texts = extract_text_from_adf(item.get('content', []))
-                full_text = ' '.join([t[0] for t in texts]).strip()
-                is_strikethrough = any(t[1] for t in texts)
-
-                if not full_text:
-                    continue
-
-                # 检测状态标记
-                is_done, is_backlog, is_moved = _check_status_flags(full_text)
-
-                # 检测负责人
-                owners = _detect_item_owners(item.get('content', []), full_text)
-
-                items.append({
-                    'index': index,
-                    'text': full_text,
-                    'is_done': is_done,
-                    'is_backlog': is_backlog,
-                    'is_moved': is_moved,
-                    'is_strikethrough': is_strikethrough,
-                    'is_processed': is_done or is_backlog or is_moved or is_strikethrough,
-                    'owners': owners,
-                })
-                index += 1
-
-            elif 'content' in item:
-                # 递归解析嵌套结构（如 bulletList > listItem）
-                sub_items, new_index = parse_list_items(item['content'], index)
-                items.extend(sub_items)
-                index = new_index
-
-    return items, index
+    _walk_adf_for_list_items(content, items, index)
+    next_index = max((item['index'] for item in items), default=index - 1) + 1
+    return items, next_index
