@@ -85,13 +85,12 @@ def _check_status_flags(text):
     检测列表项的处理状态标记
 
     支持的标记格式（中英文括号、有无空格）：
-    - (done), ( done ), （done）, （ done ）
-    - (backlog), （backlog）
-    - (moved), （moved）, (moved 10967 No. 6) 等括号内以 moved 开头的说明
+    - (done), ( Done Post/Product ) 等括号内以 done 开头的说明
+    - (backlog), (backlog Q2) 等括号内以 backlog 开头的说明
+    - (moved), (moved 10967 No. 6) 等括号内以 moved 开头的说明
 
-    注意：不匹配普通句子中出现的 done/backlog/moved 单词，
-    避免将 "this should be done by..." 等误判为已完成。
-    moved 要求出现在括号开头，避免误匹配 "item moved to ..." 等叙述句。
+    注意：done/backlog/moved 须出现在括号开头，避免误匹配叙述句中的单词。
+    普通句子如 "this should be done by..." 不会被判为已完成。
 
     Args:
         text: 待检测的文本（建议先转小写）
@@ -100,9 +99,11 @@ def _check_status_flags(text):
         tuple[bool, bool, bool]: (是否完成, 是否搁置, 是否已转移)
     """
     lower_text = text.lower()
-    is_done = bool(re.search(r'[\(（]\s*done\s*[\)）]|^done[\)）\s]', lower_text))
-    is_backlog = bool(re.search(r'[\(（]\s*backlog\s*[\)）]', lower_text))
-    # 括号内以 moved 开头即可，如 (moved 10967 No. 6 )
+    is_done = bool(
+        re.search(r'[\(（]\s*done\b', lower_text)
+        or re.search(r'^done[\)）\s]', lower_text)
+    )
+    is_backlog = bool(re.search(r'[\(（]\s*backlog\b', lower_text))
     is_moved = bool(re.search(r'[\(（]\s*moved\b', lower_text))
     return is_done, is_backlog, is_moved
 
