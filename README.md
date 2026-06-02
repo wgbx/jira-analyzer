@@ -10,6 +10,7 @@
 - 自动识别条目的负责人（通过 @mention 和文本匹配）
 - 生成带筛选功能的 HTML 报告
 - 支持按人员筛选，包括未分配的条目
+- 支持「已排期」标记（维护于 `data/scheduled.json`，对应发布周计划）
 
 ## 项目结构
 
@@ -39,6 +40,8 @@ jira-analyzer/
 npm run setup
 ```
 
+`setup` 会自动执行 `git:local-ignore`：在本机忽略 `output/jira-report.html` 的本地改动，**全选暂存**时不会再带上自动生成的报告。若仍出现在更改列表，可手动再跑一次：`npm run git:local-ignore`。
+
 等价于 `pip install -r requirements.txt`。
 
 ### 2. 配置
@@ -65,8 +68,10 @@ npm start
 |------|------|
 | `npm start` | 拉取 Jira 数据并生成报告（默认） |
 | `npm run analyze` | 同 `npm start` |
-| `npm run serve` | 预览 `output/` 报告（默认 8080，被占用时自动换端口；可用 `PORT=9000 npm run serve` 指定起始端口） |
-| `npm run dev` | 先生成报告，再启动本地预览服务 |
+| `npm run serve` | 仅预览已有报告（静态文件，不拉 Jira） |
+| `npm run dev` | **推荐本地使用**：定时拉取 Jira、更新报告，浏览器自动刷新（默认每 120 秒，见 `config.json` → `watch`） |
+
+开发时改完 `data/scheduled.json` 或 Jira 后，保持 `npm run dev` 运行即可，无需反复手动 `npm start`。单次生成仍用 `npm start`。
 
 ## GitHub 部署
 
@@ -122,6 +127,25 @@ launchctl load ~/Library/LaunchAgents/com.jira.analyzer.plist
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 ```
+
+## 维护已排期列表
+
+编辑 `data/scheduled.json`，按发布周录入子任务编号与列表序号（与 Google Sheet 中 `11047 No.15` 格式一致：`issue` 为数字部分，`index` 为 No. 后的序号）：
+
+```json
+{
+  "project_key": "KAT",
+  "releases": [
+    {
+      "date": "2026-06-01",
+      "label": "6/1/2026 Release",
+      "items": [{"issue": "11047", "index": 15}]
+    }
+  ]
+}
+```
+
+报告会对命中排期表的条目显示发布周标签；**排期状态** 支持：全部、已排期、排期已处理（Done/Backlog/Moved）、未排期。
 
 ## 添加团队成员
 

@@ -5,13 +5,17 @@ Jira API 客户端模块
 包括子任务查询、任务详情获取和批量分析。
 """
 
-import requests
-from requests.auth import HTTPBasicAuth
+import time
 
+from analyzer.jira_http import build_jira_session, jira_request
 from analyzer.parser import parse_list_items
+from analyzer.scheduled import get_scheduled_lookup
+
+# 连续请求间隔，减轻 macOS LibreSSL 下偶发 SSLEOFError
+_ISSUE_FETCH_DELAY_SEC = 0.35
 
 
-def get_subtasks(config):
+def get_subtasks(config, session=None):
     """
     获取父任务下的所有分配给当前用户的子任务
 
@@ -23,22 +27,24 @@ def get_subtasks(config):
     Returns:
         list[dict]: 子任务列表，每个元素包含 key、fields 等信息
     """
+    session = session or build_jira_session(config)
     url = f"{config['jira']['base_url']}/rest/api/3/search/jql"
-    auth = HTTPBasicAuth(config['jira']['email'], config['jira']['api_token'])
-
     jql = f"parent = {config['parent_issue']} AND assignee = currentUser()"
 
-    response = requests.post(
-        url,
-        auth=auth,
-        headers={"Content-Type": "application/json"},
-        json={
-            "jql": jql,
-            "fields": ["summary", "description", "status", "key"],
-            "maxResults": 100,
-        },
-        timeout=30,
-    )
+    try:
+        response = jira_request(
+            session,
+            'POST',
+            url,
+            json={
+                'jql': jql,
+                'fields': ['summary', 'description', 'status', 'key'],
+                'maxResults': 100,
+            },
+        )
+    except Exception as exc:
+        print(f'获取子任务失败: {exc}')
+        return []
 
     if response.status_code != 200:
         print(f"获取子任务失败: {response.status_code} - {response.text}")
@@ -47,7 +53,7 @@ def get_subtasks(config):
     return response.json().get('issues', [])
 
 
-def get_issue_description(config, issue_key):
+def get_issue_description(config, issue_key, session=None):
     """
     获取单个任务的详细信息
 
@@ -59,16 +65,19 @@ def get_issue_description(config, issue_key):
         dict | None: 任务信息，包含 key、summary、status、description；
                      获取失败时返回 None
     """
+    session = session or build_jira_session(config)
     url = f"{config['jira']['base_url']}/rest/api/3/issue/{issue_key}"
-    auth = HTTPBasicAuth(config['jira']['email'], config['jira']['api_token'])
 
-    response = requests.get(
-        url,
-        auth=auth,
-        headers={"Content-Type": "application/json"},
-        params={"fields": "description,summary,status"},
-        timeout=30,
-    )
+    try:
+        response = jira_request(
+            session,
+            'GET',
+            url,
+            params={'fields': 'description,summary,status'},
+        )
+    except Exception as exc:
+        print(f'获取任务 {issue_key} 失败: {exc}')
+        return None
 
     if response.status_code != 200:
         print(f"获取任务 {issue_key} 失败: {response.status_code}")
@@ -102,19 +111,28 @@ def analyze_issues(config):
     """
     print(f"正在分析 {config['parent_issue']} 的子任务...")
 
-    subtasks = get_subtasks(config)
+    session = build_jira_session(config)
+    subtasks = get_subtasks(config, session=session)
     print(f"找到 {len(subtasks)} 个子任务")
 
     all_items = []
     total_count = 0
     processed_count = 0
+    scheduled_lookup = get_scheduled_lookup(config)
+    fetch_failures = 0
 
-    for issue in subtasks:
+    for i, issue in enumerate(subtasks):
         key = issue.get('key')
         summary = issue.get('fields', {}).get('summary', '')
 
-        issue_data = get_issue_description(config, key)
-        if not issue_data or not issue_data['description']:
+        if i > 0:
+            time.sleep(_ISSUE_FETCH_DELAY_SEC)
+
+        issue_data = get_issue_description(config, key, session=session)
+        if not issue_data:
+            fetch_failures += 1
+            continue
+        if not issue_data['description']:
             continue
 
         description = issue_data['description']
@@ -128,6 +146,7 @@ def analyze_issues(config):
             total_count += 1
             if item['is_processed']:
                 processed_count += 1
+            release_label = scheduled_lookup.get((key, item['index']))
             all_items.append({
                 'task_key': key,
                 'task_summary': summary,
@@ -135,6 +154,12 @@ def analyze_issues(config):
                 'text': item['text'],
                 'owners': item['owners'],
                 'is_processed': item['is_processed'],
+                'is_done': item.get('is_done', False),
+                'is_backlog': item.get('is_backlog', False),
+                'is_moved': item.get('is_moved', False),
+                'is_strikethrough': item.get('is_strikethrough', False),
+                'is_scheduled': release_label is not None,
+                'scheduled_release': release_label,
             })
 
     # 按任务编号分组
@@ -148,9 +173,24 @@ def analyze_issues(config):
             }
         grouped[key]['items'].append(item)
 
+    if fetch_failures:
+        print(f"警告: {fetch_failures} 个子任务因网络错误未拉取，将使用其余任务生成报告")
+
+    unprocessed = total_count - processed_count
+    scheduled_unprocessed = sum(
+        1 for item in all_items
+        if not item['is_processed'] and item.get('is_scheduled')
+    )
+    scheduled_processed = sum(
+        1 for item in all_items
+        if item['is_processed'] and item.get('is_scheduled')
+    )
+
     return {
         'total': total_count,
         'processed': processed_count,
-        'unprocessed': total_count - processed_count,
+        'unprocessed': unprocessed,
+        'scheduled_unprocessed': scheduled_unprocessed,
+        'scheduled_processed': scheduled_processed,
         'grouped': grouped,
     }

@@ -1,0 +1,90 @@
+{
+  "project_key": "KAT",
+  "releases": [
+    {
+      "date": "2026-05-11",
+      "label": "5/11/2026 Release",
+      "items": [
+        {"issue": "11062", "index": 9},
+        {"issue": "10978", "index": 5},
+        {"issue": "10978", "index": 20},
+        {"issue": "11003", "index": 2},
+        {"issue": "11003", "index": 11},
+        {"issue": "11003", "index": 4},
+        {"issue": "11003", "index": 9},
+        {"issue": "11016", "index": 7},
+        {"issue": "11016", "index": 8}
+      ]
+    },
+    {
+      "date": "2026-05-18",
+      "label": "5/18/2026 Release",
+      "items": [
+        {"issue": "11016", "index": 4},
+        {"issue": "11027", "index": 1},
+        {"issue": "11027", "index": 8},
+        {"issue": "11047", "index": 2},
+        {"issue": "11047", "index": 4},
+        {"issue": "11047", "index": 6},
+        {"issue": "11047", "index": 8},
+        {"issue": "11047", "index": 9},
+        {"issue": "11047", "index": 11},
+        {"issue": "10990", "index": 7},
+        {"issue": "10990", "index": 11},
+        {"issue": "10990", "index": 12}
+      ]
+    },
+    {
+      "date": "2026-05-25",
+      "label": "5/25/2026 Release",
+      "items": [
+        {"issue": "10990", "index": 9},
+        {"issue": "10990", "index": 13},
+        {"issue": "10990", "index": 16},
+        {"issue": "10990", "index": 17},
+        {"issue": "11003", "index": 12},
+        {"issue": "11003", "index": 14},
+        {"issue": "11003", "index": 16},
+        {"issue": "11003", "index": 19},
+        {"issue": "11003", "index": 22}
+      ]
+    },
+    {
+      "date": "2026-06-01",
+      "label": "6/1/2026 Release",
+      "items": [
+        {"issue": "11047", "index": 15},
+        {"issue": "11062", "index": 12},
+        {"issue": "11206", "index": 9},
+        {"issue": "11324", "index": 7},
+        {"issue": "11075", "index": 4},
+        {"issue": "11230", "index": 2},
+        {"issue": "11098", "index": 7},
+        {"issue": "11098", "index": 10},
+        {"issue": "11098", "index": 12},
+        {"issue": "11244", "index": 6},
+        {"issue": "11109", "index": 11},
+        {"issue": "11158", "index": 7},
+        {"issue": "11075", "index": 2},
+        {"issue": "11292", "index": 2}
+      ]
+    },
+    {
+      "date": "2026-06-08",
+      "label": "6/8/2026 Release",
+      "items": [
+        {"issue": "11194", "index": 4},
+        {"issue": "11194", "index": 2},
+        {"issue": "11137", "index": 4},
+        {"issue": "11137", "index": 5},
+        {"issue": "11137", "index": 6},
+        {"issue": "11158", "index": 13},
+        {"issue": "11158", "index": 7},
+        {"issue": "11206", "index": 6},
+        {"issue": "11206", "index": 7},
+        {"issue": "11111", "index": 7},
+        {"issue": "11075", "index": 8}
+      ]
+    }
+  ]
+}

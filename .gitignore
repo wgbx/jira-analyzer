@@ -1,8 +1,9 @@
 # 敏感文件
 config.json
 
-# 输出文件
-output/
+# 输出目录中的临时/日志（报告 HTML 由 CI 生成；本机用 npm run git:local-ignore 忽略本地改动）
+output/*.log
+output/report-version.json
 
 # Python
 __pycache__/
