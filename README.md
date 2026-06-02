@@ -4,7 +4,7 @@
 
 ## 功能
 
-- 自动获取分配给当前用户的子任务
+- 默认拉取父任务（KAT-10938）下**全部**子任务并统计列表条目
 - 解析 ADF（Atlassian Document Format）描述中的列表项
 - 检测条目状态：Done / Backlog / Moved / 删除线
 - 自动识别条目的负责人（通过 @mention 和文本匹配）
@@ -146,6 +146,10 @@ launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 ```
 
 报告会对命中排期表的条目显示发布周标签；**排期状态** 支持：全部、已排期、排期已处理（Done/Backlog/Moved）、未排期。
+
+### 统计口径
+
+顶部 **总条目数 / 已处理 / 未处理 / 已排期** 等，为父任务下各子任务 **Description 里所有列表行** 的合计（不是子任务个数）。默认包含所有子任务，不因 issue 已改派给领导而从统计中消失；人员筛选只影响列表展示，不改变顶部总览数字。
 
 ## 添加团队成员
 

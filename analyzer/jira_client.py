@@ -15,42 +15,66 @@ from analyzer.scheduled import get_scheduled_lookup
 _ISSUE_FETCH_DELAY_SEC = 0.35
 
 
+def _subtasks_jql(config):
+    """
+    子任务 JQL。
+
+    默认 parent 下全部子任务（统计含已转交领导的条目）；
+    filters.subtasks_scope = "mine" 时仅当前用户经办。
+    """
+    jql = f"parent = {config['parent_issue']}"
+    scope = config.get('filters', {}).get('subtasks_scope', 'all')
+    if scope == 'mine':
+        jql += ' AND assignee = currentUser()'
+    return jql
+
+
 def get_subtasks(config, session=None):
     """
-    获取父任务下的所有分配给当前用户的子任务
-
-    通过 JQL 查询 parent = {parent_issue} AND assignee = currentUser() 的任务。
+    获取父任务下的子任务列表（支持分页）。
 
     Args:
-        config: 配置字典，需包含 jira.base_url、jira.email、jira.api_token、parent_issue
+        config: 配置字典，需包含 jira、parent_issue；可选 filters.subtasks_scope
 
     Returns:
         list[dict]: 子任务列表，每个元素包含 key、fields 等信息
     """
     session = session or build_jira_session(config)
     url = f"{config['jira']['base_url']}/rest/api/3/search/jql"
-    jql = f"parent = {config['parent_issue']} AND assignee = currentUser()"
+    jql = _subtasks_jql(config)
 
-    try:
-        response = jira_request(
-            session,
-            'POST',
-            url,
-            json={
-                'jql': jql,
-                'fields': ['summary', 'description', 'status', 'key'],
-                'maxResults': 100,
-            },
-        )
-    except Exception as exc:
-        print(f'获取子任务失败: {exc}')
-        return []
+    issues = []
+    next_page_token = None
 
-    if response.status_code != 200:
-        print(f"获取子任务失败: {response.status_code} - {response.text}")
-        return []
+    while True:
+        body = {
+            'jql': jql,
+            'fields': ['summary', 'description', 'status', 'key'],
+            'maxResults': 100,
+        }
+        if next_page_token:
+            body['nextPageToken'] = next_page_token
 
-    return response.json().get('issues', [])
+        try:
+            response = jira_request(session, 'POST', url, json=body)
+        except Exception as exc:
+            print(f'获取子任务失败: {exc}')
+            break
+
+        if response.status_code != 200:
+            print(f'获取子任务失败: {response.status_code} - {response.text}')
+            break
+
+        data = response.json()
+        issues.extend(data.get('issues', []))
+
+        if data.get('isLast', True):
+            break
+        next_page_token = data.get('nextPageToken')
+        if not next_page_token:
+            break
+
+    return issues
 
 
 def get_issue_description(config, issue_key, session=None):
@@ -109,11 +133,13 @@ def analyze_issues(config):
             - unprocessed: 未处理条目数
             - grouped: 按任务编号分组的数据，每组包含 summary 和 items
     """
-    print(f"正在分析 {config['parent_issue']} 的子任务...")
+    scope = config.get('filters', {}).get('subtasks_scope', 'all')
+    scope_label = '全部子任务' if scope != 'mine' else '分配给当前用户的子任务'
+    print(f"正在分析 {config['parent_issue']} 的{scope_label}...")
 
     session = build_jira_session(config)
     subtasks = get_subtasks(config, session=session)
-    print(f"找到 {len(subtasks)} 个子任务")
+    print(f"找到 {len(subtasks)} 个子任务（统计与列表均基于此范围）")
 
     all_items = []
     total_count = 0

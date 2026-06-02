@@ -11,6 +11,7 @@
     "path": "output/jira-report.html"
   },
   "filters": {
+    "subtasks_scope": "all",
     "exclude_keywords": ["(Done)", "(done)", "(Backlog)", "(backlog)", "(Moved)", "(moved)"]
   },
   "scheduled": {

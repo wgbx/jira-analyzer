@@ -87,9 +87,9 @@ def _check_status_flags(text):
     支持的标记格式（中英文括号、有无空格）：
     - (done), ( Done Post/Product ) 等括号内以 done 开头的说明
     - (backlog), (backlog Q2) 等括号内以 backlog 开头的说明
-    - (moved), (moved 10967 No. 6) 等括号内以 moved 开头的说明
+    - 括号内以 move 开头均视为已迁移：moved、move to、Move to KAT-10967 等
 
-    注意：done/backlog/moved 须出现在括号开头，避免误匹配叙述句中的单词。
+    注意：done/backlog/move* 须出现在括号开头，避免误匹配叙述句中的单词。
     普通句子如 "this should be done by..." 不会被判为已完成。
 
     Args:
@@ -104,7 +104,7 @@ def _check_status_flags(text):
         or re.search(r'^done[\)）\s]', lower_text)
     )
     is_backlog = bool(re.search(r'[\(（]\s*backlog\b', lower_text))
-    is_moved = bool(re.search(r'[\(（]\s*moved\b', lower_text))
+    is_moved = bool(re.search(r'[\(（]\s*move', lower_text))
     return is_done, is_backlog, is_moved
 
 
