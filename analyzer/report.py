@@ -25,7 +25,7 @@ OWNER_COLORS = {
     'tianye': ('#fce7f3', '#9d174d'),
     'fengxia': ('#fef9c3', '#854d0e'),
     'fred': ('#e2e8f0', '#334155'),
-    'joey': ('#d1fae5', '#065f46'),
+    'jiangtian': ('#d1fae5', '#065f46'),
     'chenglim': ('#ede9fe', '#5b21b6'),
     'zhengzhu': ('#ffedd5', '#9a3412'),
     'cici': ('#fdf2f8', '#9d174d'),
