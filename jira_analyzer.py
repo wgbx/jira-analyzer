@@ -88,10 +88,12 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
     base_url = config['jira']['base_url']
 
     if output_format == 'markdown':
-        report = generate_markdown_report(analysis)
+        parent = config.get('parent_issue', 'KAT-10938')
+        report = generate_markdown_report(analysis, parent)
         output_path = OUTPUT_DIR / 'jira-report.md'
     else:
-        report = generate_html_report(analysis, base_url)
+        parent = config.get('parent_issue', 'KAT-10938')
+        report = generate_html_report(analysis, base_url, parent)
         output_path = OUTPUT_DIR / 'jira-report.html'
 
     with open(output_path, 'w', encoding='utf-8') as f:
