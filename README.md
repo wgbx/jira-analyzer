@@ -6,7 +6,7 @@
 
 - 默认拉取父任务（KAT-10938）下**全部**子任务并统计列表条目
 - 解析 ADF（Atlassian Document Format）描述中的列表项
-- 检测条目状态：Done / Backlog / Moved / 删除线
+- 检测条目状态：Done / Backlog（含 Invalid）/ Moved / 删除线
 - 自动识别条目的负责人（通过 @mention 和文本匹配）
 - 生成带筛选功能的 HTML 报告
 - 支持按人员筛选，包括未分配的条目
@@ -145,7 +145,7 @@ launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 }
 ```
 
-报告会对命中排期表的条目显示发布周标签；**排期状态** 支持：全部、已排期、排期已处理（Done/Backlog/Moved）、未排期。
+报告会对命中排期表的条目显示发布周标签；**排期状态** 支持：全部、已排期、排期已处理（Done/Backlog/Invalid/Moved）、未排期。
 
 ### 统计口径
 

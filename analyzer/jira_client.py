@@ -220,6 +220,7 @@ def analyze_issues(config):
                 'is_processed': item['is_processed'],
                 'is_done': item.get('is_done', False),
                 'is_backlog': item.get('is_backlog', False),
+                'backlog_label': item.get('backlog_label'),
                 'is_moved': item.get('is_moved', False),
                 'is_strikethrough': item.get('is_strikethrough', False),
                 'is_scheduled': release_label is not None,

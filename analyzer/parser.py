@@ -5,9 +5,8 @@ ADF（Atlassian Document Format）解析模块
 提取列表项、检测处理状态和识别负责人。
 """
 
-import re
-
 from analyzer.owners import detect_owner
+from analyzer.statuses import detect_processed_flags
 
 
 def extract_text_from_adf(content):
@@ -80,34 +79,6 @@ def extract_mentions_from_adf(content):
     return mentions
 
 
-def _check_status_flags(text):
-    """
-    检测列表项的处理状态标记
-
-    支持的标记格式（中英文括号、有无空格）：
-    - (done), ( Done Post/Product ) 等括号内以 done 开头的说明
-    - (backlog), (backlog Q2) 等括号内以 backlog 开头的说明
-    - 括号内以 move 开头均视为已迁移：moved、move to、Move to KAT-10967 等
-
-    注意：done/backlog/move* 须出现在括号开头，避免误匹配叙述句中的单词。
-    普通句子如 "this should be done by..." 不会被判为已完成。
-
-    Args:
-        text: 待检测的文本（建议先转小写）
-
-    Returns:
-        tuple[bool, bool, bool]: (是否完成, 是否搁置, 是否已转移)
-    """
-    lower_text = text.lower()
-    is_done = bool(
-        re.search(r'[\(（]\s*done\b', lower_text)
-        or re.search(r'^done[\)）\s]', lower_text)
-    )
-    is_backlog = bool(re.search(r'[\(（]\s*backlog\b', lower_text))
-    is_moved = bool(re.search(r'[\(（]\s*move', lower_text))
-    return is_done, is_backlog, is_moved
-
-
 def _detect_item_owners(item_content, full_text):
     """
     综合检测列表项的负责人
@@ -151,13 +122,14 @@ def _extract_list_item_direct_text(list_item):
 
 def _make_parsed_item(jira_index, full_text, list_item_content, is_strikethrough):
     """构建单条解析结果。"""
-    is_done, is_backlog, is_moved = _check_status_flags(full_text)
+    is_done, is_backlog, backlog_label, is_moved = detect_processed_flags(full_text)
     owners = _detect_item_owners(list_item_content, full_text)
     return {
         'index': jira_index,
         'text': full_text,
         'is_done': is_done,
         'is_backlog': is_backlog,
+        'backlog_label': backlog_label,
         'is_moved': is_moved,
         'is_strikethrough': is_strikethrough,
         'is_processed': is_done or is_backlog or is_moved or is_strikethrough,

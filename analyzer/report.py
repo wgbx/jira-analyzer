@@ -131,7 +131,7 @@ def _processed_status_label(item):
     if item.get('is_done'):
         return 'Done'
     if item.get('is_backlog'):
-        return 'Backlog'
+        return item.get('backlog_label') or 'Backlog'
     if item.get('is_moved'):
         return 'Moved'
     if item.get('is_strikethrough'):
