@@ -324,10 +324,10 @@ def _build_filter_js(visible_owners, show_unassigned):
 
         function filterItems(filter) {
             currentOwnerFilter = filter;
-            document.querySelectorAll('.filter-bar .filter-btn').forEach(btn => {
+            document.querySelectorAll('.owner-bar .filter-btn').forEach(btn => {
                 btn.classList.remove(""" + remove_owner_classes + """);
             });
-            const activeBtn = document.querySelector(`.filter-bar .filter-btn[data-filter="${filter}"]`);
+            const activeBtn = document.querySelector(`.owner-bar .filter-btn[data-filter="${filter}"]`);
             if (activeBtn) {
                 if (filter === 'all') {
                     activeBtn.classList.add('active');
@@ -564,7 +564,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
             font-weight: 500;
         }}
 {owner_css}
-        .filter-bar {{
+        .schedule-bar, .owner-bar {{
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -663,7 +663,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
             <button class="sort-btn" data-sort="count-asc" onclick="sortSections('count-asc')">未处理数量 ↑</button>
         </div>
 
-        <div class="schedule-bar filter-bar">
+        <div class="schedule-bar">
             <span class="filter-label">排期状态:</span>
             <button class="filter-btn active" data-schedule="all" onclick="filterSchedule('all')">全部</button>
             <button class="filter-btn" data-schedule="scheduled" onclick="filterSchedule('scheduled')">已排期</button>
@@ -671,7 +671,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
             <button class="filter-btn" data-schedule="unscheduled" onclick="filterSchedule('unscheduled')">未排期</button>
         </div>
 
-        <div class="filter-bar">
+        <div class="owner-bar">
             <span class="filter-label">筛选人员:</span>
             {filter_buttons}
         </div>
