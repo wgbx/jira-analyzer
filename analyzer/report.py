@@ -196,24 +196,33 @@ def _render_item_li(item):
                 </li>"""
 
 
-def _build_filter_buttons(visible_owners, show_unassigned):
+def _filter_count_badge(count):
+    """筛选按钮上的固定条目数（不随人员筛选变化）。"""
+    return str(count) if count else ''
+
+
+def _build_filter_buttons(visible_owners, show_unassigned, owner_counts):
     """生成筛选栏按钮 HTML（仅包含有未处理条目的 owner）"""
     buttons = [
         '<button class="filter-btn active" data-filter="all" '
-        'onclick="filterItems(\'all\')">全部<span class="filter-count" id="count-all"></span></button>',
+        'onclick="filterItems(\'all\')">全部<span class="filter-count" id="count-all">'
+        f'{_filter_count_badge(owner_counts.get("all", 0))}</span></button>',
     ]
     for owner in visible_owners:
         display = OWNER_DISPLAY_NAMES[owner]
+        cnt = owner_counts.get(owner, 0)
         buttons.append(
             f'<button class="filter-btn" data-filter="{owner}" '
             f'onclick="filterItems(\'{owner}\')">{display}'
-            f'<span class="filter-count" id="count-{owner}"></span></button>'
+            f'<span class="filter-count" id="count-{owner}">'
+            f'{_filter_count_badge(cnt)}</span></button>'
         )
     if show_unassigned:
         buttons.append(
             '<button class="filter-btn" data-filter="unassigned" '
             'onclick="filterItems(\'unassigned\')">未分配'
-            '<span class="filter-count" id="count-unassigned"></span></button>'
+            f'<span class="filter-count" id="count-unassigned">'
+            f'{_filter_count_badge(owner_counts.get("unassigned", 0))}</span></button>'
         )
     return '\n            '.join(buttons)
 
@@ -253,18 +262,36 @@ def _build_filter_js(visible_owners, show_unassigned):
         let currentOwnerFilter = 'all';
         let currentScheduleFilter = 'all';
 
+        function matchesScheduleFilter(processed, scheduled) {
+            if (currentScheduleFilter === 'all') {
+                return !processed;
+            }
+            if (currentScheduleFilter === 'scheduled') {
+                return scheduled && !processed;
+            }
+            if (currentScheduleFilter === 'unscheduled') {
+                return !scheduled && !processed;
+            }
+            if (currentScheduleFilter === 'scheduled-processed') {
+                return scheduled && processed;
+            }
+            return false;
+        }
+
         function updateCounts() {
             const allItems = document.querySelectorAll('li.item-row');
             const counts = { """ + counts_init + """ };
             allItems.forEach(li => {
-                if (li.style.display === 'none') return;
+                const scheduled = li.getAttribute('data-scheduled') === 'true';
+                const processed = li.getAttribute('data-processed') === 'true';
+                if (!matchesScheduleFilter(processed, scheduled)) return;
                 counts.all++;
                 const owners = li.getAttribute('data-owners');
 """ + count_loop + """
             });
             for (const [key, count] of Object.entries(counts)) {
                 const el = document.getElementById('count-' + key);
-                if (el) el.textContent = count;
+                if (el) el.textContent = count || '';
             }
         }
 
@@ -284,17 +311,7 @@ def _build_filter_js(visible_owners, show_unassigned):
                     showOwner = owners && owners.split(',').includes(currentOwnerFilter);
                 }
 
-                let showSchedule = false;
-                if (currentScheduleFilter === 'all') {
-                    showSchedule = !processed;
-                } else if (currentScheduleFilter === 'scheduled') {
-                    showSchedule = scheduled && !processed;
-                } else if (currentScheduleFilter === 'unscheduled') {
-                    showSchedule = !scheduled && !processed;
-                } else if (currentScheduleFilter === 'scheduled-processed') {
-                    showSchedule = scheduled && processed;
-                }
-
+                const showSchedule = matchesScheduleFilter(processed, scheduled);
                 li.style.display = showOwner && showSchedule ? '' : 'none';
             });
 
@@ -396,7 +413,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
     visible_owners = _visible_filter_owners(analysis)
     show_unassigned = owner_counts.get('unassigned', 0) > 0
     owner_css = _build_owner_css(_owners_needing_css(analysis, visible_owners))
-    filter_buttons = _build_filter_buttons(visible_owners, show_unassigned)
+    filter_buttons = _build_filter_buttons(visible_owners, show_unassigned, owner_counts)
     filter_js = _build_filter_js(visible_owners, show_unassigned)
 
     html = f"""<!DOCTYPE html>
