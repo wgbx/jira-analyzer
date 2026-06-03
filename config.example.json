@@ -12,7 +12,15 @@
   },
   "filters": {
     "subtasks_scope": "all",
-    "exclude_keywords": ["(Done)", "(done)", "(Backlog)", "(backlog)", "(Moved)", "(moved)"]
+    "active_statuses": ["未处理", "进行中"],
+    "exclude_keywords": [
+      "(Done)",
+      "(done)",
+      "(Backlog)",
+      "(backlog)",
+      "(Moved)",
+      "(moved)"
+    ]
   },
   "scheduled": {
     "path": "data/scheduled.json"

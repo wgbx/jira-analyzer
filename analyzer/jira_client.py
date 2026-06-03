@@ -14,6 +14,16 @@ from analyzer.scheduled import get_scheduled_lookup
 # 连续请求间隔，减轻 macOS LibreSSL 下偶发 SSLEOFError
 _ISSUE_FETCH_DELAY_SEC = 0.35
 
+# 「未处理 / 已排期」口径：仅统计这些 Jira 状态的子任务（如 QA Staging 不计入）
+DEFAULT_ACTIVE_STATUSES = ('未处理', '进行中')
+
+
+def get_active_statuses(config):
+    statuses = config.get('filters', {}).get('active_statuses')
+    if statuses is None:
+        return list(DEFAULT_ACTIVE_STATUSES)
+    return list(statuses)
+
 
 def _subtasks_jql(config):
     """
@@ -158,6 +168,9 @@ def analyze_issues(config):
         if not issue_data:
             fetch_failures += 1
             continue
+        issue_status = issue_data.get('status') or (
+            issue.get('fields', {}).get('status', {}).get('name', '')
+        )
         if not issue_data['description']:
             continue
 
@@ -176,6 +189,7 @@ def analyze_issues(config):
             all_items.append({
                 'task_key': key,
                 'task_summary': summary,
+                'issue_status': issue_status,
                 'index': item['index'],
                 'text': item['text'],
                 'owners': item['owners'],
@@ -195,6 +209,7 @@ def analyze_issues(config):
         if key not in grouped:
             grouped[key] = {
                 'summary': item['task_summary'],
+                'issue_status': item['issue_status'],
                 'items': [],
             }
         grouped[key]['items'].append(item)
@@ -202,10 +217,16 @@ def analyze_issues(config):
     if fetch_failures:
         print(f"警告: {fetch_failures} 个子任务因网络错误未拉取，将使用其余任务生成报告")
 
-    unprocessed = total_count - processed_count
+    active_statuses = get_active_statuses(config)
+    # 总条目数 / 已处理：全部子任务；未处理 / 已排期：仅活跃 Jira 状态
+    unprocessed = sum(
+        1 for item in all_items
+        if not item['is_processed'] and item['issue_status'] in active_statuses
+    )
     scheduled_unprocessed = sum(
         1 for item in all_items
         if not item['is_processed'] and item.get('is_scheduled')
+        and item['issue_status'] in active_statuses
     )
     scheduled_processed = sum(
         1 for item in all_items
@@ -218,5 +239,6 @@ def analyze_issues(config):
         'unprocessed': unprocessed,
         'scheduled_unprocessed': scheduled_unprocessed,
         'scheduled_processed': scheduled_processed,
+        'active_statuses': active_statuses,
         'grouped': grouped,
     }

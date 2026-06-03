@@ -15,7 +15,19 @@ def _report_timestamp():
     return datetime.now(_REPORT_TZ).strftime('%Y-%m-%d %H:%M:%S')
 
 from analyzer.config import OUTPUT_DIR
+from analyzer.jira_client import DEFAULT_ACTIVE_STATUSES
 from analyzer.owners import OWNERS, OWNER_DISPLAY_NAMES
+
+
+def _active_statuses_for_analysis(analysis):
+    return tuple(analysis.get('active_statuses') or DEFAULT_ACTIVE_STATUSES)
+
+
+def _counts_as_unprocessed(item, active_statuses):
+    """描述未处理，且子任务 Jira 状态在活跃集合内。"""
+    if item.get('is_processed'):
+        return False
+    return item.get('issue_status') in active_statuses
 
 
 # ============================================================
@@ -50,13 +62,14 @@ def _count_unprocessed_by_owner(analysis):
     """
     统计未处理条目中各 owner 的条目数（一条含多人时分别计入各 owner）
     """
+    active_statuses = _active_statuses_for_analysis(analysis)
     counts = {owner: 0 for owner in OWNERS}
     counts['unassigned'] = 0
     counts['all'] = 0
 
     for task in analysis.get('grouped', {}).values():
         for item in task.get('items', []):
-            if item.get('is_processed'):
+            if not _counts_as_unprocessed(item, active_statuses):
                 continue
             counts['all'] += 1
             owners = item.get('owners') or []
@@ -78,9 +91,10 @@ def _visible_filter_owners(analysis):
 def _owners_needing_css(analysis, visible_owners):
     """条目标签与筛选按钮所需的 owner 样式集合"""
     needed = set(visible_owners)
+    active_statuses = _active_statuses_for_analysis(analysis)
     for task in analysis.get('grouped', {}).values():
         for item in task.get('items', []):
-            if item.get('is_processed'):
+            if not _counts_as_unprocessed(item, active_statuses):
                 continue
             needed.update(item.get('owners') or [])
     return needed
@@ -101,9 +115,12 @@ def _build_owner_css(owners):
     return css
 
 
-def _report_items(task_items):
-    """报告中展示的条目：全部未处理 + 已排期且已处理。"""
-    unprocessed = [i for i in task_items if not i.get('is_processed')]
+def _report_items(task_items, active_statuses):
+    """报告中展示：活跃状态下的未处理 + 全部子任务的排期已处理。"""
+    unprocessed = [
+        i for i in task_items
+        if _counts_as_unprocessed(i, active_statuses)
+    ]
     processed_scheduled = [
         i for i in task_items
         if i.get('is_processed') and i.get('is_scheduled')
@@ -377,6 +394,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
         str: 完整的 HTML 文档字符串
     """
     now = _report_timestamp()
+    active_statuses = _active_statuses_for_analysis(analysis)
     owner_counts = _count_unprocessed_by_owner(analysis)
     visible_owners = _visible_filter_owners(analysis)
     show_unassigned = owner_counts.get('unassigned', 0) > 0
@@ -651,7 +669,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
     if analysis['grouped']:
         for task_key in sorted(analysis['grouped'].keys(), reverse=True):
             task = analysis['grouped'][task_key]
-            display_items = _report_items(task['items'])
+            display_items = _report_items(task['items'], active_statuses)
             if not display_items:
                 continue
             has_any_items = True
@@ -718,6 +736,7 @@ def generate_markdown_report(analysis, parent_issue='KAT-10938'):
         str: Markdown 文档字符串
     """
     now = _report_timestamp()
+    active_statuses = _active_statuses_for_analysis(analysis)
 
     md = f"""# Jira 任务分析报告
 
@@ -743,7 +762,10 @@ def generate_markdown_report(analysis, parent_issue='KAT-10938'):
     if analysis['grouped']:
         for task_key in sorted(analysis['grouped'].keys(), reverse=True):
             task = analysis['grouped'][task_key]
-            unprocessed_items = [item for item in task['items'] if not item.get('is_processed')]
+            unprocessed_items = [
+                item for item in task['items']
+                if _counts_as_unprocessed(item, active_statuses)
+            ]
             if not unprocessed_items:
                 continue
             md += f"### [{task_key}] {task['summary']}\n\n"
