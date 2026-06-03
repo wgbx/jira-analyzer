@@ -149,7 +149,7 @@ launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 
 ### 统计口径
 
-**总条目数 / 已处理 / 排期已处理**：父任务下**全部**子任务 Description 列表行的合计。**未处理 / 已排期**：仅子任务 Jira 状态为 **未处理** 或 **进行中** 的条目（不含 QA Staging 等）；可在 `filters.active_statuses` 配置。默认拉取全部子任务，不因改派而从总条目统计中消失；人员筛选只影响列表展示。
+**总条目数 / 已处理 / 排期已处理**：父任务下**全部**子任务 Description 列表行的合计。**未处理 / 已排期**：仅 Jira 状态为 **待办**、**正在进行** 的子任务（API 的 `status.name`；界面上的「未处理」「进行中」与此对应，不是字面字符串 `未处理`/`进行中`）。`To Verify` 等 QA 后状态不计入。可在 `filters.active_statuses` 配置，也支持别名 `未处理`→`待办`、`进行中`→`正在进行`。
 
 ## 添加团队成员
 

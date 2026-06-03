@@ -14,15 +14,39 @@ from analyzer.scheduled import get_scheduled_lookup
 # 连续请求间隔，减轻 macOS LibreSSL 下偶发 SSLEOFError
 _ISSUE_FETCH_DELAY_SEC = 0.35
 
-# 「未处理 / 已排期」口径：仅统计这些 Jira 状态的子任务（如 QA Staging 不计入）
-DEFAULT_ACTIVE_STATUSES = ('未处理', '进行中')
+# 「未处理 / 已排期」口径：Jira API 返回的 status.name（与界面简称可能不同）
+# 本实例：待办≈未处理，正在进行≈界面上的「进行中」；To Verify 等为 QA 后状态
+DEFAULT_ACTIVE_STATUSES = ('待办', '正在进行')
+
+# 配置或口头习惯用语 → API 实际 status.name
+STATUS_NAME_ALIASES = {
+    '未处理': '待办',
+    '进行中': '正在进行',
+    'To Do': '待办',
+    'In Progress': '正在进行',
+}
+
+
+def _resolve_status_name(name, config):
+    """将配置/别名解析为 Jira API 的 status.name。"""
+    extra = config.get('filters', {}).get('status_aliases') or {}
+    aliases = {**STATUS_NAME_ALIASES, **extra}
+    return aliases.get(name, name)
 
 
 def get_active_statuses(config):
-    statuses = config.get('filters', {}).get('active_statuses')
-    if statuses is None:
+    """未处理统计所允许的 Jira status.name 列表（已解析别名）。"""
+    configured = config.get('filters', {}).get('active_statuses')
+    if configured is None:
         return list(DEFAULT_ACTIVE_STATUSES)
-    return list(statuses)
+    return list(dict.fromkeys(
+        _resolve_status_name(s, config) for s in configured
+    ))
+
+
+def is_active_issue_status(status, config):
+    resolved = _resolve_status_name(status, config)
+    return resolved in get_active_statuses(config)
 
 
 def _subtasks_jql(config):
@@ -221,12 +245,13 @@ def analyze_issues(config):
     # 总条目数 / 已处理：全部子任务；未处理 / 已排期：仅活跃 Jira 状态
     unprocessed = sum(
         1 for item in all_items
-        if not item['is_processed'] and item['issue_status'] in active_statuses
+        if not item['is_processed']
+        and is_active_issue_status(item['issue_status'], config)
     )
     scheduled_unprocessed = sum(
         1 for item in all_items
         if not item['is_processed'] and item.get('is_scheduled')
-        and item['issue_status'] in active_statuses
+        and is_active_issue_status(item['issue_status'], config)
     )
     scheduled_processed = sum(
         1 for item in all_items
