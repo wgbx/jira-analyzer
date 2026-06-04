@@ -1,0 +1,6 @@
+#!/bin/sh
+# 去掉 Cursor 等自动追加的 Co-authored-by 行，保持单人作者提交规范
+COMMIT_MSG_FILE=$1
+[ -f "$COMMIT_MSG_FILE" ] || exit 0
+grep -v '^Co-authored-by:' "$COMMIT_MSG_FILE" > "${COMMIT_MSG_FILE}.tmp" \
+  && mv "${COMMIT_MSG_FILE}.tmp" "$COMMIT_MSG_FILE"
