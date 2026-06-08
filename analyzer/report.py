@@ -113,6 +113,33 @@ def _build_owner_css(owners):
     return css
 
 
+def _find_all_done_active_tasks(analysis):
+    """
+    找出「所有条目都已处理，但 Jira 状态仍是活跃」的子任务。
+
+    用于提醒用户去 Jira 上把状态改为 Done / Closed。
+    """
+    results = []
+    active_statuses = tuple(analysis.get('active_statuses') or DEFAULT_ACTIVE_STATUSES)
+    for task_key, task in analysis.get('grouped', {}).items():
+        items = task.get('items', [])
+        if not items:
+            continue
+        issue_status = task.get('issue_status', '')
+        resolved = issue_status
+        if not all(item.get('is_processed') for item in items):
+            continue
+        if resolved not in active_statuses:
+            continue
+        results.append({
+            'key': task_key,
+            'summary': task['summary'],
+            'status': issue_status,
+            'total': len(items),
+        })
+    return results
+
+
 def _report_items(task_items, analysis):
     """报告中展示：活跃状态下的未处理 + 全部子任务的排期已处理。"""
     unprocessed = [
@@ -619,6 +646,55 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
         }}
         .sort-btn:hover {{ border-color: #667eea; color: #667eea; }}
         .sort-btn.active {{ background: #667eea; color: white; border-color: #667eea; }}
+        .stale-tasks {{
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }}
+        .stale-tasks-title {{
+            font-size: 16px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 12px;
+        }}
+        .stale-task-list {{
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }}
+        .stale-task-item {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            font-size: 14px;
+        }}
+        .stale-task-item a {{
+            color: #92400e;
+            font-weight: 600;
+            text-decoration: none;
+        }}
+        .stale-task-item a:hover {{
+            text-decoration: underline;
+        }}
+        .stale-task-summary {{
+            color: #78350f;
+            flex: 1;
+        }}
+        .stale-task-badge {{
+            background: #f59e0b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }}
         .empty-state {{ text-align: center; padding: 60px 20px; color: #9ca3af; }}
         .empty-icon {{ font-size: 64px; margin-bottom: 20px; }}
         .footer {{ text-align: center; color: #9ca3af; margin-top: 40px; font-size: 14px; }}
@@ -654,7 +730,30 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
                 <div class="stat-number scheduled-processed">{analysis.get('scheduled_processed', 0)}</div>
             </div>
         </div>
+"""
 
+    # 提醒：所有条目已完成但 Jira 状态仍是活跃的子任务
+    stale_tasks = _find_all_done_active_tasks(analysis)
+    if stale_tasks:
+        html += """
+        <div class="stale-tasks">
+            <div class="stale-tasks-title">⚠️ 以下子任务的所有条目都已处理，但 Jira 状态仍为活跃，请及时更新状态</div>
+            <ul class="stale-task-list">
+"""
+        for t in stale_tasks:
+            summary_display = t['summary'][:45] + ('...' if len(t['summary']) > 45 else '')
+            html += (
+                f'                <li class="stale-task-item">'
+                f'<a href="{base_url}/browse/{t["key"]}" target="_blank">{t["key"]}</a>'
+                f'<span class="stale-task-summary">{_escape_html(summary_display)}</span>'
+                f'<span class="stale-task-badge">{_escape_html(t["status"])} · {t["total"]} 条已完成</span>'
+                f'</li>\n'
+            )
+        html += """            </ul>
+        </div>
+"""
+
+    html += f"""
         <div class="sort-bar">
             <span class="sort-label">排序方式:</span>
             <button class="sort-btn active" data-sort="key-desc" onclick="sortSections('key-desc')">任务编号 ↓</button>
@@ -767,7 +866,18 @@ def generate_markdown_report(analysis, parent_issue='KAT-10938'):
 
 ---
 
-## 未处理项目
+"""
+
+    # 提醒：所有条目已完成但 Jira 状态仍是活跃的子任务
+    stale_tasks = _find_all_done_active_tasks(analysis)
+    if stale_tasks:
+        md += "## ⚠️ 请更新 Jira 状态\n\n"
+        md += "以下子任务的所有条目都已处理，但 Jira 状态仍为活跃，请及时更新：\n\n"
+        for t in stale_tasks:
+            md += f"- **{t['key']}** {t['summary']} — 状态: {t['status']}，{t['total']} 条已完成\n"
+        md += "\n---\n\n"
+
+    md += """## 未处理项目
 
 """
 
