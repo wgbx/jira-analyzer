@@ -50,6 +50,7 @@ description: >
 | 出现两个相同编号 | 第一次 PUT 留下残缺 `orderedList`，修复时又新增/合并 | 附件就绪前不写目标；只追加一个 `order=new_number` 的 orderedList |
 | `(moved … No. 6)` 实际应在 #7 | **off-by-one**：把 `len(items)` 当成新编号，忘了 `+ 1` | 必须用下方 `compute_new_number`；`moved` / `From` / `order` 三者同号 |
 | 两个 #7（缺 #6） | 目标有条目 **跳号**（如 #1–#5、#7），`len+1` 撞上已有编号 | 用 `max(index)+1`，不能只用 `len(items)+1` |
+| 两个 #11 | 目标有**空 orderedList**（paragraph 无文本），`parse_list_items` 未计入 | `compute_new_number` 必须同时扫 `attrs.order`；优先复用空位 |
 | 目标多了别人的图 | 把 orderedList 后 trailing media 误归到块内靠前的条目 | 仅最后一条 `listItem` 才合并 trailing media |
 | 目标多了录屏/隔开的图 | trailing 扫描未在 `paragraph` 等屏障处停止 | 只吸收**紧挨** orderedList 后连续的 `mediaSingle` |
 | bulletList 丢失 | 重试时只保留了 paragraph | copy 源 listItem 的**全部**子节点 |
@@ -130,7 +131,7 @@ def get_trailing_media_for_item(top_content, ol_node, list_item):
 
 ### Step 4：计算目标 issue 的新编号
 
-**用 `parse_list_items` 结果中的最大 `index + 1`**。目标 issue 的条目序号可能**跳号**（例如有 #1–#5 和 #7、缺 #6），此时 `len(items)+1` 会撞上已有编号。
+编号计算必须同时考虑 `parse_list_items` 可解析的条目 **和** ADF 中 orderedList 的 `attrs.order`（包括空 orderedList），否则空 orderedList 的编号会被遗漏，导致新编号与已有编号冲突。
 
 ```python
 from analyzer.parser import parse_list_items
@@ -138,34 +139,76 @@ from analyzer.parser import parse_list_items
 def compute_new_number(target_description_content, extra_count=0):
     """
     返回下一条迁移条目在目标 issue 上的编号。
+    优先复用空 orderedList 的编号（将内容填入空位），否则追加到末尾。
 
     extra_count: 同一次 PUT 中要追加多条时，第 2 条在 base+1、第 3 条在 base+2 …
     """
+    top = target_description_content if isinstance(target_description_content, list) else target_description_content.get('content', [])
+
+    # 1. 收集所有顶层 orderedList 的 order 值
+    used_orders = set()
+    empty_slots = {}  # order → orderedList node（可复用的空位）
+    for node in top:
+        if isinstance(node, dict) and node.get('type') == 'orderedList':
+            order = node.get('attrs', {}).get('order', 1)
+            used_orders.add(order)
+            # 判断是否为空：listItem 内 paragraph 无文本
+            items_in = [c for c in node.get('content', []) if c.get('type') == 'listItem']
+            if len(items_in) == 1:
+                para = next((c for c in items_in[0].get('content', []) if c.get('type') == 'paragraph'), None)
+                texts = para.get('content', []) if para else []
+                has_text = any(
+                    n.get('type') == 'text' and n.get('text', '').strip()
+                    for n in texts
+                )
+                has_mention = any(n.get('type') == 'mention' for n in texts)
+                has_media = any(
+                    c.get('type') == 'mediaSingle'
+                    for c in items_in[0].get('content', [])
+                )
+                if not has_text and not has_mention and not has_media:
+                    empty_slots[order] = node
+
+    # 2. 也从 parse_list_items 获取已占用的 index
     items, _ = parse_list_items(target_description_content)
-    base = (max(i['index'] for i in items) if items else 0) + 1
+    parsed_indices = {i['index'] for i in items}
+
+    # 3. 所有已占用编号的并集
+    all_used = used_orders | parsed_indices
+
+    # 4. 优先找最小空位复用
+    for slot_order in sorted(empty_slots):
+        if slot_order not in parsed_indices:
+            return slot_order + extra_count  # 复用空位
+
+    # 5. 无空位则在末尾追加
+    base = (max(all_used) if all_used else 0) + 1
     return base + extra_count
 ```
 
-| 目标已有条目 | `len(items)` | `max(index)` | 新编号 | 源端 `(moved … No.? )` |
-|-------------|--------------|--------------|--------|------------------------|
-| #1–#6 连续 | 6 | 6 | **7** | `(moved 11386 No. 7 )` |
-| #1–#5、#7（缺 #6） | 6 | 7 | **8** | `(moved 11325 No. 8 )` |
-| #1–#4 连续 | 4 | 4 | **5** | `(moved 11386 No. 5 )` |
+| 目标已有条目 | `max(index)` | 空位 | 新编号 | 策略 |
+|-------------|--------------|------|--------|------|
+| #1–#6 连续 | 6 | 无 | **7** | 末尾追加 |
+| #1–#5、#7（缺 #6） | 7 | 无 | **8** | 末尾追加 |
+| #1–#10、#11 空 | 10 / 11 | **#11** | **11** | **复用 #11 空位**（填入内容） |
+| #1–#10、#11 空、#12 空 | 10 | #11 | **11** | 复用最小空位 #11 |
+
+**复用空位时**：不追加新 orderedList，而是将迁移内容填入空 orderedList 的 listItem 中（替换空 paragraph）。
 
 **禁止写法（真实事故）**：
 
 ```python
-new_number = len(items)              # ❌ 少 +1；且跳号时会撞上已有 index
-new_number = len(items) + 1          # ❌ 跳号时仍可能撞上（6 条但 max=7 → 算出 7）
-new_number = len(items) - 1          # ❌
-new_number = ordered_list.attrs['order']  # ❌ 与条目序号无关
+new_number = len(items)              # ❌ 少 +1；且跳号/空条时会撞上已有 index
+new_number = len(items) + 1          # ❌ 跳号/空条时仍可能撞上
+new_number = max(i['index'] for i in items) + 1  # ❌ 空 orderedList 无 index，max 会漏掉
+new_number = ordered_list.attrs['order']          # ❌ 与条目序号无关
 ```
 
-**推荐**：算出 `new_number` 后，断言 `new_number not in {i['index'] for i in items}`。
+**推荐**：算出 `new_number` 后，断言 `new_number not in parsed_indices`（可等于空 orderedList 的 order）。
 
 **三条必须同号**（写错任一都会乱）：
 
-1. 目标新 `orderedList.attrs.order` = `new_number`
+1. 目标 `orderedList.attrs.order` = `new_number`（复用空位或新建）
 2. 目标 `(From {source} No.{source_index})` 不变（来源编号是源条目序号）
 3. 源 `(moved {target} No.{new_number})` 里的数字 = `new_number`（**目标上的新位置**，不是源条目序号）
 
@@ -185,7 +228,9 @@ mediaSingle      ← 图片/视频，永远在段落和子弹列表之后
 
 将 listItem **外部**、且经 Step 3 判定归属本条的顶层 mediaSingle deep copy 后，追加到 listItem `content` **末尾**（仍在 paragraph / bulletList 之后）。**禁止**把同 `orderedList` 内下一条的 trailing 媒体并入当前条目。
 
-构建新的 orderedList（**独立节点，追加到 description 末尾**）：
+构建新的 orderedList，分两种情况：
+
+**情况 A：末尾追加**（无空位可复用）
 
 ```python
 import uuid
@@ -195,11 +240,25 @@ new_ordered_list = {
     "attrs": {"order": new_number, "localId": f"migrated_{uuid.uuid4().hex[:12]}"},
     "content": [migrated_list_item],  # 完整 listItem，非裸 paragraph
 }
+# 追加到 description content 末尾
+```
+
+**情况 B：复用空 orderedList**（`compute_new_number` 返回了已有空 orderedList 的 order）
+
+```python
+# 找到目标 issue description 中 order == new_number 的空 orderedList
+# 将其 listItem 的 content 替换为 migrated_list_item 的 content
+empty_ol = next(n for n in target_desc['content']
+                if n.get('type') == 'orderedList'
+                and n.get('attrs', {}).get('order') == new_number)
+empty_li = next(c for c in empty_ol['content'] if c.get('type') == 'listItem')
+empty_li['content'] = migrated_list_item['content']  # 填入迁移内容
+# 不追加新 orderedList，原地修改即可
 ```
 
 **禁止**：
 - 只 copy `paragraph` 而丢掉 `bulletList` / `mediaSingle`
-- 把迁移条目插入已有 `orderedList` 的 `content` 数组
+- 把迁移条目插入已有**非空** `orderedList` 的 `content` 数组
 - 事后单独 `append(mediaSingle)` 到已 PUT 的 listItem
 
 ### Step 6：处理附件（图片/视频）——先于一切 PUT
@@ -363,6 +422,17 @@ new_number = max(i['index'] for i in items) + 1      # 7 + 1 = 8，不是 len+1=
 
 - **KAT-11206 #4**：`(moved 11325 No. 8 ) (Lury)Only show one tab "Sold by co-sellers"…`
 - **KAT-11325 #8**：`(From 11206 No. 4 ) (Lury)Only show one tab "Sold by co-sellers"…`
+
+### 单条：11111 #7 → 11386（目标有 #1–#10、#11 空）
+
+```python
+# parse_list_items 返回 [1,2,3,...,10]，max=10
+# 但 ADF 中有 order=11 的空 orderedList
+compute_new_number(target_desc['content'])  # → 11（复用空位）
+```
+
+- **KAT-11111 #7**：`(moved 11386 No. 11 )`
+- **KAT-11386 #11**：`(From 11111 No. 7 )`（填入原有空 orderedList）
 
 含子弹列表与图片时，目标 #7 的 ADF 顺序：
 
