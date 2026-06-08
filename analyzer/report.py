@@ -288,6 +288,38 @@ def _build_filter_js(visible_owners, show_unassigned):
     <script>
         let currentOwnerFilter = 'all';
         let currentScheduleFilter = 'all';
+        let currentSort = 'key-desc';
+        let currentProjectFilter = null;
+
+        const URL_DEFAULTS = { sort: 'key-desc', schedule: 'all', owner: 'all' };
+        const VALID_SORTS = ['key-desc', 'key-asc', 'count-desc', 'count-asc'];
+        const VALID_SCHEDULES = ['all', 'scheduled', 'unscheduled', 'scheduled-processed'];
+
+        function parseProjectParam(value) {
+            if (!value) return null;
+            const keys = value.split(',').map(k => k.trim().toUpperCase()).filter(Boolean);
+            return keys.length ? new Set(keys) : null;
+        }
+
+        function matchesProjectFilter(sectionKey) {
+            if (!currentProjectFilter) return true;
+            return currentProjectFilter.has((sectionKey || '').toUpperCase());
+        }
+
+        function syncUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (currentSort === URL_DEFAULTS.sort) params.delete('sort');
+            else params.set('sort', currentSort);
+            if (currentScheduleFilter === URL_DEFAULTS.schedule) params.delete('schedule');
+            else params.set('schedule', currentScheduleFilter);
+            if (currentOwnerFilter === URL_DEFAULTS.owner) params.delete('owner');
+            else params.set('owner', currentOwnerFilter);
+            if (!currentProjectFilter) params.delete('project');
+            else params.set('project', [...currentProjectFilter].join(','));
+            const qs = params.toString();
+            const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+            history.replaceState(null, '', newUrl);
+        }
 
         function matchesScheduleFilter(processed, scheduled) {
             if (currentScheduleFilter === 'all') {
@@ -343,14 +375,18 @@ def _build_filter_js(visible_owners, show_unassigned):
             });
 
             document.querySelectorAll('.task-section').forEach(section => {
+                const sectionKey = section.getAttribute('data-key');
+                if (!matchesProjectFilter(sectionKey)) {
+                    section.style.display = 'none';
+                    return;
+                }
                 const visibleItems = section.querySelectorAll('li.item-row:not([style*="display: none"])');
                 section.style.display = visibleItems.length > 0 ? '' : 'none';
             });
             updateCounts();
         }
 
-        function filterItems(filter) {
-            currentOwnerFilter = filter;
+        function applyOwnerFilterUI(filter) {
             document.querySelectorAll('.owner-bar .filter-btn').forEach(btn => {
                 btn.classList.remove(""" + remove_owner_classes + """);
             });
@@ -362,11 +398,9 @@ def _build_filter_js(visible_owners, show_unassigned):
                     activeBtn.classList.add('active-' + filter);
                 }
             }
-            applyFilters();
         }
 
-        function filterSchedule(filter) {
-            currentScheduleFilter = filter;
+        function applyScheduleFilterUI(filter) {
             document.querySelectorAll('.schedule-bar .filter-btn').forEach(btn => {
                 btn.classList.remove(
                     'active', 'active-scheduled', 'active-unscheduled', 'active-scheduled-processed'
@@ -384,13 +418,39 @@ def _build_filter_js(visible_owners, show_unassigned):
                     activeBtn.classList.add('active-unscheduled');
                 }
             }
-            applyFilters();
         }
 
-        function sortSections(sortBy) {
+        function applySortUI(sortBy) {
             document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.querySelector(`.sort-btn[data-sort="${sortBy}"]`);
             if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function filterItems(filter, options = {}) {
+            const btn = document.querySelector(`.owner-bar .filter-btn[data-filter="${filter}"]`);
+            if (!btn) return;
+            currentOwnerFilter = filter;
+            applyOwnerFilterUI(filter);
+            if (!options.skipApply) {
+                applyFilters();
+                if (!options.skipUrl) syncUrlParams();
+            }
+        }
+
+        function filterSchedule(filter, options = {}) {
+            if (!VALID_SCHEDULES.includes(filter)) return;
+            currentScheduleFilter = filter;
+            applyScheduleFilterUI(filter);
+            if (!options.skipApply) {
+                applyFilters();
+                if (!options.skipUrl) syncUrlParams();
+            }
+        }
+
+        function sortSections(sortBy, options = {}) {
+            if (!VALID_SORTS.includes(sortBy)) return;
+            currentSort = sortBy;
+            applySortUI(sortBy);
 
             const container = document.getElementById('task-container');
             if (!container) return;
@@ -414,9 +474,45 @@ def _build_filter_js(visible_owners, show_unassigned):
             });
 
             sections.forEach(section => container.appendChild(section));
+            if (!options.skipUrl) syncUrlParams();
         }
 
-        applyFilters();
+        function initFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            currentProjectFilter = parseProjectParam(params.get('project'));
+
+            const schedule = params.get('schedule');
+            if (schedule && VALID_SCHEDULES.includes(schedule)) {
+                filterSchedule(schedule, { skipApply: true, skipUrl: true });
+            } else {
+                applyScheduleFilterUI(currentScheduleFilter);
+            }
+
+            const owner = params.get('owner');
+            if (owner) {
+                const ownerBtn = document.querySelector(`.owner-bar .filter-btn[data-filter="${owner}"]`);
+                if (ownerBtn) {
+                    currentOwnerFilter = owner;
+                    applyOwnerFilterUI(owner);
+                } else {
+                    applyOwnerFilterUI(currentOwnerFilter);
+                }
+            } else {
+                applyOwnerFilterUI(currentOwnerFilter);
+            }
+
+            const sort = params.get('sort');
+            if (sort && VALID_SORTS.includes(sort)) {
+                sortSections(sort, { skipUrl: true });
+            } else {
+                applySortUI(currentSort);
+            }
+
+            applyFilters();
+            syncUrlParams();
+        }
+
+        initFromUrl();
     </script>"""
 
 
