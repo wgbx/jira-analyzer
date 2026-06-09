@@ -26,10 +26,11 @@ from analyzer.parser import parse_list_items
 
 1. **只改 mention**：不修改条目正文文字、不删除 `mediaSingle` / `inlineCard`、不改动 `(Done)` / `(moved …)` 等标记
 2. **@mention 文案必须与 OWNERS 一致**（如 `tiancheng` → `@Tiancheng Tang`），不得手写拼写
-3. **加人前先查重**：该 listItem 的 paragraph 中已存在同一 `accountId` 或相同 `attrs.text` 的 mention 时，跳过并告知用户
-4. **删人只删 mention 节点**：不删相邻的纯空格 `text` 节点以外的正文
-5. **PUT 失败不部分提交**：先 `deepcopy` 描述，改完一次 PUT；状态码须为 200 或 204
-6. **owners.py 与 Jira 分离**：用户只说「加人/删人」且指向某条 Jira 时，只改 Jira；仅当用户要求「登记新成员」「从团队列表移除」时才改 `owners.py`
+3. **「给某人」= 替换 OWNERS 内的 mention，不是追加**：当用户说「给 zhiyong」「4 给 tiancheng」时，只删除该条目中**属于 `OWNERS` 映射**的已有 mention（如 `@Tiancheng Tang`），再插入新的 owner mention；**绝对不能删除不在 `OWNERS` 中的 mention**（如 `@Yuxiao Zhu`），这些 mention 与 owner 统计无关，必须保留不动。只有用户明确说「加上 xxx」「追加 xxx」时才保留所有原有 mention 并追加
+4. **加人前先查重**：该 listItem 的 paragraph 中已存在同一 `accountId` 或相同 `attrs.text` 的 mention 时，跳过并告知用户
+5. **删人只删 mention 节点**：不删相邻的纯空格 `text` 节点以外的正文
+6. **PUT 失败不部分提交**：先 `deepcopy` 描述，改完一次 PUT；状态码须为 200 或 204
+7. **owners.py 与 Jira 分离**：用户只说「加人/删人」且指向某条 Jira 时，只改 Jira；仅当用户要求「登记新成员」「从团队列表移除」时才改 `owners.py`
 
 ## 操作流程
 
@@ -175,16 +176,17 @@ OWNER_DISPLAY_NAMES = {
 
 | 用户说法 | 动作 |
 |----------|------|
-| KAT-11194 第 4 条加上 tiancheng | Step 5a，`owner_key=tiancheng` |
+| 11278 4 给 zhiyong | **替换 OWNERS 内的 mention**：只删除 #4 中属于 OWNERS 的 mention（如 @Jayce），保留非 OWNERS 的 mention（如 @Yuxiao Zhu），插入 zhiyong |
+| KAT-11194 第 4 条加上 tiancheng | 追加（用户说「加上」），保留原有 mention |
 | 把 11194 的 #4 去掉 zhiyong | Step 5b |
 | https://…/browse/KAT-11194 条目 2 加 jun | 从 URL 取 key，Step 5a |
 | owners 里加 yuxiao，@Yuxiao Zhu | 仅 Step 7 |
-| 阅读这个 jira 并把 #4 加上 tiancheng | 先读 issue，再 Step 5a |
+| 阅读这个 jira 并把 #4 给 tiancheng | 先读 issue，再**替换**（只删 OWNERS 内的 mention） |
 
 ## 常见陷阱
 
 1. **单 orderedList 多条目**：编号 4 往往是 `order=1` 的 `content[3]`，不是 `order=4` 的节点
-2. **Yuxiao Zhu 等未在 OWNERS 的人**：Jira 里可有 mention，但报告 owner 筛选用不到；需用户确认是否写入 `owners.py`
+2. **Yuxiao Zhu 等未在 OWNERS 的人**：Jira 里可有 mention，但报告 owner 筛选用不到；需用户确认是否写入 `owners.py`。**替换（给）操作绝对不能删除这些 mention**——只删 OWNERS 中定义的 owner mention
 3. **inlineCard / 截图**：条目内可能有 Slack 链接或 `mediaSingle`，插入 mention 时勿碰这些节点
 4. **config 凭据**：勿在 skill 或回复中泄露 `api_token`
 
