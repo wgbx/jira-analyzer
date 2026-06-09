@@ -10,6 +10,7 @@ import re
 BACKLOG_STATUS_PREFIXES = {
     'backlog': 'Backlog',
     'invalid': 'Invalid',
+    'cannot reproduce': 'Cannot reproduce',
 }
 
 DONE_PREFIX_PATTERN = re.compile(
