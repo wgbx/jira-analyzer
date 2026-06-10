@@ -55,8 +55,8 @@ def _write_report_version():
 def _print_stats(analysis):
     print(f"\n统计结果:")
     print(f"  总条目数: {analysis['total']}")
-    print(f"  已处理: {analysis['processed']}")
-    print(f"  未处理: {analysis['unprocessed']}")
+    print(f"  已处理: {analysis['processed']}（{analysis.get('processed_jira', 0)} 个子任务）")
+    print(f"  未处理: {analysis['unprocessed']}（{analysis.get('unprocessed_jira', 0)} 个子任务）")
     print(f"  已排期: {analysis.get('scheduled_unprocessed', 0)}")
     print(f"  排期已处理: {analysis.get('scheduled_processed', 0)}")
 

@@ -164,7 +164,9 @@ def analyze_issues(config):
         dict: 分析结果，包含:
             - total: 总条目数
             - processed: 已处理条目数
+            - processed_jira: 含已处理条目的子任务数
             - unprocessed: 未处理条目数
+            - unprocessed_jira: 含未处理条目且 Jira 状态活跃的子任务数
             - grouped: 按任务编号分组的数据，每组包含 summary 和 items
     """
     scope = config.get('filters', {}).get('subtasks_scope', 'all')
@@ -258,11 +260,25 @@ def analyze_issues(config):
         1 for item in all_items
         if item['is_processed'] and item.get('is_scheduled')
     )
+    processed_jira = sum(
+        1 for task in grouped.values()
+        if any(item['is_processed'] for item in task['items'])
+    )
+    unprocessed_jira = sum(
+        1 for task in grouped.values()
+        if any(
+            not item['is_processed']
+            and is_active_issue_status(task['issue_status'], config)
+            for item in task['items']
+        )
+    )
 
     return {
         'total': total_count,
         'processed': processed_count,
+        'processed_jira': processed_jira,
         'unprocessed': unprocessed,
+        'unprocessed_jira': unprocessed_jira,
         'scheduled_unprocessed': scheduled_unprocessed,
         'scheduled_processed': scheduled_processed,
         'active_statuses': active_statuses,

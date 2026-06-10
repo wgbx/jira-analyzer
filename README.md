@@ -151,6 +151,8 @@ launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 
 **总条目数 / 已处理 / 排期已处理**：父任务下**全部**子任务 Description 列表行的合计。**未处理 / 已排期**：仅 Jira 状态为 **待办**、**正在进行** 的子任务（API 的 `status.name`；界面上的「未处理」「进行中」与此对应，不是字面字符串 `未处理`/`进行中`）。`To Verify` 等 QA 后状态不计入。可在 `filters.active_statuses` 配置，也支持别名 `未处理`→`待办`、`进行中`→`正在进行`。
 
+**已处理 / 未处理** 卡片下方另显示子任务数：含已处理条目的子任务数；含未处理条目且 Jira 状态活跃的子任务数。
+
 ## 添加团队成员
 
 编辑 `analyzer/owners.py`，在 `OWNERS` 字典中添加新成员：
