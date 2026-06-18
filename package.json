@@ -9,7 +9,8 @@
     "start": "python3 jira_analyzer.py",
     "analyze": "python3 jira_analyzer.py",
     "serve": "python3 scripts/serve.py",
-    "dev": "python3 scripts/serve.py --watch"
+    "dev": "python3 scripts/serve.py --watch",
+    "migrate": "python3 scripts/jira-item-migrate.py"
   },
   "engines": {
     "node": ">=18"

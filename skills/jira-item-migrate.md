@@ -6,11 +6,59 @@ description: >
   原则：只增不删——源 issue 的文字和附件永远不删除，只在列表项文本前面追加 (moved XXX No.x) 标记；
   目标 issue 只新增一条列表项（含文字、mention、附件图片/视频），并在文本前追加 (From XXX No.x) 来源标记。
   执行必须原子化：附件全部就绪后再 PUT，禁止分步打补丁。
+  优先运行 scripts/jira-item-migrate.py，禁止每次临时拼 inline Python。
 ---
 
 # Jira 列表条目迁移
 
 将源 Jira issue 有序列表中的指定条目迁移到目标 Jira issue。
+
+## 执行方式（优先）
+
+**Agent 必须优先调用仓库内 CLI 脚本** [`scripts/jira-item-migrate.py`](../scripts/jira-item-migrate.py)，不要每次在对话里重新生成一段 inline Python。
+
+脚本已实现本 Skill 的核心流程（`compute_new_number`、trailing media 归属、附件 multipart 上传、批量迁移、替换已有 `(moved …)` 前缀）。凭据复用 `config.json` / `JIRA_*` 环境变量（见 `analyzer.config.load_config`）。
+
+### 命令
+
+```bash
+# 完整迁移：复制内容+附件到目标，并更新源 (moved …) 标记
+python3 scripts/jira-item-migrate.py migrate --target KAT-11496 \
+  KAT-11267:3 KAT-11267:5 KAT-11109:2
+
+# 仅标记：目标里已有 (From …)，只更新源端 (moved …) 编号
+python3 scripts/jira-item-migrate.py mark --target KAT-11496 \
+  KAT-11349:2 KAT-11349:5 KAT-11349:6
+
+# 预览，不写入 Jira（--dry-run 放在子命令前面）
+python3 scripts/jira-item-migrate.py --dry-run migrate --target KAT-11496 KAT-11267:3
+
+# 等价 npm 入口
+npm run migrate -- migrate --target KAT-11496 KAT-11267:3
+```
+
+源条目格式为 `KAT-{编号}:{条目序号}`，可一次传多条。
+
+### 两种子命令怎么选
+
+| 场景 | 子命令 | 说明 |
+|------|--------|------|
+| 正常迁移 / 目标描述被改需**重迁** | `migrate` | 从源 deep copy 内容，上传附件，在目标末尾追加 `(From …)`，更新源 `(moved …)` |
+| 内容已在目标、只缺源端标记 | `mark` | 读目标 `(From {源编号} No.{源序号})` 确定新位置，只改源 `(moved …)` |
+| 重迁且源已有旧 `(moved …)` | `migrate` | 脚本会先 strip 旧前缀再写入新编号 |
+
+### Agent 工作流
+
+1. 从用户消息解析 `--target` 与 `KAT-xxxx:N` 列表
+2. 判断用 `migrate` 还是 `mark`（用户说「重迁」「11496 被人改了」→ `migrate`；说「标记一下」「确认编号」→ `mark`）
+3. **直接运行脚本**；失败时根据 stderr 对照下方「常见故障」排查，**不要**分步 PUT 打补丁
+4. 向用户汇报脚本输出中的编号对应与校验结果
+
+### 何时仍读本 Skill 下文
+
+- 脚本报错需理解 ADF / 编号 / trailing media 根因
+- 目标 issue 有**空 orderedList 需复用空位**（情况 B）——脚本当前只做末尾追加；此场景按下方 Step 3–8 手工处理或扩展脚本
+- 需要修改迁移逻辑时，改 `scripts/jira-item-migrate.py` 而非复制粘贴新脚本
 
 ## 标记规范（双向溯源）
 
@@ -58,6 +106,8 @@ description: >
 
 ## 操作流程
 
+> **默认路径**：运行 `scripts/jira-item-migrate.py`（见上文「执行方式」）。以下 Step 0–10 为实现参考与排障手册；`migrate` / `mark` 子命令的逻辑与 Step 3–9 一致，源码在 `scripts/jira-item-migrate.py` 的 `JiraMigrator` 类。
+
 ### Step 0：执行顺序（原子化）
 
 ```
@@ -66,7 +116,7 @@ description: >
     → PUT 目标（一次）→ 插入 (moved …) 标记 → PUT 源（一次）→ 事后校验
 ```
 
-**任何一步失败**：停止，不 PUT，向用户报告失败点。
+**任何一步失败**：停止，不 PUT，向用户报告失败点。优先用 CLI 一次跑完，禁止拆成多轮 inline 脚本。
 
 ### Step 1：解析用户指令
 
@@ -394,6 +444,26 @@ PUT 完成后重新 GET 两个 issue，用 `parse_list_items` 确认：
 
 ## 示例
 
+### CLI：批量重迁到 11496（目标描述曾被改动）
+
+源端已有旧 `(moved 11496 No. 7–12)`，但 11496 内容对不上，需重迁并更新编号：
+
+```bash
+python3 scripts/jira-item-migrate.py migrate --target KAT-11496 \
+  KAT-11267:3 KAT-11267:5 KAT-11109:2 KAT-10839:5 KAT-10951:10 KAT-10928:10
+```
+
+脚本会追加到目标末尾（如 #32–#37），并把源端 `(moved …)` 改为新编号。
+
+### CLI：仅补源端 moved 标记
+
+目标已有 `(From 11349 No.2)` 等，源端尚未标记：
+
+```bash
+python3 scripts/jira-item-migrate.py mark --target KAT-11496 \
+  KAT-11349:2 KAT-11349:5 KAT-11349:6
+```
+
 ### 单条：11075 #1 → 11325（目标已有 6 条）
 
 ```python
@@ -445,6 +515,8 @@ listItem
 
 ## 相关文件
 
-- `skills/jira-owner-mention.md` — `find_list_item_by_index`
+- **`scripts/jira-item-migrate.py`** — **首选执行入口**（`migrate` / `mark` 子命令）
+- `docs/jira-item-migrate-setup.md` — 环境配置与凭据自检
+- `skills/jira-owner-mention.md` — `find_list_item_by_index`（脚本内同名实现）
 - `analyzer/jira_http.py` — `build_jira_session`（附件上传须绕过默认 JSON Content-Type）
 - `analyzer/parser.py` — `parse_list_items`（编号校验与事后验证）
