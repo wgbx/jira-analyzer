@@ -24,6 +24,7 @@ import copy
 import mimetypes
 import re
 import sys
+import time
 import uuid
 from pathlib import Path
 
@@ -228,19 +229,29 @@ class JiraMigrator:
         if resp.status_code not in (200, 204):
             raise RuntimeError(f'PUT {key} failed: {resp.status_code} {resp.text[:500]}')
 
-    def upload_attachment(self, target_key, filename, data):
+    def upload_attachment(self, target_key, filename, data, max_attempts=5):
         mime, _ = mimetypes.guess_type(filename)
         mime = mime or 'application/octet-stream'
-        resp = requests.post(
-            f'{self.base}/rest/api/3/issue/{target_key}/attachments',
-            auth=self.session.auth,
-            headers={'X-Atlassian-Token': 'no-check'},
-            files={'file': (filename, data, mime)},
-            timeout=120,
-        )
-        if resp.status_code not in (200, 201):
-            raise RuntimeError(f'Upload failed {filename}: {resp.status_code} {resp.text[:300]}')
-        return resp.json()[0]
+        url = f'{self.base}/rest/api/3/issue/{target_key}/attachments'
+        last_exc = None
+        for attempt in range(max_attempts):
+            try:
+                resp = requests.post(
+                    url,
+                    auth=self.session.auth,
+                    headers={'X-Atlassian-Token': 'no-check'},
+                    files={'file': (filename, data, mime)},
+                    timeout=300,
+                )
+                if resp.status_code in (200, 201):
+                    return resp.json()[0]
+                raise RuntimeError(f'Upload failed {filename}: {resp.status_code} {resp.text[:300]}')
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exc:
+                last_exc = exc
+                wait = 2 ** attempt
+                print(f'    上传中断，{wait}s 后重试 ({attempt + 1}/{max_attempts}): {exc.__class__.__name__}')
+                time.sleep(wait)
+        raise RuntimeError(f'Upload failed after {max_attempts} attempts: {filename}') from last_exc
 
     def get_media_uuid(self, attachment_id):
         resp = jira_request(
