@@ -75,7 +75,7 @@ npm start
 
 ## GitHub 部署
 
-项目使用 GitHub Actions 每 4 小时自动运行（与本地相同：`npm run setup` → `npm start`），并将报告部署到 GitHub Pages。
+项目使用 GitHub Actions 每 1 小时自动运行（与本地相同：`npm run setup` → `npm start`），并将报告部署到 GitHub Pages。
 
 ### 1. 创建仓库
 

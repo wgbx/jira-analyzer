@@ -802,7 +802,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
         <div class="header">
             <h1>Jira 任务分析报告</h1>
             <p class="header-subtitle">{parent_issue} 所有项目概览</p>
-            <p class="header-updated">数据更新到 {now}（UTC+8，每 4 小时自动同步）</p>
+            <p class="header-updated">数据更新到 {now}（UTC+8，每 1 小时自动同步）</p>
         </div>
 
         <div class="stats">

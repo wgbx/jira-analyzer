@@ -1,9 +1,9 @@
-name: 每4小时生成 Jira 分析报告
+name: 每1小时生成 Jira 分析报告
 
 on:
   schedule:
-    # 每4小时运行一次（UTC 0:00, 4:00, 8:00, 12:00, 16:00, 20:00）
-    - cron: '0 */4 * * *'
+    # 每1小时运行一次（UTC 每小时整点）
+    - cron: '0 * * * *'
   push:
     branches:
       - main
