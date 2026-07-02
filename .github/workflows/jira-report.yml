@@ -1,9 +1,9 @@
-name: 每1小时生成 Jira 分析报告
+name: 每3小时生成 Jira 分析报告
 
 on:
   schedule:
-    # 每1小时运行一次（UTC 每小时第 17 分，避开整点高峰以免被 GitHub 丢弃）
-    - cron: '17 * * * *'
+    # 每3小时运行一次（UTC 0:17、3:17、6:17…，第 17 分避开整点高峰）
+    - cron: '17 */3 * * *'
   push:
     branches:
       - main
