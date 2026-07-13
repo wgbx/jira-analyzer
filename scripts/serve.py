@@ -80,6 +80,14 @@ def _load_refresh_interval(watch_mode: bool) -> int:
     return 120
 
 
+def _primary_report_path() -> Path:
+    index = OUTPUT_DIR / 'index.html'
+    if index.is_file():
+        return index
+    legacy = OUTPUT_DIR / 'jira-report.html'
+    return legacy
+
+
 class ReportHandler(SimpleHTTPRequestHandler):
     """静态文件服务；对 HTML 报告注入自动刷新脚本。"""
 
@@ -92,10 +100,16 @@ class ReportHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = self.translate_path(self.path)
+        is_html = (
+            self.path.rstrip('/').endswith('.html')
+            or self.path.rstrip('/').endswith('/')
+            or self.path in ('', '/')
+        )
         if (
             self.inject_live_reload
-            and self.path.rstrip('/').endswith('jira-report.html')
+            and is_html
             and os.path.isfile(path)
+            and path.endswith('.html')
         ):
             with open(path, encoding='utf-8') as f:
                 body = f.read()
@@ -147,7 +161,7 @@ def main() -> None:
         from jira_analyzer import run_analyzer
 
         print('首次生成报告…')
-        report_path = OUTPUT_DIR / 'jira-report.html'
+        report_path = _primary_report_path()
         try:
             run_analyzer(quiet=False, open_browser=False)
         except SystemExit:
@@ -169,7 +183,7 @@ def main() -> None:
         thread.start()
         print(f'[watch] 每 {interval} 秒自动拉取 Jira 并更新报告')
         ReportHandler.inject_live_reload = True
-    elif not (OUTPUT_DIR / 'jira-report.html').is_file():
+    elif not _primary_report_path().is_file():
         print(f'错误: 报告不存在，请先运行: npm start', file=sys.stderr)
         print('或使用: npm run dev', file=sys.stderr)
         sys.exit(1)
@@ -181,7 +195,8 @@ def main() -> None:
     with ThreadingHTTPServer(('', port), ReportHandler) as httpd:
         if port != start:
             print(f'端口 {start} 已被占用，改用 {port}')
-        print(f'报告预览: http://localhost:{port}/jira-report.html')
+        print(f'报告预览: http://localhost:{port}/')
+        print(f'Q2 报告:   http://localhost:{port}/2026q2/')
         if ReportHandler.inject_live_reload:
             print('页面将在报告更新后自动刷新（无需手动 npm start）')
         print('按 Ctrl+C 停止')

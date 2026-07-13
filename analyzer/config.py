@@ -2,7 +2,7 @@
 配置管理模块
 
 负责加载和管理项目的配置信息。
-Jira 凭据优先读环境变量（GitHub Actions）；parent_issue 等非敏感项读仓库内配置文件。
+Jira 凭据优先读环境变量（GitHub Actions）；reports 等非敏感项读仓库内配置文件。
 """
 
 import json
@@ -23,8 +23,21 @@ OUTPUT_DIR = PROJECT_ROOT / "output"
 DEFAULT_PARENT_ISSUE = 'KAT-11542'
 DEFAULT_OUTPUT = {
     'format': 'html',
-    'path': 'output/jira-report.html',
 }
+DEFAULT_REPORTS = [
+    {
+        'id': 'q3',
+        'label': 'Q3',
+        'parent_issue': 'KAT-11542',
+        'output': 'output/index.html',
+    },
+    {
+        'id': 'q2',
+        'label': 'Q2',
+        'parent_issue': 'KAT-10938',
+        'output': 'output/2026q2/index.html',
+    },
+]
 
 
 def _load_json(path):
@@ -41,13 +54,30 @@ def _load_file_config():
     return None
 
 
+def get_reports(config):
+    """
+    返回要生成的报告列表。
+
+    优先用 config.reports；否则回退为单报告（legacy parent_issue）。
+    """
+    reports = config.get('reports')
+    if reports:
+        return reports
+    return [{
+        'id': 'default',
+        'label': 'Q3',
+        'parent_issue': config.get('parent_issue', DEFAULT_PARENT_ISSUE),
+        'output': config.get('output', {}).get('path', 'output/index.html'),
+    }]
+
+
 def load_config():
     """
     加载配置文件
 
     优先级：
     1. 环境变量 JIRA_BASE_URL / JIRA_EMAIL / JIRA_API_TOKEN（凭据，用于 GitHub Actions）
-    2. config.json / config.example.json（parent_issue、filters 等，写在仓库里）
+    2. config.json / config.example.json（reports、filters 等，写在仓库里）
 
     Returns:
         dict: 配置字典
@@ -67,7 +97,7 @@ def load_config():
             'email': env_email,
             'api_token': env_api_token,
         }
-        config.setdefault('parent_issue', DEFAULT_PARENT_ISSUE)
+        config.setdefault('reports', DEFAULT_REPORTS)
         config.setdefault('output', DEFAULT_OUTPUT)
         return config
 

@@ -516,7 +516,29 @@ def _build_filter_js(visible_owners, show_unassigned):
     </script>"""
 
 
-def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
+def _build_report_nav(nav_links, current_label):
+    """报告间切换导航（如 Q3 ↔ Q2）。"""
+    if not nav_links or len(nav_links) < 2:
+        return ''
+    items = []
+    for link in nav_links:
+        label = link.get('label', '')
+        href = link.get('href', './')
+        if label == current_label:
+            items.append(f'<span class="nav-current">{label}</span>')
+        else:
+            items.append(f'<a class="nav-link" href="{href}">{label}</a>')
+    return f'<nav class="report-nav" aria-label="季度切换">{"".join(items)}</nav>'
+
+
+def generate_html_report(
+    analysis,
+    base_url,
+    parent_issue='KAT-11542',
+    *,
+    label='Q3',
+    nav_links=None,
+):
     """
     生成 HTML 格式的分析报告
 
@@ -527,6 +549,8 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
         analysis: analyze_issues() 返回的分析结果
         base_url: Jira 实例地址（如 https://xxx.atlassian.net）
         parent_issue: 父任务编号（用于标题展示）
+        label: 季度标签，如 Q2 / Q3
+        nav_links: 报告间导航 [{label, href}, ...]
 
     Returns:
         str: 完整的 HTML 文档字符串
@@ -538,13 +562,15 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
     owner_css = _build_owner_css(_owners_needing_css(analysis, visible_owners))
     filter_buttons = _build_filter_buttons(visible_owners, show_unassigned, owner_counts)
     filter_js = _build_filter_js(visible_owners, show_unassigned)
+    title = f'Jira {label} 任务分析报告'
+    nav_html = _build_report_nav(nav_links, label)
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jira Q3 任务分析报告</title>
+    <title>{title}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -559,6 +585,30 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
             padding: 30px;
             border-radius: 12px;
             margin-bottom: 30px;
+        }}
+        .report-nav {{
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }}
+        .report-nav .nav-link,
+        .report-nav .nav-current {{
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+        }}
+        .report-nav .nav-link:hover {{
+            background: rgba(255, 255, 255, 0.18);
+        }}
+        .report-nav .nav-current {{
+            background: rgba(255, 255, 255, 0.28);
+            border-color: transparent;
         }}
         .header-subtitle {{
             margin-top: 8px;
@@ -800,7 +850,8 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
 <body>
     <div class="container">
         <div class="header">
-            <h1>Jira Q3 任务分析报告</h1>
+            {nav_html}
+            <h1>{title}</h1>
             <p class="header-subtitle">{parent_issue} 所有项目概览</p>
             <p class="header-updated">数据更新到 {now}（UTC+8）</p>
         </div>
@@ -937,7 +988,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
     return html
 
 
-def generate_markdown_report(analysis, parent_issue='KAT-11542'):
+def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
     """
     生成 Markdown 格式的分析报告
 
@@ -948,7 +999,7 @@ def generate_markdown_report(analysis, parent_issue='KAT-11542'):
         str: Markdown 文档字符串
     """
     now = _report_timestamp()
-    md = f"""# Jira Q3 任务分析报告
+    md = f"""# Jira {label} 任务分析报告
 
 **数据更新到**: {now}（UTC+8）
 **父任务**: {parent_issue}

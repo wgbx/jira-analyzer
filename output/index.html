@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Q3 任务分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .report-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .report-nav .nav-link,
+        .report-nav .nav-current {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+        }
+        .report-nav .nav-link:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+        .report-nav .nav-current {
+            background: rgba(255, 255, 255, 0.28);
+            border-color: transparent;
+        }
+        .header-subtitle {
+            margin-top: 8px;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        .header-updated {
+            margin-top: 12px;
+            font-size: 14px;
+            opacity: 0.88;
+            font-weight: 500;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 1100px) {
+            .stats { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 700px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .stat-number { font-size: 36px; font-weight: bold; margin: 10px 0; }
+        .stat-sublabel { color: #9ca3af; font-size: 13px; margin-top: -4px; }
+        .stat-label { color: #666; font-size: 14px; }
+        .total { color: #667eea; }
+        .processed { color: #10b981; }
+        .unprocessed { color: #ef4444; }
+        .scheduled { color: #0d9488; }
+        .scheduled-processed { color: #6366f1; }
+        .task-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        .task-key { font-size: 18px; font-weight: 600; }
+        .task-key a { color: #667eea; text-decoration: none; }
+        .task-key a:hover { text-decoration: underline; }
+        .task-count {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .item-list { list-style: none; }
+        .item {
+            padding: 12px 15px;
+            border-left: 3px solid #e5e7eb;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            border-radius: 0 8px 8px 0;
+        }
+        .item-index {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        .item-content { display: inline-block; vertical-align: top; max-width: calc(100% - 40px); }
+        .item-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+            max-height: 4.5em;
+        }
+        .item-meta { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .item-owners { display: flex; gap: 6px; flex-wrap: wrap; }
+        .scheduled-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+        .filter-btn.active-scheduled { background: #0d9488; border-color: #0d9488; color: white; }
+        .filter-btn.active-unscheduled { background: #f59e0b; border-color: #f59e0b; color: white; }
+        .filter-btn.active-scheduled-processed { background: #6366f1; border-color: #6366f1; color: white; }
+        .item-processed {
+            opacity: 0.85;
+            border-left-color: #c7d2fe;
+            background: #f5f3ff;
+        }
+        .status-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+        .owner-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .owner-zhiyong { background: #dcfce7; color: #166534; }
+        .owner-tianye { background: #fce7f3; color: #9d174d; }
+        .owner-jun { background: #fef3c7; color: #92400e; }
+        .owner-fengxia { background: #fef9c3; color: #854d0e; }
+        .owner-lory { background: #e0f2fe; color: #0c4a6e; }
+        .owner-jayce { background: #dbeafe; color: #1e40af; }
+        .owner-jiaqi { background: #fee2e2; color: #991b1b; }
+        .filter-btn.active-zhiyong { background: #166534; border-color: #166534; color: white; }
+        .filter-btn.active-tianye { background: #9d174d; border-color: #9d174d; color: white; }
+        .filter-btn.active-jun { background: #92400e; border-color: #92400e; color: white; }
+        .filter-btn.active-fengxia { background: #854d0e; border-color: #854d0e; color: white; }
+        .filter-btn.active-lory { background: #0c4a6e; border-color: #0c4a6e; color: white; }
+        .filter-btn.active-jayce { background: #1e40af; border-color: #1e40af; color: white; }
+        .filter-btn.active-jiaqi { background: #991b1b; border-color: #991b1b; color: white; }
+        .filter-btn.active-unassigned {{ background: #6b7280; border-color: #6b7280; color: white; }}
+
+        .schedule-bar, .owner-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-label { font-weight: 600; color: #374151; margin-right: 8px; }
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover { border-color: #667eea; color: #667eea; }
+        .filter-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .filter-count {
+            font-size: 11px;
+            background: rgba(255,255,255,0.3);
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+        .sort-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .sort-label { font-weight: 600; color: #374151; margin-right: 8px; }
+        .sort-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sort-btn:hover { border-color: #667eea; color: #667eea; }
+        .sort-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .stale-tasks {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+        .stale-tasks-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 12px;
+        }
+        .stale-task-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .stale-task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .stale-task-item a {
+            color: #92400e;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .stale-task-item a:hover {
+            text-decoration: underline;
+        }
+        .stale-task-summary {
+            color: #78350f;
+            flex: 1;
+        }
+        .stale-task-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
+        .empty-icon { font-size: 64px; margin-bottom: 20px; }
+        .footer { text-align: center; color: #9ca3af; margin-top: 40px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <nav class="report-nav" aria-label="季度切换"><span class="nav-current">Q3</span><a class="nav-link" href="2026q2/">Q2</a></nav>
+            <h1>Jira Q3 任务分析报告</h1>
+            <p class="header-subtitle">KAT-11542 所有项目概览</p>
+            <p class="header-updated">数据更新到 2026-07-13 14:01:34（UTC+8）</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">总条目数</div>
+                <div class="stat-number total">65</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">已处理</div>
+                <div class="stat-number processed">12</div>
+                <div class="stat-sublabel">3 个子任务</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">未处理</div>
+                <div class="stat-number unprocessed">53</div>
+                <div class="stat-sublabel">6 个子任务</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">已排期</div>
+                <div class="stat-number scheduled">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">排期已处理</div>
+                <div class="stat-number scheduled-processed">0</div>
+            </div>
+        </div>
+
+        <div class="sort-bar">
+            <span class="sort-label">排序方式:</span>
+            <button class="sort-btn active" data-sort="key-desc" onclick="sortSections('key-desc')">任务编号 ↓</button>
+            <button class="sort-btn" data-sort="key-asc" onclick="sortSections('key-asc')">任务编号 ↑</button>
+            <button class="sort-btn" data-sort="count-desc" onclick="sortSections('count-desc')">未处理数量 ↓</button>
+            <button class="sort-btn" data-sort="count-asc" onclick="sortSections('count-asc')">未处理数量 ↑</button>
+        </div>
+
+        <div class="schedule-bar">
+            <span class="filter-label">排期状态:</span>
+            <button class="filter-btn active" data-schedule="all" onclick="filterSchedule('all')">全部</button>
+            <button class="filter-btn" data-schedule="scheduled" onclick="filterSchedule('scheduled')">已排期</button>
+            <button class="filter-btn" data-schedule="scheduled-processed" onclick="filterSchedule('scheduled-processed')">排期已处理</button>
+            <button class="filter-btn" data-schedule="unscheduled" onclick="filterSchedule('unscheduled')">未排期</button>
+        </div>
+
+        <div class="owner-bar">
+            <span class="filter-label">筛选人员:</span>
+            <button class="filter-btn active" data-filter="all" onclick="filterItems('all')">全部<span class="filter-count" id="count-all">53</span></button>
+            <button class="filter-btn" data-filter="jayce" onclick="filterItems('jayce')">Jayce<span class="filter-count" id="count-jayce">3</span></button>
+            <button class="filter-btn" data-filter="zhiyong" onclick="filterItems('zhiyong')">Zhiyong<span class="filter-count" id="count-zhiyong">1</span></button>
+            <button class="filter-btn" data-filter="jun" onclick="filterItems('jun')">Jun<span class="filter-count" id="count-jun">2</span></button>
+            <button class="filter-btn" data-filter="jiaqi" onclick="filterItems('jiaqi')">Jiaqi<span class="filter-count" id="count-jiaqi">4</span></button>
+            <button class="filter-btn" data-filter="lory" onclick="filterItems('lory')">Lory<span class="filter-count" id="count-lory">5</span></button>
+            <button class="filter-btn" data-filter="tianye" onclick="filterItems('tianye')">Tian Ye<span class="filter-count" id="count-tianye">1</span></button>
+            <button class="filter-btn" data-filter="fengxia" onclick="filterItems('fengxia')">Feng Xia<span class="filter-count" id="count-fengxia">2</span></button>
+            <button class="filter-btn" data-filter="unassigned" onclick="filterItems('unassigned')">未分配<span class="filter-count" id="count-unassigned">36</span></button>
+        </div>
+    <div id="task-container" class="task-container">
+
+        <div class="task-section" data-key="KAT-11675" data-count="3">
+            <div class="task-header">
+                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11675" target="_blank">KAT-11675</a></span>
+                <span class="task-summary">Daily UI tweaks and bug fixes 2026-07-12</span>
+                <span class="task-count">3 未处理 · 0 已排期 · 0 排期已处理</span>
+            </div>
+            <ul class="item-list">
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">1</span>
+                    <span class="item-content">
+                        <span class="item-text">Partner cannot change the event setting “Exclude  Pear.Us  Venue app sales from sales report“ even after the event is completed.  Comments from 11230:</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">Sales email:</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">3</span>
+                    <span class="item-content">
+                        <span class="item-text">(linda)The “My content“ &gt; “X“ button need to click 2 times to close it after create the first post on the content</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="task-section" data-key="KAT-11667" data-count="6">
+            <div class="task-header">
+                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11667" target="_blank">KAT-11667</a></span>
+                <span class="task-summary">Daily UI tweaks and bug fixes 2026-07-09</span>
+                <span class="task-count">6 未处理 · 0 已排期 · 0 排期已处理</span>
+            </div>
+            <ul class="item-list">
+                <li class="item item-row" data-owners="lory" data-scheduled="false" data-processed="false">
+                    <span class="item-index">1</span>
+                    <span class="item-content">
+                        <span class="item-text">(Critical bug)  BD team found many cases the total number of orders from a post is smaller than the recorded funnel order number. This makes the analytics tool not usable and cannot be trusted.  Especially when date range filter is on.  @Lory Jiang</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">(linda)When the section is hide, the post shouldn’t can be find on the explore page. @Pengfei Wu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jayce" data-scheduled="false" data-processed="false">
+                    <span class="item-index">3</span>
+                    <span class="item-content">
+                        <span class="item-text">(Yuxiao)The points that need optimization in "View submitted info"  @jayce chen  :</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jayce">Jayce</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">4</span>
+                    <span class="item-content">
+                        <span class="item-text">The Form title “Contact us“ shouldn’t display  https://onemarkettalk.slack.com/archives/C061Y4G7AER/p1783672737117959</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">5</span>
+                    <span class="item-content">
+                        <span class="item-text">Catalog settings tweak:  @Yizhen Xin</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">6</span>
+                    <span class="item-content">
+                        <span class="item-text">apply the same radius 12px to both previews.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="task-section" data-key="KAT-11625" data-count="14">
+            <div class="task-header">
+                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11625" target="_blank">KAT-11625</a></span>
+                <span class="task-summary">Daily UI tweaks and bug fixes 2026-07-06</span>
+                <span class="task-count">14 未处理 · 0 已排期 · 0 排期已处理</span>
+            </div>
+            <ul class="item-list">
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">1</span>
+                    <span class="item-content">
+                        <span class="item-text">The toast notification banners should be consistent, especially from the same page  @Yizhen Xin   @Yuxiao Zhu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="lory" data-scheduled="false" data-processed="false">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">Shopify initiated a refund, and it failed to sync at Pear Shop without any notification. P213331.  @Lory Jiang   @Dian Yuhong  （Reported by Grace）</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jiaqi" data-scheduled="false" data-processed="false">
+                    <span class="item-index">3</span>
+                    <span class="item-content">
+                        <span class="item-text">(Demi) The color of “From your original post“ should be the same as the postcard title  @Jiaqi Yu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">4</span>
+                    <span class="item-content">
+                        <span class="item-text">(High) (Linda)switch Events and Posts tab, the page flash.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">5</span>
+                    <span class="item-content">
+                        <span class="item-text">In the event ticket and merch context menu, (1) change the “Sharing” to a straightforward “Copy link for sharing” (remove the native sharing logic) (2) for consistency, change Sharing to sharing  @Yizhen Xin   @Xuan Hu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">6</span>
+                    <span class="item-content">
+                        <span class="item-text">Inefficient real estate utilization  @Yizhen Xin   @Xuan Hu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">7</span>
+                    <span class="item-content">
+                        <span class="item-text">When going to a new page, should start from the beginning of the list. Browsing position is not supposed to be kept in this context.  @Dian Yuhong</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="fengxia" data-scheduled="false" data-processed="false">
+                    <span class="item-index">8</span>
+                    <span class="item-content">
+                        <span class="item-text">What happened to order P266294, why is the status “Processing” for a ticket?  @Feng Xia</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-fengxia">Feng Xia</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">9</span>
+                    <span class="item-content">
+                        <span class="item-text">we should expose the message history entry directly in the UI. (Design reference:   )  @Dian Yuhong</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="lory" data-scheduled="false" data-processed="false">
+                    <span class="item-index">12</span>
+                    <span class="item-content">
+                        <span class="item-text">If a co-seller gets 10% commission, the co-seller can create coupon up to 10%, not 9%.   @Lory Jiang   @Xuan Hu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">13</span>
+                    <span class="item-content">
+                        <span class="item-text">(Linda) reset the password on the login page, the pear logo is missing on the email , also the bottom “Copy right “ text need to center align. Expect result:</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jiaqi" data-scheduled="false" data-processed="false">
+                    <span class="item-index">14</span>
+                    <span class="item-content">
+                        <span class="item-text">(linda) The edu UI about “X“button is overlay on the mobile side （Iphone SE）  @Jiaqi Yu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">15</span>
+                    <span class="item-content">
+                        <span class="item-text">Menu navigation issue: Business Settings page should have a dedicated top nav bar like other first level pages, otherwise the nav root looks weird. e.g., page goes to the last page after closing Business Settings.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">16</span>
+                    <span class="item-content">
+                        <span class="item-text">unify the log in buttons (copy and style) on different pages (storefront, cart, etc) to make the product looks professional.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="task-section" data-key="KAT-11600" data-count="4">
+            <div class="task-header">
+                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11600" target="_blank">KAT-11600</a></span>
+                <span class="task-summary">Daily UI tweaks and bug fixes 2026-07-01 (Campaign...</span>
+                <span class="task-count">4 未处理 · 0 已排期 · 0 排期已处理</span>
+            </div>
+            <ul class="item-list">
+                <li class="item item-row" data-owners="jun" data-scheduled="false" data-processed="false">
+                    <span class="item-index">1</span>
+                    <span class="item-content">
+                        <span class="item-text">When an SMS doesn’t include a link, prompt a drawer to remind the user. The should be the first thing to check (before checking special characters replacement)  @Jun Li   Title: No link detected Body This SMS does not contain a link. Consider adding one if recipients need to take action. Buttons: (1) Continue Anyway (2) CTA: Back to Edit</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jun" data-scheduled="false" data-processed="false">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">“Campaign name” is missing  @Jun Li</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jun">Jun</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="lory,fengxia" data-scheduled="false" data-processed="false">
+                    <span class="item-index">10</span>
+                    <span class="item-content">
+                        <span class="item-text">(Critical bug) Campaign was charged but showing 0 recipients.  From Feng:  “send button was clicked twice but API is not idempotent, not blocking in-progress/completed campaigns. So while it didn't actually resend the SMS( it's idempotent here) , the count got bumped twice, and the second time, all numbers are 0.”   “I've fixed the count issue on release. @ Yuhang the usage_fee is also at risk of double charging  @Feng Xia   @Lory Jiang</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-lory">Lory</span><span class="owner-tag owner-fengxia">Feng Xia</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="lory" data-scheduled="false" data-processed="false">
+                    <span class="item-index">11</span>
+                    <span class="item-content">
+                        <span class="item-text">Need a payment timestamp when a campaign is sent and paid. This is important to accurately record Pear revenue weekly, monthly and so on.  @Lory Jiang</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-lory">Lory</span></div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="task-section" data-key="KAT-11598" data-count="14">
+            <div class="task-header">
+                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11598" target="_blank">KAT-11598</a></span>
+                <span class="task-summary">Daily UI tweaks and bug fixes 2026-07-01</span>
+                <span class="task-count">14 未处理 · 0 已排期 · 0 排期已处理</span>
+            </div>
+            <ul class="item-list">
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">This design should be consistent with the Event Sales order list.  Simplify, simplify, and simplify.  Less, less and less.  @Yizhen Xin   @Dian Yuhong</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">3</span>
+                    <span class="item-content">
+                        <span class="item-text">We can benefit from simple and straightforward UI design  @Yizhen Xin   @Xuan Hu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">4</span>
+                    <span class="item-content">
+                        <span class="item-text">There is no other content in this empty state UI, so let’s utilize the space  @Cynthia Yueh   @Xuan Hu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">5</span>
+                    <span class="item-content">
+                        <span class="item-text">(linda)Add from my links, the padding of “Link“ and “test“ need to optimize</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">6</span>
+                    <span class="item-content">
+                        <span class="item-text">(Linda)When preview the shop, the empty status no need to display for a time</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">7</span>
+                    <span class="item-content">
+                        <span class="item-text">(Linda)The “cookie preferences“ text no need to display when refresh the shop</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">8</span>
+                    <span class="item-content">
+                        <span class="item-text">(Demi) The product’s price is not displayed in the Preview window&gt;Products module(Vertical Scroll Layout)</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">9</span>
+                    <span class="item-content">
+                        <span class="item-text">(Demi) The preview window should be the visitor view</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jayce" data-scheduled="false" data-processed="false">
+                    <span class="item-index">12</span>
+                    <span class="item-content">
+                        <span class="item-text">(Yuxiao)In Impersonate mode of Admin Profile, there is no need to pop up a cookie window  @jayce chen</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jayce">Jayce</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="tianye" data-scheduled="false" data-processed="false">
+                    <span class="item-index">13</span>
+                    <span class="item-content">
+                        <span class="item-text">(Demi) Update the copy to “Customize commission“ for both co-sellers and affiliates  @Tian Ye</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-tianye">Tian Ye</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jiaqi" data-scheduled="false" data-processed="false">
+                    <span class="item-index">14</span>
+                    <span class="item-content">
+                        <span class="item-text">(Yuxiao)When entering the partner store, the module without a name will jump for a moment.  @Jiaqi Yu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jayce" data-scheduled="false" data-processed="false">
+                    <span class="item-index">15</span>
+                    <span class="item-content">
+                        <span class="item-text">(Yuxiao)"Explore-Shops". If the number of shops browsed reaches exactly 20, a "More" CTA will appear here, which is quite unattractive.  @jayce chen</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jayce">Jayce</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="zhiyong" data-scheduled="false" data-processed="false">
+                    <span class="item-index">16</span>
+                    <span class="item-content">
+                        <span class="item-text">(Yuxiao)UX feedback: The response speed after clicking "my content" is still rather slow. A loading feedback is needed.  @zhiyong song</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-zhiyong">Zhiyong</span></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="jiaqi" data-scheduled="false" data-processed="false">
+                    <span class="item-index">17</span>
+                    <span class="item-content">
+                        <span class="item-text">(Yuxiao)The cover (GIF) of the "past card" cannot be displayed on the landing page of Post.  @Jiaqi Yu   @Yuxiao Zhu</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"><span class="owner-tag owner-jiaqi">Jiaqi</span></div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="task-section" data-key="KAT-11543" data-count="12">
+            <div class="task-header">
+                <span class="task-key"><a href="https://pearshop.atlassian.net/browse/KAT-11543" target="_blank">KAT-11543</a></span>
+                <span class="task-summary">Daily UI tweaks and bug fixes from 2026 Q2 (RTE fo...</span>
+                <span class="task-count">12 未处理 · 0 已排期 · 0 排期已处理</span>
+            </div>
+            <ul class="item-list">
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">1</span>
+                    <span class="item-content">
+                        <span class="item-text">When using browser search to search content on editor page, pressing ‘ESC' to close browser search should not place cursor at top of document / scroll up. Cursor position needs to be preserved.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">2</span>
+                    <span class="item-content">
+                        <span class="item-text">Backspace / delete issues:</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">3</span>
+                    <span class="item-content">
+                        <span class="item-text">Shift+click must select from cursor placement to current location</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">4</span>
+                    <span class="item-content">
+                        <span class="item-text">On mobile, do not show keyboard when custom element has focus</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">5</span>
+                    <span class="item-content">
+                        <span class="item-text">(Demi) The All tickets banner/Media/Lineup is very hard to click+hold / touch+hold to move its location in RTE</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">6</span>
+                    <span class="item-content">
+                        <span class="item-text">Insert Media - Users should be allowed to insert multiple at once.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">7</span>
+                    <span class="item-content">
+                        <span class="item-text">For CTA button components, on mobile only, when label will not fit fully in CTA, replace with + / - icon</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">8</span>
+                    <span class="item-content">
+                        <span class="item-text">Adjust lineup section settings to be consistent with Media section and lineup in event settings. (Details marked in Figma   )</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">9</span>
+                    <span class="item-content">
+                        <span class="item-text">Make all CTA button disabled states consistent throughout the RTE. The current colors and UI behavior are inconsistent. Simplify the logic and standardize the UI for a more consistent user experience.(Details marked in Figma   )</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">10</span>
+                    <span class="item-content">
+                        <span class="item-text">Change new icons for event info widget and adjust size to 16 px (Details marked in Figma   )</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">11</span>
+                    <span class="item-content">
+                        <span class="item-text">Add a background color to the product carousel cards, and make the section background color editable through the style - color settings. (Details marked in Figma   )</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+                <li class="item item-row" data-owners="" data-scheduled="false" data-processed="false">
+                    <span class="item-index">12</span>
+                    <span class="item-content">
+                        <span class="item-text">"Widget" feels like an internal term. Let's rename all event widgets to "Section" for better clarity and consistency.</span>
+                        <div class="item-meta">
+                            
+                            <div class="item-owners"></div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>    </div>
+
+        <div class="footer">
+            <p>Generated by Jira Analyzer</p>
+        </div>
+    </div>
+
+    <script>
+        let currentOwnerFilter = 'all';
+        let currentScheduleFilter = 'all';
+        let currentSort = 'key-desc';
+        let currentProjectFilter = null;
+
+        const URL_DEFAULTS = { sort: 'key-desc', schedule: 'all', owner: 'all' };
+        const VALID_SORTS = ['key-desc', 'key-asc', 'count-desc', 'count-asc'];
+        const VALID_SCHEDULES = ['all', 'scheduled', 'unscheduled', 'scheduled-processed'];
+
+        function parseProjectParam(value) {
+            if (!value) return null;
+            const keys = value.split(',').map(k => k.trim().toUpperCase()).filter(Boolean);
+            return keys.length ? new Set(keys) : null;
+        }
+
+        function matchesProjectFilter(sectionKey) {
+            if (!currentProjectFilter) return true;
+            return currentProjectFilter.has((sectionKey || '').toUpperCase());
+        }
+
+        function syncUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (currentSort === URL_DEFAULTS.sort) params.delete('sort');
+            else params.set('sort', currentSort);
+            if (currentScheduleFilter === URL_DEFAULTS.schedule) params.delete('schedule');
+            else params.set('schedule', currentScheduleFilter);
+            if (currentOwnerFilter === URL_DEFAULTS.owner) params.delete('owner');
+            else params.set('owner', currentOwnerFilter);
+            if (!currentProjectFilter) params.delete('project');
+            else params.set('project', [...currentProjectFilter].join(','));
+            const qs = params.toString();
+            const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+            history.replaceState(null, '', newUrl);
+        }
+
+        function matchesScheduleFilter(processed, scheduled) {
+            if (currentScheduleFilter === 'all') {
+                return !processed;
+            }
+            if (currentScheduleFilter === 'scheduled') {
+                return scheduled && !processed;
+            }
+            if (currentScheduleFilter === 'unscheduled') {
+                return !scheduled && !processed;
+            }
+            if (currentScheduleFilter === 'scheduled-processed') {
+                return scheduled && processed;
+            }
+            return false;
+        }
+
+        function updateCounts() {
+            const allItems = document.querySelectorAll('li.item-row');
+            const counts = { all: 0, jayce: 0, zhiyong: 0, jun: 0, jiaqi: 0, lory: 0, tianye: 0, fengxia: 0, unassigned: 0 };
+            allItems.forEach(li => {
+                const scheduled = li.getAttribute('data-scheduled') === 'true';
+                const processed = li.getAttribute('data-processed') === 'true';
+                if (!matchesScheduleFilter(processed, scheduled)) return;
+                counts.all++;
+                const owners = li.getAttribute('data-owners');
+
+                if (!owners) {
+                    counts.unassigned++;
+                } else {
+                    const ownerList = owners.split(',');
+                    if (ownerList.includes('jayce')) counts.jayce++;
+                    if (ownerList.includes('zhiyong')) counts.zhiyong++;
+                    if (ownerList.includes('jun')) counts.jun++;
+                    if (ownerList.includes('jiaqi')) counts.jiaqi++;
+                    if (ownerList.includes('lory')) counts.lory++;
+                    if (ownerList.includes('tianye')) counts.tianye++;
+                    if (ownerList.includes('fengxia')) counts.fengxia++;
+                }
+            });
+            for (const [key, count] of Object.entries(counts)) {
+                const el = document.getElementById('count-' + key);
+                if (el) el.textContent = count || '';
+            }
+        }
+
+        function applyFilters() {
+            const allItems = document.querySelectorAll('li.item-row');
+            allItems.forEach(li => {
+                const owners = li.getAttribute('data-owners');
+                const scheduled = li.getAttribute('data-scheduled') === 'true';
+                const processed = li.getAttribute('data-processed') === 'true';
+
+                let showOwner = false;
+                if (currentOwnerFilter === 'all') {
+                    showOwner = true;
+                } else if (currentOwnerFilter === 'unassigned') {
+                    showOwner = !owners;
+                } else {
+                    showOwner = owners && owners.split(',').includes(currentOwnerFilter);
+                }
+
+                const showSchedule = matchesScheduleFilter(processed, scheduled);
+                li.style.display = showOwner && showSchedule ? '' : 'none';
+            });
+
+            document.querySelectorAll('.task-section').forEach(section => {
+                const sectionKey = section.getAttribute('data-key');
+                if (!matchesProjectFilter(sectionKey)) {
+                    section.style.display = 'none';
+                    return;
+                }
+                const visibleItems = section.querySelectorAll('li.item-row:not([style*="display: none"])');
+                section.style.display = visibleItems.length > 0 ? '' : 'none';
+            });
+            updateCounts();
+        }
+
+        function applyOwnerFilterUI(filter) {
+            document.querySelectorAll('.owner-bar .filter-btn').forEach(btn => {
+                btn.classList.remove('active-jayce', 'active-zhiyong', 'active-jun', 'active-jiaqi', 'active-lory', 'active-tianye', 'active-fengxia', 'active-unassigned', 'active');
+            });
+            const activeBtn = document.querySelector(`.owner-bar .filter-btn[data-filter="${filter}"]`);
+            if (activeBtn) {
+                if (filter === 'all') {
+                    activeBtn.classList.add('active');
+                } else {
+                    activeBtn.classList.add('active-' + filter);
+                }
+            }
+        }
+
+        function applyScheduleFilterUI(filter) {
+            document.querySelectorAll('.schedule-bar .filter-btn').forEach(btn => {
+                btn.classList.remove(
+                    'active', 'active-scheduled', 'active-unscheduled', 'active-scheduled-processed'
+                );
+            });
+            const activeBtn = document.querySelector(`.schedule-bar .filter-btn[data-schedule="${filter}"]`);
+            if (activeBtn) {
+                if (filter === 'all') {
+                    activeBtn.classList.add('active');
+                } else if (filter === 'scheduled') {
+                    activeBtn.classList.add('active-scheduled');
+                } else if (filter === 'scheduled-processed') {
+                    activeBtn.classList.add('active-scheduled-processed');
+                } else {
+                    activeBtn.classList.add('active-unscheduled');
+                }
+            }
+        }
+
+        function applySortUI(sortBy) {
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.sort-btn[data-sort="${sortBy}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function filterItems(filter, options = {}) {
+            const btn = document.querySelector(`.owner-bar .filter-btn[data-filter="${filter}"]`);
+            if (!btn) return;
+            currentOwnerFilter = filter;
+            applyOwnerFilterUI(filter);
+            if (!options.skipApply) {
+                applyFilters();
+                if (!options.skipUrl) syncUrlParams();
+            }
+        }
+
+        function filterSchedule(filter, options = {}) {
+            if (!VALID_SCHEDULES.includes(filter)) return;
+            currentScheduleFilter = filter;
+            applyScheduleFilterUI(filter);
+            if (!options.skipApply) {
+                applyFilters();
+                if (!options.skipUrl) syncUrlParams();
+            }
+        }
+
+        function sortSections(sortBy, options = {}) {
+            if (!VALID_SORTS.includes(sortBy)) return;
+            currentSort = sortBy;
+            applySortUI(sortBy);
+
+            const container = document.getElementById('task-container');
+            if (!container) return;
+            const sections = Array.from(container.querySelectorAll('.task-section'));
+
+            sections.sort((a, b) => {
+                const keyA = a.getAttribute('data-key') || '';
+                const keyB = b.getAttribute('data-key') || '';
+                const numA = parseInt(keyA.replace(/[^0-9]/g, '')) || 0;
+                const numB = parseInt(keyB.replace(/[^0-9]/g, '')) || 0;
+                const countA = parseInt(a.getAttribute('data-count')) || 0;
+                const countB = parseInt(b.getAttribute('data-count')) || 0;
+
+                switch (sortBy) {
+                    case 'key-desc': return numB - numA;
+                    case 'key-asc': return numA - numB;
+                    case 'count-desc': return countB - countA || numB - numA;
+                    case 'count-asc': return countA - countB || numA - numB;
+                    default: return numB - numA;
+                }
+            });
+
+            sections.forEach(section => container.appendChild(section));
+            if (!options.skipUrl) syncUrlParams();
+        }
+
+        function initFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            currentProjectFilter = parseProjectParam(params.get('project'));
+
+            const schedule = params.get('schedule');
+            if (schedule && VALID_SCHEDULES.includes(schedule)) {
+                filterSchedule(schedule, { skipApply: true, skipUrl: true });
+            } else {
+                applyScheduleFilterUI(currentScheduleFilter);
+            }
+
+            const owner = params.get('owner');
+            if (owner) {
+                const ownerBtn = document.querySelector(`.owner-bar .filter-btn[data-filter="${owner}"]`);
+                if (ownerBtn) {
+                    currentOwnerFilter = owner;
+                    applyOwnerFilterUI(owner);
+                } else {
+                    applyOwnerFilterUI(currentOwnerFilter);
+                }
+            } else {
+                applyOwnerFilterUI(currentOwnerFilter);
+            }
+
+            const sort = params.get('sort');
+            if (sort && VALID_SORTS.includes(sort)) {
+                sortSections(sort, { skipUrl: true });
+            } else {
+                applySortUI(currentSort);
+            }
+
+            applyFilters();
+            syncUrlParams();
+        }
+
+        initFromUrl();
+    </script>
+</body>
+</html>

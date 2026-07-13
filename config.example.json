@@ -4,11 +4,23 @@
     "email": "your-email@example.com",
     "api_token": "YOUR_JIRA_API_TOKEN_HERE"
   },
-  "parent_issue": "KAT-11542",
+  "reports": [
+    {
+      "id": "q3",
+      "label": "Q3",
+      "parent_issue": "KAT-11542",
+      "output": "output/index.html"
+    },
+    {
+      "id": "q2",
+      "label": "Q2",
+      "parent_issue": "KAT-10938",
+      "output": "output/2026q2/index.html"
+    }
+  ],
   "assignee": "your name",
   "output": {
-    "format": "html",
-    "path": "output/jira-report.html"
+    "format": "html"
   },
   "filters": {
     "subtasks_scope": "all",

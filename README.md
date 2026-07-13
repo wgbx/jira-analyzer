@@ -1,10 +1,11 @@
 # Jira 任务分析器
 
-定期分析 Jira 父任务（KAT-11542）下的子任务，解析描述中的列表项，统计未处理的项目并生成可视化报告。
+定期分析 Jira 父任务下的子任务（当前默认 Q3：KAT-11542，并保留 Q2：KAT-10938），解析描述中的列表项，统计未处理的项目并生成可视化报告。
 
 ## 功能
 
-- 默认拉取父任务（KAT-11542）下**全部**子任务并统计列表条目
+- 一次生成多份报告：首页 Q3 + `/2026q2/`（见 `config.example.json` → `reports`）
+- 默认拉取各父任务下**全部**子任务并统计列表条目
 - 解析 ADF（Atlassian Document Format）描述中的列表项
 - 检测条目状态：Done / Backlog（含 Invalid）/ Moved / 删除线
 - 自动识别条目的负责人（通过 @mention 和文本匹配）
@@ -40,7 +41,7 @@ jira-analyzer/
 npm run setup
 ```
 
-`setup` 会自动执行 `git:local-ignore`：在本机忽略 `output/jira-report.html` 的本地改动，**全选暂存**时不会再带上自动生成的报告。若仍出现在更改列表，可手动再跑一次：`npm run git:local-ignore`。
+`setup` 会自动执行 `git:local-ignore`：在本机忽略自动生成报告的本地改动，**全选暂存**时不会再带上它们。若仍出现在更改列表，可手动再跑一次：`npm run git:local-ignore`。
 
 等价于 `pip install -r requirements.txt`。
 
@@ -60,7 +61,11 @@ API Token 获取地址：https://id.atlassian.net/manage-profile/security/api-to
 npm start
 ```
 
-报告会生成到 `output/jira-report.html`，并在本地自动用浏览器打开。
+报告会生成到：
+- `output/index.html`（Q3，对应站点 `/`）
+- `output/2026q2/index.html`（Q2，对应站点 `/2026q2/`）
+
+并在本地自动用浏览器打开 Q3 报告。
 
 ### 常用脚本
 
@@ -91,7 +96,7 @@ npm start
 | `JIRA_EMAIL` | Jira 账号邮箱 |
 | `JIRA_API_TOKEN` | Jira API Token |
 
-父任务编号写在仓库内的 `config.example.json` → `parent_issue`（当前为 `KAT-11542`），CI 会直接读取，无需 Secret。
+父任务编号写在仓库内的 `config.example.json` → `reports`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`），CI 会直接读取，无需 Secret。
 
 ### 3. 启用 GitHub Pages
 
@@ -112,7 +117,9 @@ git push -u origin main
 
 ### 5. 查看报告
 
-部署完成后，访问：`https://your-username.github.io/jira-analyzer/jira-report.html`
+部署完成后，访问：
+- Q3：`https://your-username.github.io/jira-analyzer/`
+- Q2：`https://your-username.github.io/jira-analyzer/2026q2/`
 
 ## 本地定时运行（macOS launchd）
 
