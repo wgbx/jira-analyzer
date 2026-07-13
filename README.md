@@ -90,7 +90,8 @@ npm start
 | `JIRA_BASE_URL` | Jira 实例地址，如 `https://your-domain.atlassian.net` |
 | `JIRA_EMAIL` | Jira 账号邮箱 |
 | `JIRA_API_TOKEN` | Jira API Token |
-| `JIRA_PARENT_ISSUE` | 父任务编号，如 `KAT-11542` |
+
+父任务编号写在仓库内的 `config.example.json` → `parent_issue`（当前为 `KAT-11542`），CI 会直接读取，无需 Secret。
 
 ### 3. 启用 GitHub Pages
 
