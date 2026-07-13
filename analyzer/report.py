@@ -516,7 +516,7 @@ def _build_filter_js(visible_owners, show_unassigned):
     </script>"""
 
 
-def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
+def generate_html_report(analysis, base_url, parent_issue='KAT-11542'):
     """
     生成 HTML 格式的分析报告
 
@@ -544,7 +544,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jira 任务分析报告</title>
+    <title>Jira Q3 任务分析报告</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -800,7 +800,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
 <body>
     <div class="container">
         <div class="header">
-            <h1>Jira 任务分析报告</h1>
+            <h1>Jira Q3 任务分析报告</h1>
             <p class="header-subtitle">{parent_issue} 所有项目概览</p>
             <p class="header-updated">数据更新到 {now}（UTC+8）</p>
         </div>
@@ -937,7 +937,7 @@ def generate_html_report(analysis, base_url, parent_issue='KAT-10938'):
     return html
 
 
-def generate_markdown_report(analysis, parent_issue='KAT-10938'):
+def generate_markdown_report(analysis, parent_issue='KAT-11542'):
     """
     生成 Markdown 格式的分析报告
 
@@ -948,7 +948,7 @@ def generate_markdown_report(analysis, parent_issue='KAT-10938'):
         str: Markdown 文档字符串
     """
     now = _report_timestamp()
-    md = f"""# Jira 任务分析报告
+    md = f"""# Jira Q3 任务分析报告
 
 **数据更新到**: {now}（UTC+8）
 **父任务**: {parent_issue}

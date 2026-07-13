@@ -2,7 +2,7 @@
 """
 Jira 任务分析器 - 入口脚本
 
-定期分析 KAT-10938 子任务，统计未处理的项目并生成可视化报告。
+定期分析 KAT-11542 子任务，统计未处理的项目并生成可视化报告。
 
 使用方式:
     python jira_analyzer.py
@@ -88,11 +88,11 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
     base_url = config['jira']['base_url']
 
     if output_format == 'markdown':
-        parent = config.get('parent_issue', 'KAT-10938')
+        parent = config.get('parent_issue', 'KAT-11542')
         report = generate_markdown_report(analysis, parent)
         output_path = OUTPUT_DIR / 'jira-report.md'
     else:
-        parent = config.get('parent_issue', 'KAT-10938')
+        parent = config.get('parent_issue', 'KAT-11542')
         report = generate_html_report(analysis, base_url, parent)
         output_path = OUTPUT_DIR / 'jira-report.html'
 

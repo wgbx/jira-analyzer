@@ -1,10 +1,10 @@
 # Jira 任务分析器
 
-定期分析 Jira 父任务（KAT-10938）下的子任务，解析描述中的列表项，统计未处理的项目并生成可视化报告。
+定期分析 Jira 父任务（KAT-11542）下的子任务，解析描述中的列表项，统计未处理的项目并生成可视化报告。
 
 ## 功能
 
-- 默认拉取父任务（KAT-10938）下**全部**子任务并统计列表条目
+- 默认拉取父任务（KAT-11542）下**全部**子任务并统计列表条目
 - 解析 ADF（Atlassian Document Format）描述中的列表项
 - 检测条目状态：Done / Backlog（含 Invalid）/ Moved / 删除线
 - 自动识别条目的负责人（通过 @mention 和文本匹配）
@@ -90,7 +90,7 @@ npm start
 | `JIRA_BASE_URL` | Jira 实例地址，如 `https://your-domain.atlassian.net` |
 | `JIRA_EMAIL` | Jira 账号邮箱 |
 | `JIRA_API_TOKEN` | Jira API Token |
-| `JIRA_PARENT_ISSUE` | 父任务编号，如 `KAT-10938` |
+| `JIRA_PARENT_ISSUE` | 父任务编号，如 `KAT-11542` |
 
 ### 3. 启用 GitHub Pages
 

@@ -47,7 +47,7 @@ def load_config():
                 'email': env_email,
                 'api_token': env_api_token,
             },
-            'parent_issue': os.environ.get('JIRA_PARENT_ISSUE', 'KAT-10938'),
+            'parent_issue': os.environ.get('JIRA_PARENT_ISSUE', 'KAT-11542'),
             'output': {
                 'format': 'html',
                 'path': 'output/jira-report.html',

@@ -4,7 +4,7 @@
     "email": "your-email@example.com",
     "api_token": "YOUR_JIRA_API_TOKEN_HERE"
   },
-  "parent_issue": "KAT-10938",
+  "parent_issue": "KAT-11542",
   "assignee": "your name",
   "output": {
     "format": "html",
