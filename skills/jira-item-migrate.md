@@ -4,7 +4,7 @@ description: >
   将一个 Jira issue 的有序列表中的某个条目迁移到另一个 Jira issue。
   使用场景：用户说"迁移"、"搬到"、"move"、提供两个 Jira URL 并指定要移动的编号。
   原则：只增不删——源 issue 的文字和附件永远不删除，只在列表项文本前面追加 (moved XXX No.x) 标记；
-  目标 issue 只新增一条列表项（含文字、mention、附件图片/视频），并在文本前追加 (From XXX No.x) 来源标记。
+  目标 issue 只新增一条列表项（含文字、mention、附件图片/视频），不追加来源标记。
   执行必须原子化：附件全部就绪后再 PUT，禁止分步打补丁。
   优先运行 scripts/jira-item-migrate.py，禁止每次临时拼 inline Python。
 ---
@@ -26,9 +26,12 @@ description: >
 python3 scripts/jira-item-migrate.py migrate --target KAT-11496 \
   KAT-11267:3 KAT-11267:5 KAT-11109:2
 
-# 仅标记：目标里已有 (From …)，只更新源端 (moved …) 编号
-python3 scripts/jira-item-migrate.py mark --target KAT-11496 \
+# 仅标记：内容已在目标，按指定编号更新源端 (moved …) 标记
+python3 scripts/jira-item-migrate.py mark --target KAT-11496 --at 7,8,9 \
   KAT-11349:2 KAT-11349:5 KAT-11349:6
+
+# 移除历史遗留的 (From …) 前缀
+python3 scripts/jira-item-migrate.py strip-from KAT-11751:1
 
 # 预览，不写入 Jira（--dry-run 放在子命令前面）
 python3 scripts/jira-item-migrate.py --dry-run migrate --target KAT-11496 KAT-11267:3
@@ -43,8 +46,9 @@ npm run migrate -- migrate --target KAT-11496 KAT-11267:3
 
 | 场景 | 子命令 | 说明 |
 |------|--------|------|
-| 正常迁移 / 目标描述被改需**重迁** | `migrate` | 从源 deep copy 内容，上传附件，在目标末尾追加 `(From …)`，更新源 `(moved …)` |
-| 内容已在目标、只缺源端标记 | `mark` | 读目标 `(From {源编号} No.{源序号})` 确定新位置，只改源 `(moved …)` |
+| 正常迁移 / 目标描述被改需**重迁** | `migrate` | 从源 deep copy 内容，上传附件，在目标末尾追加新条目，更新源 `(moved …)` |
+| 内容已在目标、只缺源端标记 | `mark` | 用 `--at` 指定目标条目编号，只改源 `(moved …)` |
+| 历史条目带 `(From …)` 需清理 | `strip-from` | 移除目标条目上的 `(From …)` 前缀，不改其他内容 |
 | 重迁且源已有旧 `(moved …)` | `migrate` | 脚本会先 strip 旧前缀再写入新编号 |
 
 ### Agent 工作流
@@ -60,23 +64,16 @@ npm run migrate -- migrate --target KAT-11496 KAT-11267:3
 - 目标 issue 有**空 orderedList 需复用空位**（情况 B）——脚本当前只做末尾追加；此场景按下方 Step 3–8 手工处理或扩展脚本
 - 需要修改迁移逻辑时，改 `scripts/jira-item-migrate.py` 而非复制粘贴新脚本
 
-## 标记规范（双向溯源）
+## 标记规范
 
-迁移后在**两端**各加一条英文前缀，issue 编号均用**纯数字**（不带 `KAT-` 等项目前缀），与现有 daily 写法一致。
+迁移后**仅在源 issue** 追加英文前缀，issue 编号用**纯数字**（不带 `KAT-` 等项目前缀），与现有 daily 写法一致。
 
 | 位置 | 格式 | 示例 |
 |------|------|------|
 | **源** issue（条目已迁出） | `(moved {target_number} No.{new_number})` | `(moved 11325 No. 7 )` |
-| **目标** issue（新迁入条目） | `(From {source_number} No.{source_index})` | `(From 11075 No. 1 )` |
+| **目标** issue（新迁入条目） | 无额外标记 | 保持源正文原样 |
 
-**为何推荐 `(From …)` 而非 `(Migrated from …)` / `(Imported from …)`：**
-
-- 与源端 `(moved …)` **对称、短、好扫**：一眼能拼出完整路径 `11075 #1 → 11325 #7`
-- 纯英文、括号包裹，和 `( Done )` / `( Backlog )` 风格一致；`From` 首字母大写
-- `(From …)` **不会**命中 `statuses.py` 的 `moved` 检测，目标条目仍按正常未处理项统计
-- 不用 `(migrate to …)` 那种非标准写法（历史条目里偶有，但不统一）
-
-两段标记均用 **strong（加粗）** ADF `text` 节点，插在 paragraph `content` **最前面**，后接空格再跟原有正文。
+源端标记用 **strong（加粗）** ADF `text` 节点，插在 paragraph `content` **最前面**，后接空格再跟原有正文。目标端不插入任何迁移前缀。
 
 ## 铁律（永不违反）
 
@@ -96,7 +93,7 @@ npm run migrate -- migrate --target KAT-11496 KAT-11267:3
 |----------|------|----------|
 | 图片在上、文字在下 | 只 `append(mediaSingle)`，paragraph 内容丢失或为空 | 整段 deep copy listItem，保持子节点顺序 |
 | 出现两个相同编号 | 第一次 PUT 留下残缺 `orderedList`，修复时又新增/合并 | 附件就绪前不写目标；只追加一个 `order=new_number` 的 orderedList |
-| `(moved … No. 6)` 实际应在 #7 | **off-by-one**：把 `len(items)` 当成新编号，忘了 `+ 1` | 必须用下方 `compute_new_number`；`moved` / `From` / `order` 三者同号 |
+| `(moved … No. 6)` 实际应在 #7 | **off-by-one**：把 `len(items)` 当成新编号，忘了 `+ 1` | 必须用下方 `compute_new_number`；`moved` 与 `order` 同号 |
 | 两个 #7（缺 #6） | 目标有条目 **跳号**（如 #1–#5、#7），`len+1` 撞上已有编号 | 用 `max(index)+1`，不能只用 `len(items)+1` |
 | 两个 #11 | 目标有**空 orderedList**（paragraph 无文本），`parse_list_items` 未计入 | `compute_new_number` 必须同时扫 `attrs.order`；优先复用空位 |
 | 目标多了别人的图 | 把 orderedList 后 trailing media 误归到块内靠前的条目 | 仅最后一条 `listItem` 才合并 trailing media |
@@ -112,7 +109,7 @@ npm run migrate -- migrate --target KAT-11496 KAT-11267:3
 
 ```
 读取源/目标 → 定位源条目 → 内存中 deep copy → 上传全部附件 → 写入新 UUID
-    → 插入 (From …) 标记 → 组装 new_ordered_list → 校验 ADF
+    → 组装 new_ordered_list → 校验 ADF
     → PUT 目标（一次）→ 插入 (moved …) 标记 → PUT 源（一次）→ 事后校验
 ```
 
@@ -256,11 +253,10 @@ new_number = ordered_list.attrs['order']          # ❌ 与条目序号无关
 
 **推荐**：算出 `new_number` 后，断言 `new_number not in parsed_indices`（可等于空 orderedList 的 order）。
 
-**三条必须同号**（写错任一都会乱）：
+**两条必须同号**（写错任一都会乱）：
 
 1. 目标 `orderedList.attrs.order` = `new_number`（复用空位或新建）
-2. 目标 `(From {source} No.{source_index})` 不变（来源编号是源条目序号）
-3. 源 `(moved {target} No.{new_number})` 里的数字 = `new_number`（**目标上的新位置**，不是源条目序号）
+2. 源 `(moved {target} No.{new_number})` 里的数字 = `new_number`（**目标上的新位置**，不是源条目序号）
 
 批量迁移（如 #1 和 #2 同批）：第一条 `compute_new_number(..., 0)`，第二条 `compute_new_number(..., 1)`，依此类推；**每条各追加一个** `orderedList`。
 
@@ -271,7 +267,7 @@ new_number = ordered_list.attrs['order']          # ❌ 与条目序号无关
 **listItem 子节点顺序必须与源一致**，典型结构：
 
 ```
-paragraph        ← 正文 + mention + (From …) 标记
+paragraph        ← 正文 + mention（无迁移前缀）
 bulletList       ← 若有，必须保留，不可丢
 mediaSingle      ← 图片/视频，永远在段落和子弹列表之后
 ```
@@ -361,21 +357,9 @@ requests.post(
 
 **如果任一附件上传或 UUID 获取失败**：停止整个迁移，不 PUT 目标、不标记源，列出失败文件名，请用户手动处理或重试。
 
-### Step 7：标记目标 issue 新条目
+### Step 7：写入目标 issue 新条目
 
-在 deep copy 后的 listItem 的**第一个** `paragraph` 的 `content` **最前面**插入来源标记：
-
-```json
-[
-  {"type": "text", "text": "(From {source_number} No.", "marks": [{"type": "strong"}]},
-  {"type": "text", "text": "{source_index}", "marks": [{"type": "strong"}]},
-  {"type": "text", "text": ") ", "marks": [{"type": "strong"}]}
-]
-```
-
-`{source_number}` 为源 issue key 的纯数字部分（如 `11075`），`{source_index}` 为源条目编号。
-
-将 `new_ordered_list` **追加**到目标 issue description 的 `content` 数组**末尾**（不修改已有节点）。
+将 `new_ordered_list` **追加**到目标 issue description 的 `content` 数组**末尾**（不修改已有节点）。目标条目**不插入** `(From …)` 或任何迁移前缀。
 
 #### PUT 前自检（内存中）
 
@@ -424,7 +408,7 @@ Body: {"fields": {"description": updated_source_desc}}
 PUT 完成后重新 GET 两个 issue，用 `parse_list_items` 确认：
 
 - 目标 issue 条目总数 = 迁移前 + 迁移条数，**无重复编号**（`len(indices) == len(set(indices))`）
-- 目标新条目 `index == new_number`，文本以 `(From …)` 开头
+- 目标新条目 `index == new_number`，文本**不含** `(From …)` 前缀
 - 源条目 `(moved {target} No.{new_number})` 中 **No. 后面的数字 == 目标新条目的 index**（不是源条目序号）
 - 源条目 `is_moved == True`
 - 目标新条目的 listItem 子节点顺序：`paragraph` →（`bulletList`?）→ `mediaSingle`…
@@ -438,7 +422,7 @@ PUT 完成后重新 GET 两个 issue，用 `parse_list_items` 确认：
 向用户报告：
 - 迁移了什么内容（文字概要）
 - 源 issue 标记为 `(moved {target_number} No.{new_number})`
-- 目标 issue 新增为第 {new_number} 条，标记为 `(From {source_number} No.{source_index})`
+- 目标 issue 新增为第 {new_number} 条（无来源前缀）
 - 附件迁移数量与文件名
 - 若曾中止：说明失败点，确认两端均未写入
 
@@ -457,10 +441,10 @@ python3 scripts/jira-item-migrate.py migrate --target KAT-11496 \
 
 ### CLI：仅补源端 moved 标记
 
-目标已有 `(From 11349 No.2)` 等，源端尚未标记：
+内容已在目标 issue 中，源端尚未标记，需指定目标条目编号：
 
 ```bash
-python3 scripts/jira-item-migrate.py mark --target KAT-11496 \
+python3 scripts/jira-item-migrate.py mark --target KAT-11496 --at 7,8,9 \
   KAT-11349:2 KAT-11349:5 KAT-11349:6
 ```
 
@@ -474,14 +458,12 @@ new_number = max(i['index'] for i in items) + 1   # max=6 → 7
 完成后：
 
 - **KAT-11075 #1**：`(moved 11325 No. 7 ) Add a copy icon…` ← `No. 7` 是目标新位置
-- **KAT-11325 #7**：`(From 11075 No. 1 ) Add a copy icon…` ← `No. 1` 是源条目序号
+- **KAT-11325 #7**：`Add a copy icon…`（正文原样，无来源前缀）
 
 ### 单条：11244 #7 → 11386（目标已有 6 条）
 
 - **KAT-11244 #7**：`(moved 11386 No. 7 ) (Lury)The shared amount…`
-- **KAT-11386 #7**：`(From 11244 No. 7 ) (Lury)The shared amount…`
-
-注意：`From 11244 No. 7` 与 `moved 11386 No. 7` 里的「7」含义不同——前者是**源 issue 上的条目号**，后者是**目标 issue 上的新条目号**；本例碰巧都是 7。
+- **KAT-11386 #7**：`(Lury)The shared amount…`
 
 ### 单条：11206 #4 → 11325（目标有 #1–#5、#7，缺 #6）
 
@@ -491,7 +473,7 @@ new_number = max(i['index'] for i in items) + 1      # 7 + 1 = 8，不是 len+1=
 ```
 
 - **KAT-11206 #4**：`(moved 11325 No. 8 ) (Lury)Only show one tab "Sold by co-sellers"…`
-- **KAT-11325 #8**：`(From 11206 No. 4 ) (Lury)Only show one tab "Sold by co-sellers"…`
+- **KAT-11325 #8**：`(Lury)Only show one tab "Sold by co-sellers"…`
 
 ### 单条：11111 #7 → 11386（目标有 #1–#10、#11 空）
 
@@ -502,20 +484,20 @@ compute_new_number(target_desc['content'])  # → 11（复用空位）
 ```
 
 - **KAT-11111 #7**：`(moved 11386 No. 11 )`
-- **KAT-11386 #11**：`(From 11111 No. 7 )`（填入原有空 orderedList）
+- **KAT-11386 #11**：填入原有空 orderedList，正文原样
 
 含子弹列表与图片时，目标 #7 的 ADF 顺序：
 
 ```
 listItem
-  [0] paragraph   (From 11075 No. 2 ) please make sure… @Tiancheng Tang
+  [0] paragraph   please make sure… @Tiancheng Tang
   [1] bulletList  If the post media is different…
   [2] mediaSingle Frame 2147238569.png
 ```
 
 ## 相关文件
 
-- **`scripts/jira-item-migrate.py`** — **首选执行入口**（`migrate` / `mark` 子命令）
+- **`scripts/jira-item-migrate.py`** — **首选执行入口**（`migrate` / `mark` / `strip-from` 子命令）
 - `docs/jira-item-migrate-setup.md` — 环境配置与凭据自检
 - `skills/jira-owner-mention.md` — `find_list_item_by_index`（脚本内同名实现）
 - `analyzer/jira_http.py` — `build_jira_session`（附件上传须绕过默认 JSON Content-Type）

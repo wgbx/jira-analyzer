@@ -11,7 +11,7 @@ Jira 列表条目迁移 CLI。
       KAT-11267:3 KAT-11267:5 KAT-11109:2
 
   # 仅更新源 issue 的 (moved …) 标记（内容已在目标 issue 中）
-  python3 scripts/jira-item-migrate.py mark --target KAT-11496 KAT-11349:2 KAT-11349:5
+  python3 scripts/jira-item-migrate.py mark --target KAT-11496 --at 7 KAT-11349:2 KAT-11349:5
 
   # 预览，不写入 Jira
   python3 scripts/jira-item-migrate.py migrate --target KAT-11496 KAT-11267:3 --dry-run
@@ -39,7 +39,6 @@ from analyzer.parser import parse_list_items
 
 TARGET_NUM_RE = re.compile(r'KAT-(\d+)', re.I)
 SOURCE_SPEC_RE = re.compile(r'^KAT-(\d+):(\d+)$', re.I)
-FROM_PATTERN = re.compile(r'\(From\s+(\d+)\s+No\.?\s*(\d+)\s*\)', re.I)
 
 
 def parse_source_spec(spec: str) -> tuple[str, int, str]:
@@ -101,7 +100,18 @@ def get_trailing_media(top_content, ol_node, list_item):
     return trailing
 
 
+def empty_adf_doc():
+    return {'type': 'doc', 'version': 1, 'content': []}
+
+
+def ensure_adf_doc(description):
+    if not description:
+        return empty_adf_doc()
+    return description
+
+
 def compute_new_number(target_description_content, extra_count=0):
+    target_description_content = ensure_adf_doc(target_description_content)
     top = (
         target_description_content
         if isinstance(target_description_content, list)
@@ -169,12 +179,18 @@ def strip_moved_prefix(para):
             break
 
 
-def make_from_prefix(source_number, source_index):
-    return [
-        {'type': 'text', 'text': f'(From {source_number} No.', 'marks': [{'type': 'strong'}]},
-        {'type': 'text', 'text': str(source_index), 'marks': [{'type': 'strong'}]},
-        {'type': 'text', 'text': ') ', 'marks': [{'type': 'strong'}]},
-    ]
+def strip_from_prefix(para):
+    content = para.get('content', [])
+    if not re.search(r'\(From\s+\d+', para_text(para), re.I):
+        return
+    while content:
+        node = content[0]
+        if node.get('type') == 'text' and any(m.get('type') == 'strong' for m in node.get('marks', [])):
+            content.pop(0)
+            if ')' in node.get('text', ''):
+                break
+        else:
+            break
 
 
 def make_moved_prefix(target_num, new_number):
@@ -301,7 +317,7 @@ class JiraMigrator:
             uploaded.append(att['filename'])
         return uploaded
 
-    def build_migrated_list_item(self, source_desc, source_attachments, source_idx, source_num, target_key):
+    def build_migrated_list_item(self, source_desc, source_attachments, source_idx, target_key):
         top = source_desc.get('content', [])
         li, para, ol = find_list_item_by_index(top, source_idx)
         if not li or not para:
@@ -317,25 +333,29 @@ class JiraMigrator:
 
         migrated_para = next(c for c in migrated_li['content'] if c.get('type') == 'paragraph')
         strip_moved_prefix(migrated_para)
-        migrated_para['content'] = make_from_prefix(source_num, source_idx) + migrated_para['content']
+        strip_from_prefix(migrated_para)
 
         uploaded = self.process_media_in_copy(migrated_li, source_attachments, target_key)
         return migrated_li, uploaded
 
-    def lookup_from_mapping(self, target_desc, source_num, source_idx):
-        items, _ = parse_list_items(target_desc)
-        for item in items:
-            m = FROM_PATTERN.search(item['text'])
-            if m and m.group(1) == source_num and int(m.group(2)) == source_idx:
-                return item['index']
-        return None
+    def strip_from_on_target(self, target_key, indices):
+        fields = self.fetch_issue(target_key, fields='description')
+        desc = copy.deepcopy(ensure_adf_doc(fields['description']))
+        top = desc.get('content', [])
+        for idx in indices:
+            _, para, _ = find_list_item_by_index(top, idx)
+            if not para:
+                raise RuntimeError(f'Cannot find target item #{idx} on {target_key}')
+            strip_from_prefix(para)
+            print(f'  {target_key} #{idx}: 已移除 (From …) 前缀')
+        self.put_description(target_key, desc)
 
     def cmd_migrate(self, target_key, sources):
         target_num = target_number(target_key)
         print(f'目标: {target_key}，迁移 {len(sources)} 条')
 
         target_fields = self.fetch_issue(target_key, fields='description')
-        target_desc = copy.deepcopy(target_fields['description'])
+        target_desc = copy.deepcopy(ensure_adf_doc(target_fields['description']))
 
         source_cache = {}
         new_ols = []
@@ -356,7 +376,6 @@ class JiraMigrator:
                 source_cache[source_key]['description'],
                 source_cache[source_key]['attachments'],
                 source_idx,
-                source_num,
                 target_key,
             )
             if uploaded:
@@ -387,20 +406,12 @@ class JiraMigrator:
 
         self._verify_migrate(target_key, sources, source_updates)
 
-    def cmd_mark(self, target_key, sources):
+    def cmd_mark(self, target_key, sources, target_indices):
         target_num = target_number(target_key)
         print(f'目标: {target_key}，仅标记 {len(sources)} 条源条目')
 
-        target_fields = self.fetch_issue(target_key, fields='description')
-        target_desc = target_fields['description']
-
         by_issue = {}
-        for source_key, source_idx, source_num in sources:
-            new_number = self.lookup_from_mapping(target_desc, source_num, source_idx)
-            if new_number is None:
-                raise SystemExit(
-                    f'在 {target_key} 中未找到 (From {source_num} No.{source_idx})，无法确定目标编号'
-                )
+        for (source_key, source_idx, _), new_number in zip(sources, target_indices):
             print(f'  {source_key} #{source_idx} -> (moved {target_num} No. {new_number})')
             by_issue.setdefault(source_key, []).append((source_idx, new_number))
 
@@ -420,13 +431,10 @@ class JiraMigrator:
         target_fields = self.fetch_issue(target_key, fields='description')
         target_items, _ = parse_list_items(target_fields['description'])
 
-        for source_key, source_idx, source_num in sources:
+        for source_key, source_idx, _ in sources:
             new_number = dict(source_updates[source_key])[source_idx]
             item = next((i for i in target_items if i['index'] == new_number), None)
-            ok = (
-                item
-                and re.search(rf'from\s+{source_num}\s+no\.?\s*{source_idx}', item['text'], re.I)
-            )
+            ok = item is not None and not re.search(r'\(From\s+\d+', item['text'], re.I)
             print(f'  {target_key} #{new_number} [{"OK" if ok else "FAIL"}]')
 
         for source_key, updates in source_updates.items():
@@ -439,6 +447,23 @@ class JiraMigrator:
                 print(f'  {source_key} #{source_idx} [{"OK" if ok else "FAIL"}]')
 
 
+def parse_target_index_spec(spec: str) -> tuple[str, int]:
+    m = re.match(r'^KAT-(\d+):(\d+)$', spec.strip(), re.I)
+    if not m:
+        raise argparse.ArgumentTypeError(f'无效目标条目格式: {spec!r}，应为 KAT-12345:1')
+    return f'KAT-{m.group(1)}', int(m.group(2))
+
+
+def parse_indices(value: str) -> list[int]:
+    parts = [p.strip() for p in value.split(',') if p.strip()]
+    if not parts:
+        raise argparse.ArgumentTypeError('--at 不能为空')
+    try:
+        return [int(p) for p in parts]
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f'--at 必须是整数列表: {value!r}') from exc
+
+
 def build_parser():
     parser = argparse.ArgumentParser(description='Jira 列表条目迁移工具')
     parser.add_argument('--dry-run', action='store_true', help='预览操作，不写入 Jira')
@@ -448,9 +473,17 @@ def build_parser():
     migrate_p.add_argument('--target', required=True, help='目标 issue，如 KAT-11496')
     migrate_p.add_argument('sources', nargs='+', type=parse_source_spec, help='源条目，如 KAT-11267:3')
 
-    mark_p = sub.add_parser('mark', help='仅标记：根据目标 issue 的 (From …) 更新源 moved 标记')
+    mark_p = sub.add_parser('mark', help='仅标记：按指定目标编号更新源 moved 标记')
     mark_p.add_argument('--target', required=True, help='目标 issue，如 KAT-11496')
+    mark_p.add_argument(
+        '--at',
+        required=True,
+        help='目标条目编号，多条用逗号分隔，与 sources 一一对应，如 1 或 7,8',
+    )
     mark_p.add_argument('sources', nargs='+', type=parse_source_spec, help='源条目，如 KAT-11349:2')
+
+    strip_p = sub.add_parser('strip-from', help='移除目标 issue 条目上的 (From …) 前缀')
+    strip_p.add_argument('targets', nargs='+', type=parse_target_index_spec, help='目标条目，如 KAT-11751:1')
 
     return parser
 
@@ -465,7 +498,17 @@ def main():
     if args.command == 'migrate':
         migrator.cmd_migrate(args.target.upper(), args.sources)
     elif args.command == 'mark':
-        migrator.cmd_mark(args.target.upper(), args.sources)
+        indices = parse_indices(args.at)
+        if len(indices) != len(args.sources):
+            raise SystemExit(f'--at 条目数 ({len(indices)}) 必须与 sources 数 ({len(args.sources)}) 一致')
+        migrator.cmd_mark(args.target.upper(), args.sources, indices)
+    elif args.command == 'strip-from':
+        by_issue = {}
+        for issue_key, idx in args.targets:
+            by_issue.setdefault(issue_key, []).append(idx)
+        for issue_key, indices in by_issue.items():
+            print(f'移除 {issue_key} 上的 (From …) 前缀:')
+            migrator.strip_from_on_target(issue_key, indices)
 
 
 if __name__ == '__main__':
