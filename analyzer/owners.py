@@ -3,46 +3,38 @@ Owner 识别模块
 
 定义团队成员列表及其关键词映射，
 用于从 Jira 任务描述中自动识别负责人。
+
+新增成员只需在 OWNER_REGISTRY 加一条：
+    'key': {
+        'mentions': ['@Jira 显示名'],   # 必填，与 Jira @mention 完全一致
+        'display': '前端按钮名',         # 必填
+        'color': ('#背景色', '#文字色'), # 可选，不填用默认灰
+    }
 """
 
-# 团队成员及其匹配关键词
-# 每个 key 是内部标识符，value 为 Jira @mention 中的标准写法
-OWNERS = {
-    'jayce': ['@Jayce'],
-    'zhiyong': ['@zhiyong song'],
-    'tiancheng': ['@Tiancheng Tang'],
-    'jun': ['@Jun Li'],
-    'jiaqi': ['@Jiaqi Yu'],
-    'lory': ['@Lory Jiang'],
-    'tianye': ['@Tian Ye'],
-    'fengxia': ['@Feng Xia'],
-    'fred': ['@Fred Steger'],
-    'jiangtian': ['@Jiangtian Hou'],
-    'chenglim': ['@Cheng Lim'],
-    'zhengzhu': ['@Zheng Zhu'],
-    'cici': ['@cici Huang'],
-    'june': ['@June Teng'],
-    'neo': ['@Neo Wang'],
+# 唯一真相来源：所有 owner 信息集中在这里维护
+OWNER_REGISTRY = {
+    'jayce':    {'mentions': ['@Jayce'],         'display': 'Jayce',     'color': ('#dbeafe', '#1e40af')},
+    'zhiyong':  {'mentions': ['@zhiyong song'],  'display': 'Zhiyong',   'color': ('#dcfce7', '#166534')},
+    'tiancheng':{'mentions': ['@Tiancheng Tang'],'display': 'Tiancheng', 'color': ('#f3e8ff', '#6b21a8')},
+    'jun':      {'mentions': ['@Jun Li'],         'display': 'Jun',       'color': ('#fef3c7', '#92400e')},
+    'jiaqi':    {'mentions': ['@Jiaqi Yu'],       'display': 'Jiaqi',     'color': ('#fee2e2', '#991b1b')},
+    'lory':     {'mentions': ['@Lory Jiang'],     'display': 'Lory',      'color': ('#e0f2fe', '#0c4a6e')},
+    'tianye':   {'mentions': ['@Tian Ye'],        'display': 'Tian Ye',   'color': ('#fce7f3', '#9d174d')},
+    'fengxia':  {'mentions': ['@Feng Xia'],       'display': 'Feng Xia',  'color': ('#fef9c3', '#854d0e')},
+    'fred':     {'mentions': ['@Fred Steger'],    'display': 'Fred',      'color': ('#e2e8f0', '#334155')},
+    'jiangtian':{'mentions': ['@Jiangtian Hou'], 'display': 'Joey',      'color': ('#d1fae5', '#065f46')},
+    'chenglim': {'mentions': ['@Cheng Lim'],      'display': 'Cheng Lim', 'color': ('#ede9fe', '#5b21b6')},
+    'zhengzhu': {'mentions': ['@Zheng Zhu'],      'display': 'Zheng Zhu', 'color': ('#ffedd5', '#9a3412')},
+    'cici':     {'mentions': ['@cici Huang'],     'display': 'Cici',      'color': ('#fdf2f8', '#9d174d')},
+    'june':     {'mentions': ['@June Teng'],      'display': 'June',      'color': ('#ecfdf5', '#065f46')},
+    'neo':      {'mentions': ['@Neo Wang'],       'display': 'Neo',       'color': ('#eff6ff', '#1e3a8a')},
+    'dajiang':  {'mentions': ['@Dajiang Zuo'],    'display': 'Dajiang',   'color': ('#faf5ff', '#6b21a8')},
 }
 
-# Owner 在 HTML 中的展示名称
-OWNER_DISPLAY_NAMES = {
-    'jayce': 'Jayce',
-    'zhiyong': 'Zhiyong',
-    'tiancheng': 'Tiancheng',
-    'jun': 'Jun',
-    'jiaqi': 'Jiaqi',
-    'lory': 'Lory',
-    'tianye': 'Tian Ye',
-    'fengxia': 'Feng Xia',
-    'fred': 'Fred',
-    'jiangtian': 'Joey',
-    'chenglim': 'Cheng Lim',
-    'zhengzhu': 'Zheng Zhu',
-    'cici': 'Cici',
-    'june': 'June',
-    'neo': 'Neo',
-}
+# 兼容导出（供现有 import 使用，勿手动编辑）
+OWNERS = {k: v['mentions'] for k, v in OWNER_REGISTRY.items()}
+OWNER_DISPLAY_NAMES = {k: v['display'] for k, v in OWNER_REGISTRY.items()}
 
 
 def detect_owner(text):

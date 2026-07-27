@@ -16,7 +16,7 @@ def _report_timestamp():
 
 from analyzer.config import OUTPUT_DIR
 from analyzer.jira_client import DEFAULT_ACTIVE_STATUSES, is_active_issue_status
-from analyzer.owners import OWNERS, OWNER_DISPLAY_NAMES
+from analyzer.owners import OWNERS, OWNER_DISPLAY_NAMES, OWNER_REGISTRY
 
 
 def _active_statuses_for_analysis(analysis):
@@ -30,34 +30,11 @@ def _counts_as_unprocessed(item, analysis):
     return is_active_issue_status(item.get('issue_status', ''), analysis)
 
 
-# ============================================================
-# Owner 相关的样式和筛选配置（集中管理，便于维护）
-# ============================================================
-
-# Owner 标签颜色：背景色 + 文字色
-OWNER_COLORS = {
-    'jayce': ('#dbeafe', '#1e40af'),
-    'zhiyong': ('#dcfce7', '#166534'),
-    'tiancheng': ('#f3e8ff', '#6b21a8'),
-    'jun': ('#fef3c7', '#92400e'),
-    'jiaqi': ('#fee2e2', '#991b1b'),
-    'lory': ('#e0f2fe', '#0c4a6e'),
-    'tianye': ('#fce7f3', '#9d174d'),
-    'fengxia': ('#fef9c3', '#854d0e'),
-    'fred': ('#e2e8f0', '#334155'),
-    'jiangtian': ('#d1fae5', '#065f46'),
-    'chenglim': ('#ede9fe', '#5b21b6'),
-    'zhengzhu': ('#ffedd5', '#9a3412'),
-    'cici': ('#fdf2f8', '#9d174d'),
-    'june': ('#ecfdf5', '#065f46'),
-    'neo': ('#eff6ff', '#1e3a8a'),
-}
-
 _DEFAULT_OWNER_COLOR = ('#f3f4f6', '#374151')
 
 
 def _owner_color(owner):
-    return OWNER_COLORS.get(owner, _DEFAULT_OWNER_COLOR)
+    return (OWNER_REGISTRY.get(owner) or {}).get('color') or _DEFAULT_OWNER_COLOR
 
 
 def _count_unprocessed_by_owner(analysis):
