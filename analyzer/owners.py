@@ -21,6 +21,8 @@ OWNERS = {
     'chenglim': ['@Cheng Lim'],
     'zhengzhu': ['@Zheng Zhu'],
     'cici': ['@cici Huang'],
+    'june': ['@June Teng'],
+    'neo': ['@Neo Wang'],
 }
 
 # Owner 在 HTML 中的展示名称
@@ -38,6 +40,8 @@ OWNER_DISPLAY_NAMES = {
     'chenglim': 'Cheng Lim',
     'zhengzhu': 'Zheng Zhu',
     'cici': 'Cici',
+    'june': 'June',
+    'neo': 'Neo',
 }
 
 

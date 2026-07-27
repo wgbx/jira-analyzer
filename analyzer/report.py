@@ -49,6 +49,8 @@ OWNER_COLORS = {
     'chenglim': ('#ede9fe', '#5b21b6'),
     'zhengzhu': ('#ffedd5', '#9a3412'),
     'cici': ('#fdf2f8', '#9d174d'),
+    'june': ('#ecfdf5', '#065f46'),
+    'neo': ('#eff6ff', '#1e3a8a'),
 }
 
 _DEFAULT_OWNER_COLOR = ('#f3f4f6', '#374151')
