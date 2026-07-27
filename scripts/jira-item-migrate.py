@@ -361,8 +361,9 @@ class JiraMigrator:
         new_ols = []
         source_updates = {}
 
-        for extra, (source_key, source_idx, source_num) in enumerate(sources):
-            new_number = compute_new_number(target_desc, extra)
+        for source_key, source_idx, source_num in sources:
+            # target_desc 已在循环内 append，勿再传 extra_count，否则会双重递增编号
+            new_number = compute_new_number(target_desc)
             print(f'  {source_key} #{source_idx} -> {target_key} #{new_number}')
 
             if source_key not in source_cache:
