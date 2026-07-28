@@ -307,6 +307,52 @@ def _build_owner_daily_table_rows(daily_stats):
     return ''.join(rows)
 
 
+def _build_owner_processed_item_rows(analysis, base_url):
+    """生成统计页已处理条目明细行（仅 Daily 子任务）。"""
+    rows = []
+    for task_key in sorted(analysis.get('grouped', {}).keys(), reverse=True):
+        task = analysis['grouped'][task_key]
+        if not _is_daily_task(task.get('summary', '')):
+            continue
+        for item in task.get('items', []):
+            if not item.get('is_processed'):
+                continue
+            owners = item.get('owners') or []
+            owners_attr = ','.join(owners)
+            owner_tags = ''.join(
+                f'<span class="owner-tag owner-{o}">{OWNER_DISPLAY_NAMES.get(o, o)}</span>'
+                for o in owners
+            ) or '<span class="owner-tag">未分配</span>'
+            rows.append(
+                f'<li class="processed-item-row" data-owners="{owners_attr}">'
+                f'<div class="processed-item-head">'
+                f'<a class="processed-task-key" href="{base_url}/browse/{task_key}" target="_blank">{task_key}</a>'
+                f'<span class="processed-item-index">{item["index"]}</span>'
+                f'</div>'
+                f'<div class="processed-item-content">{_escape_html(item["text"])}</div>'
+                f'<div class="processed-item-owners">{owner_tags}</div>'
+                f'</li>'
+            )
+    if not rows:
+        return '<li class="processed-item-empty">暂无已处理条目</li>'
+    return ''.join(rows)
+
+
+def _build_owner_filter_buttons(daily_stats):
+    """统计页人员筛选按钮。"""
+    buttons = [
+        '<button class="filter-btn active" data-filter="all" onclick="filterProcessedItems(\'all\')">全部</button>'
+    ]
+    for owner in OWNERS:
+        if owner not in daily_stats:
+            continue
+        buttons.append(
+            f'<button class="filter-btn" data-filter="{owner}" onclick="filterProcessedItems(\'{owner}\')">'
+            f'{OWNER_DISPLAY_NAMES.get(owner, owner)}</button>'
+        )
+    return ''.join(buttons)
+
+
 def _build_filter_js(visible_owners, show_unassigned):
     """生成筛选功能的 JavaScript 代码（仅人员筛选 + URL 同步）。"""
     owner_keys = list(visible_owners)
@@ -987,6 +1033,8 @@ def generate_owner_daily_html_report(
         '<div class="empty-state">暂无 Daily 处理数据</div>'
     )
     table_rows = _build_owner_daily_table_rows(daily_stats)
+    processed_item_rows = _build_owner_processed_item_rows(analysis, base_url)
+    filter_buttons = _build_owner_filter_buttons(daily_stats)
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1015,6 +1063,82 @@ def generate_owner_daily_html_report(
         table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
         th, td {{ padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }}
         th {{ color: #374151; background: #f9fafb; }}
+        .filter-bar {{
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 10px 0 16px;
+        }}
+        .filter-label {{ font-weight: 600; color: #374151; margin-right: 8px; }}
+        .filter-btn {{
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+        .filter-btn:hover {{ border-color: #667eea; color: #667eea; }}
+        .filter-btn.active {{
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }}
+        .processed-item-list {{
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }}
+        .processed-item-row {{
+            border-left: 3px solid #e5e7eb;
+            background: #f9fafb;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 14px;
+        }}
+        .processed-item-head {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }}
+        .processed-task-key {{
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }}
+        .processed-task-key:hover {{ text-decoration: underline; }}
+        .processed-item-index {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }}
+        .processed-item-content {{
+            color: #1f2937;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }}
+        .processed-item-owners {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }}
+        .processed-item-empty {{
+            color: #9ca3af;
+            padding: 12px 4px;
+        }}
         .owner-tag {{ display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }}
 {owner_css}
         .empty-state {{ color: #9ca3af; padding: 16px 0; }}
@@ -1040,7 +1164,41 @@ def generate_owner_daily_html_report(
                 <tbody>{table_rows}</tbody>
             </table>
         </div>
+
+        <div class="panel">
+            <div class="owner-daily-chart-title">已处理条目明细</div>
+            <div class="owner-daily-chart-subtitle">筛选某人可查看他处理过的具体条目；默认显示全部</div>
+            <div class="filter-bar">
+                <span class="filter-label">筛选人员:</span>
+                {filter_buttons}
+            </div>
+            <ul id="processed-items-body" class="processed-item-list">{processed_item_rows}</ul>
+        </div>
     </div>
+    <script>
+        let currentOwnerFilter = 'all';
+        function applyFilterButtonUI(owner) {{
+            document.querySelectorAll('.filter-bar .filter-btn').forEach(btn => {{
+                btn.classList.remove('active');
+            }});
+            const activeBtn = document.querySelector(`.filter-bar .filter-btn[data-filter="${{owner}}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }}
+        function filterProcessedItems(owner) {{
+            currentOwnerFilter = owner;
+            applyFilterButtonUI(owner);
+            const rows = document.querySelectorAll('#processed-items-body .processed-item-row');
+            rows.forEach(row => {{
+                if (owner === 'all') {{
+                    row.style.display = '';
+                    return;
+                }}
+                const owners = row.getAttribute('data-owners') || '';
+                const ownerList = owners ? owners.split(',') : [];
+                row.style.display = ownerList.includes(owner) ? '' : 'none';
+            }});
+        }}
+    </script>
 </body>
 </html>"""
 

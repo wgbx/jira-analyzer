@@ -6,6 +6,7 @@
 """
 
 import argparse
+import importlib
 import os
 import socket
 import sys
@@ -41,6 +42,20 @@ LIVE_RELOAD_SCRIPT = """
 })();
 </script>
 """
+
+
+def _run_analyzer_fresh(*, quiet: bool, open_browser: bool) -> None:
+    """
+    每次调用前重新加载 jira_analyzer 模块。
+
+    这样在 `pnpm run dev` 过程中修改 report.py / jira_analyzer.py 后，
+    下一次定时刷新会自动使用最新代码，无需重启 serve 进程。
+    """
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    module = importlib.import_module('jira_analyzer')
+    module = importlib.reload(module)
+    module.run_analyzer(quiet=quiet, open_browser=open_browser)
 
 
 def find_port(start: int) -> int:
@@ -128,14 +143,11 @@ class ReportHandler(SimpleHTTPRequestHandler):
 
 
 def _refresh_loop(interval: int, stop_event: threading.Event):
-    sys.path.insert(0, str(ROOT))
-    from jira_analyzer import run_analyzer
-
     while not stop_event.is_set():
         if stop_event.wait(interval):
             break
         try:
-            run_analyzer(quiet=True, open_browser=False)
+            _run_analyzer_fresh(quiet=True, open_browser=False)
             print(f'[watch] 报告已更新 ({time.strftime("%H:%M:%S")})')
         except Exception as exc:
             print(f'[watch] 刷新失败: {exc}', file=sys.stderr)
@@ -157,13 +169,10 @@ def main() -> None:
     stop_event = threading.Event()
 
     if args.watch or refresh_interval > 0:
-        sys.path.insert(0, str(ROOT))
-        from jira_analyzer import run_analyzer
-
         print('首次生成报告…')
         report_path = _primary_report_path()
         try:
-            run_analyzer(quiet=False, open_browser=False)
+            _run_analyzer_fresh(quiet=False, open_browser=False)
         except SystemExit:
             raise
         except Exception as exc:
