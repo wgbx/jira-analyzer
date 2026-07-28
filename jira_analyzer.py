@@ -73,6 +73,12 @@ def _print_stats(analysis, label=None):
     print(f"  排期已处理: {analysis.get('scheduled_processed', 0)}")
 
 
+def _favicon_href(output_path: Path) -> str:
+    """计算 favicon 相对路径，兼容 GitHub Pages 子目录部署。"""
+    rel = os.path.relpath(OUTPUT_DIR / 'favicon.svg', output_path.parent).replace('\\', '/')
+    return rel
+
+
 def _nav_href(from_output: str, to_output: str) -> str:
     """计算两份报告之间的相对链接（指向目录，便于 Pages 路径）。"""
     from_dir = Path(from_output).parent
@@ -154,6 +160,7 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
         else:
             daily_stats_path = _daily_stats_output_path(output_path)
             daily_stats_href = './daily-stats.html'
+            favicon_href = _favicon_href(output_path)
             content = generate_html_report(
                 analysis,
                 base_url,
@@ -161,6 +168,7 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
                 label=label,
                 nav_links=_nav_links_for(reports, report_cfg),
                 daily_stats_href=daily_stats_href,
+                favicon_href=favicon_href,
             )
             daily_content = generate_owner_daily_html_report(
                 analysis,
@@ -168,6 +176,7 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
                 parent,
                 label=label,
                 back_href='./',
+                favicon_href=favicon_href,
             )
             with open(daily_stats_path, 'w', encoding='utf-8') as f:
                 f.write(daily_content)
