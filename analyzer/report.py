@@ -289,22 +289,8 @@ def _build_owner_daily_chart(label, daily_stats):
 
 
 def _build_owner_daily_table_rows(daily_stats):
-    if not daily_stats:
-        return '<tr><td colspan="3">暂无数据</td></tr>'
-
-    sorted_stats = sorted(
-        daily_stats.items(),
-        key=lambda item: (item[1]['item_count'], item[1]['daily_count']),
-        reverse=True,
-    )
-    rows = []
-    for rank, (owner, stats) in enumerate(sorted_stats, start=1):
-        display = OWNER_DISPLAY_NAMES.get(owner, owner)
-        rows.append(
-            f"<tr><td>{rank}</td><td><span class=\"owner-tag owner-{owner}\">{display}</span></td>"
-            f"<td>{stats['item_count']}</td></tr>"
-        )
-    return ''.join(rows)
+    # 统计明细面板已下线，保留函数占位避免影响历史引用。
+    return ''
 
 
 def _build_owner_processed_item_rows(analysis, base_url):
@@ -1032,7 +1018,6 @@ def generate_owner_daily_html_report(
     chart_html = _build_owner_daily_chart(label, daily_stats) or (
         '<div class="empty-state">暂无 Daily 处理数据</div>'
     )
-    table_rows = _build_owner_daily_table_rows(daily_stats)
     processed_item_rows = _build_owner_processed_item_rows(analysis, base_url)
     filter_buttons = _build_owner_filter_buttons(daily_stats)
 
@@ -1156,15 +1141,6 @@ def generate_owner_daily_html_report(
             <a class="back-link" href="{back_href}">← 返回主报告</a>
         </div>
         <div class="panel">{chart_html}</div>
-        <div class="panel">
-            <div class="owner-daily-chart-title">统计明细</div>
-            <div class="owner-daily-chart-subtitle">按已处理条目数降序</div>
-            <table>
-                <thead><tr><th>排名</th><th>人员</th><th>已处理条目数</th></tr></thead>
-                <tbody>{table_rows}</tbody>
-            </table>
-        </div>
-
         <div class="panel">
             <div class="owner-daily-chart-title">已处理条目明细</div>
             <div class="owner-daily-chart-subtitle">筛选某人可查看他处理过的具体条目；默认显示全部</div>
