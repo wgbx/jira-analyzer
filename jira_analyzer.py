@@ -29,7 +29,11 @@ from analyzer.config import (
     OUTPUT_DIR,
 )
 from analyzer.jira_client import analyze_issues
-from analyzer.report import generate_html_report, generate_markdown_report
+from analyzer.report import (
+    generate_html_report,
+    generate_markdown_report,
+    generate_owner_daily_html_report,
+)
 
 REPORT_VERSION_FILE = OUTPUT_DIR / 'report-version.json'
 
@@ -65,8 +69,6 @@ def _print_stats(analysis, label=None):
     print(f"  总条目数: {analysis['total']}")
     print(f"  已处理: {analysis['processed']}（{analysis.get('processed_jira', 0)} 个子任务）")
     print(f"  未处理: {analysis['unprocessed']}（{analysis.get('unprocessed_jira', 0)} 个子任务）")
-    print(f"  已排期: {analysis.get('scheduled_unprocessed', 0)}")
-    print(f"  排期已处理: {analysis.get('scheduled_processed', 0)}")
 
 
 def _nav_href(from_output: str, to_output: str) -> str:
@@ -95,6 +97,11 @@ def _resolve_output_path(relative: str) -> Path:
         path = PROJECT_ROOT / path
     path.parent.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def _daily_stats_output_path(main_output_path: Path) -> Path:
+    """独立 Daily 统计页输出路径（与主报告同目录）。"""
+    return main_output_path.parent / 'daily-stats.html'
 
 
 def run_analyzer(config=None, *, quiet=False, open_browser=False):
@@ -143,13 +150,27 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
                 analysis, parent, label=label,
             )
         else:
+            daily_stats_path = _daily_stats_output_path(output_path)
+            daily_stats_href = './daily-stats.html'
             content = generate_html_report(
                 analysis,
                 base_url,
                 parent,
                 label=label,
                 nav_links=_nav_links_for(reports, report_cfg),
+                daily_stats_href=daily_stats_href,
             )
+            daily_content = generate_owner_daily_html_report(
+                analysis,
+                base_url,
+                parent,
+                label=label,
+                back_href='./',
+            )
+            with open(daily_stats_path, 'w', encoding='utf-8') as f:
+                f.write(daily_content)
+            if not quiet:
+                print(f"✅ [{label}] Daily 统计页已生成: {daily_stats_path}")
 
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(content)

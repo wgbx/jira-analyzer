@@ -4,6 +4,7 @@
 将分析结果渲染为 HTML 或 Markdown 格式的可视化报告。
 """
 
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -31,6 +32,38 @@ def _counts_as_unprocessed(item, analysis):
 
 
 _DEFAULT_OWNER_COLOR = ('#f3f4f6', '#374151')
+_DAILY_TASK_RE = re.compile(r'\bDaily\b', re.IGNORECASE)
+
+
+def _is_daily_task(summary):
+    return bool(_DAILY_TASK_RE.search(summary or ''))
+
+
+def _count_daily_processed_by_owner(analysis):
+    """统计 owner 在 Daily 子任务中的已处理量。"""
+    daily_issues = {owner: set() for owner in OWNERS}
+    item_counts = {owner: 0 for owner in OWNERS}
+
+    for task_key, task in analysis.get('grouped', {}).items():
+        if not _is_daily_task(task.get('summary', '')):
+            continue
+        for item in task.get('items', []):
+            if not item.get('is_processed'):
+                continue
+            for owner in (item.get('owners') or []):
+                if owner not in daily_issues:
+                    continue
+                daily_issues[owner].add(task_key)
+                item_counts[owner] += 1
+
+    return {
+        owner: {
+            'daily_count': len(daily_issues[owner]),
+            'item_count': item_counts[owner],
+        }
+        for owner in OWNERS
+        if item_counts[owner] > 0
+    }
 
 
 def _owner_color(owner):
@@ -84,6 +117,10 @@ def _build_owner_css(owners):
     for owner in owners:
         bg, color = _owner_color(owner)
         css += f"        .owner-{owner} {{ background: {bg}; color: {color}; }}\n"
+        css += (
+            f"        .owner-daily-bar.owner-{owner} "
+            f"{{ background: linear-gradient(90deg, {color} 0%, {color}cc 100%); }}\n"
+        )
     # 筛选按钮激活样式
     for owner in owners:
         _, color = _owner_color(owner)
@@ -120,16 +157,11 @@ def _find_all_done_active_tasks(analysis):
 
 
 def _report_items(task_items, analysis):
-    """报告中展示：活跃状态下的未处理 + 全部子任务的排期已处理。"""
-    unprocessed = [
+    """报告中仅展示：活跃状态下的未处理条目。"""
+    return [
         i for i in task_items
         if _counts_as_unprocessed(i, analysis)
     ]
-    processed_scheduled = [
-        i for i in task_items
-        if i.get('is_processed') and i.get('is_scheduled')
-    ]
-    return unprocessed + processed_scheduled
 
 
 def _processed_status_label(item):
@@ -152,13 +184,10 @@ def _escape_html(text):
 def _markdown_item_line(item, include_status=False):
     """Markdown 单条列表项。"""
     owners_str = ' '.join(f'`{OWNER_DISPLAY_NAMES.get(o, o)}`' for o in item['owners'])
-    schedule_str = ''
-    if item.get('is_scheduled') and item.get('scheduled_release'):
-        schedule_str = f' `[已排期: {item["scheduled_release"]}]`'
     status_str = ''
     if include_status and item.get('is_processed'):
         status_str = f' `[{_processed_status_label(item)}]`'
-    line = f"- **第 {item['index']} 点**: {item['text']}{schedule_str}{status_str}"
+    line = f"- **第 {item['index']} 点**: {item['text']}{status_str}"
     if owners_str:
         line += f"  {owners_str}"
     return line + "\n"
@@ -171,16 +200,8 @@ def _render_item_li(item):
         for o in item['owners']
     )
     owners_attr = ','.join(item['owners']) if item['owners'] else ''
-    is_scheduled = item.get('is_scheduled', False)
     is_processed = item.get('is_processed', False)
-    scheduled_attr = 'true' if is_scheduled else 'false'
     processed_attr = 'true' if is_processed else 'false'
-    release_label = item.get('scheduled_release') or ''
-    scheduled_tag = (
-        f'<span class="scheduled-tag">{release_label}</span>'
-        if is_scheduled and release_label
-        else ''
-    )
     status_tag = ''
     if is_processed:
         status_label = _processed_status_label(item)
@@ -190,12 +211,12 @@ def _render_item_li(item):
     item_class = 'item item-row' + (' item-processed' if is_processed else '')
 
     return f"""
-                <li class="{item_class}" data-owners="{owners_attr}" data-scheduled="{scheduled_attr}" data-processed="{processed_attr}">
+                <li class="{item_class}" data-owners="{owners_attr}" data-processed="{processed_attr}">
                     <span class="item-index">{item['index']}</span>
                     <span class="item-content">
                         <span class="item-text">{safe_text}</span>
                         <div class="item-meta">
-                            {scheduled_tag}{status_tag}
+                            {status_tag}
                             <div class="item-owners">{owner_tags}</div>
                         </div>
                     </span>
@@ -233,8 +254,61 @@ def _build_filter_buttons(visible_owners, show_unassigned, owner_counts):
     return '\n            '.join(buttons)
 
 
+def _build_owner_daily_chart(label, daily_stats):
+    """生成 owner 季度 Daily 处理量柱状图。"""
+    if not daily_stats:
+        return ''
+
+    rows = []
+    max_items = max(stats['item_count'] for stats in daily_stats.values())
+    sorted_stats = sorted(
+        daily_stats.items(),
+        key=lambda item: (item[1]['item_count'], item[1]['daily_count']),
+        reverse=True,
+    )
+
+    for owner, stats in sorted_stats:
+        display = OWNER_DISPLAY_NAMES.get(owner, owner)
+        item_count = stats['item_count']
+        width_pct = (item_count / max_items) * 100 if max_items else 0
+        rows.append(
+            f'<div class="owner-daily-row" data-owner="{owner}">'
+            f'<div class="owner-daily-name"><span class="owner-tag owner-{owner}">{display}</span></div>'
+            f'<div class="owner-daily-bar-track"><div class="owner-daily-bar owner-{owner}" style="width: {width_pct:.2f}%"></div></div>'
+            f'<div class="owner-daily-value">{item_count} 条</div>'
+            f'</div>'
+        )
+
+    return (
+        f'<div class="owner-daily-chart" id="owner-daily-chart">'
+        f'<div class="owner-daily-chart-title">{label} 季度 Daily 处理量</div>'
+        f'<div class="owner-daily-chart-subtitle">按已处理条目数排序（多人协作条目会分别计入）</div>'
+        f'<div class="owner-daily-chart-body">{"".join(rows)}</div>'
+        f'</div>'
+    )
+
+
+def _build_owner_daily_table_rows(daily_stats):
+    if not daily_stats:
+        return '<tr><td colspan="3">暂无数据</td></tr>'
+
+    sorted_stats = sorted(
+        daily_stats.items(),
+        key=lambda item: (item[1]['item_count'], item[1]['daily_count']),
+        reverse=True,
+    )
+    rows = []
+    for rank, (owner, stats) in enumerate(sorted_stats, start=1):
+        display = OWNER_DISPLAY_NAMES.get(owner, owner)
+        rows.append(
+            f"<tr><td>{rank}</td><td><span class=\"owner-tag owner-{owner}\">{display}</span></td>"
+            f"<td>{stats['item_count']}</td></tr>"
+        )
+    return ''.join(rows)
+
+
 def _build_filter_js(visible_owners, show_unassigned):
-    """生成筛选功能的 JavaScript 代码（人员 + 排期状态）"""
+    """生成筛选功能的 JavaScript 代码（仅人员筛选 + URL 同步）。"""
     owner_keys = list(visible_owners)
     count_keys = ['all'] + owner_keys + (['unassigned'] if show_unassigned else [])
     counts_init = ', '.join([f'{k}: 0' for k in count_keys])
@@ -266,13 +340,11 @@ def _build_filter_js(visible_owners, show_unassigned):
     return """
     <script>
         let currentOwnerFilter = 'all';
-        let currentScheduleFilter = 'all';
         let currentSort = 'key-desc';
         let currentProjectFilter = null;
 
-        const URL_DEFAULTS = { sort: 'key-desc', schedule: 'all', owner: 'all' };
+        const URL_DEFAULTS = { sort: 'key-desc', owner: 'all' };
         const VALID_SORTS = ['key-desc', 'key-asc', 'count-desc', 'count-asc'];
-        const VALID_SCHEDULES = ['all', 'scheduled', 'unscheduled', 'scheduled-processed'];
 
         function parseProjectParam(value) {
             if (!value) return null;
@@ -289,8 +361,6 @@ def _build_filter_js(visible_owners, show_unassigned):
             const params = new URLSearchParams(window.location.search);
             if (currentSort === URL_DEFAULTS.sort) params.delete('sort');
             else params.set('sort', currentSort);
-            if (currentScheduleFilter === URL_DEFAULTS.schedule) params.delete('schedule');
-            else params.set('schedule', currentScheduleFilter);
             if (currentOwnerFilter === URL_DEFAULTS.owner) params.delete('owner');
             else params.set('owner', currentOwnerFilter);
             if (!currentProjectFilter) params.delete('project');
@@ -300,29 +370,12 @@ def _build_filter_js(visible_owners, show_unassigned):
             history.replaceState(null, '', newUrl);
         }
 
-        function matchesScheduleFilter(processed, scheduled) {
-            if (currentScheduleFilter === 'all') {
-                return !processed;
-            }
-            if (currentScheduleFilter === 'scheduled') {
-                return scheduled && !processed;
-            }
-            if (currentScheduleFilter === 'unscheduled') {
-                return !scheduled && !processed;
-            }
-            if (currentScheduleFilter === 'scheduled-processed') {
-                return scheduled && processed;
-            }
-            return false;
-        }
-
         function updateCounts() {
             const allItems = document.querySelectorAll('li.item-row');
             const counts = { """ + counts_init + """ };
             allItems.forEach(li => {
-                const scheduled = li.getAttribute('data-scheduled') === 'true';
                 const processed = li.getAttribute('data-processed') === 'true';
-                if (!matchesScheduleFilter(processed, scheduled)) return;
+                if (processed) return;
                 counts.all++;
                 const owners = li.getAttribute('data-owners');
 """ + count_loop + """
@@ -337,8 +390,6 @@ def _build_filter_js(visible_owners, show_unassigned):
             const allItems = document.querySelectorAll('li.item-row');
             allItems.forEach(li => {
                 const owners = li.getAttribute('data-owners');
-                const scheduled = li.getAttribute('data-scheduled') === 'true';
-                const processed = li.getAttribute('data-processed') === 'true';
 
                 let showOwner = false;
                 if (currentOwnerFilter === 'all') {
@@ -349,8 +400,7 @@ def _build_filter_js(visible_owners, show_unassigned):
                     showOwner = owners && owners.split(',').includes(currentOwnerFilter);
                 }
 
-                const showSchedule = matchesScheduleFilter(processed, scheduled);
-                li.style.display = showOwner && showSchedule ? '' : 'none';
+                li.style.display = showOwner ? '' : 'none';
             });
 
             document.querySelectorAll('.task-section').forEach(section => {
@@ -379,26 +429,6 @@ def _build_filter_js(visible_owners, show_unassigned):
             }
         }
 
-        function applyScheduleFilterUI(filter) {
-            document.querySelectorAll('.schedule-bar .filter-btn').forEach(btn => {
-                btn.classList.remove(
-                    'active', 'active-scheduled', 'active-unscheduled', 'active-scheduled-processed'
-                );
-            });
-            const activeBtn = document.querySelector(`.schedule-bar .filter-btn[data-schedule="${filter}"]`);
-            if (activeBtn) {
-                if (filter === 'all') {
-                    activeBtn.classList.add('active');
-                } else if (filter === 'scheduled') {
-                    activeBtn.classList.add('active-scheduled');
-                } else if (filter === 'scheduled-processed') {
-                    activeBtn.classList.add('active-scheduled-processed');
-                } else {
-                    activeBtn.classList.add('active-unscheduled');
-                }
-            }
-        }
-
         function applySortUI(sortBy) {
             document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.querySelector(`.sort-btn[data-sort="${sortBy}"]`);
@@ -410,16 +440,6 @@ def _build_filter_js(visible_owners, show_unassigned):
             if (!btn) return;
             currentOwnerFilter = filter;
             applyOwnerFilterUI(filter);
-            if (!options.skipApply) {
-                applyFilters();
-                if (!options.skipUrl) syncUrlParams();
-            }
-        }
-
-        function filterSchedule(filter, options = {}) {
-            if (!VALID_SCHEDULES.includes(filter)) return;
-            currentScheduleFilter = filter;
-            applyScheduleFilterUI(filter);
             if (!options.skipApply) {
                 applyFilters();
                 if (!options.skipUrl) syncUrlParams();
@@ -459,13 +479,6 @@ def _build_filter_js(visible_owners, show_unassigned):
         function initFromUrl() {
             const params = new URLSearchParams(window.location.search);
             currentProjectFilter = parseProjectParam(params.get('project'));
-
-            const schedule = params.get('schedule');
-            if (schedule && VALID_SCHEDULES.includes(schedule)) {
-                filterSchedule(schedule, { skipApply: true, skipUrl: true });
-            } else {
-                applyScheduleFilterUI(currentScheduleFilter);
-            }
 
             const owner = params.get('owner');
             if (owner) {
@@ -517,6 +530,7 @@ def generate_html_report(
     *,
     label='Q3',
     nav_links=None,
+    daily_stats_href=None,
 ):
     """
     生成 HTML 格式的分析报告
@@ -536,13 +550,21 @@ def generate_html_report(
     """
     now = _report_timestamp()
     owner_counts = _count_unprocessed_by_owner(analysis)
+    daily_stats = _count_daily_processed_by_owner(analysis)
     visible_owners = _visible_filter_owners(analysis)
     show_unassigned = owner_counts.get('unassigned', 0) > 0
-    owner_css = _build_owner_css(_owners_needing_css(analysis, visible_owners))
+    style_owners = _owners_needing_css(analysis, visible_owners)
+    style_owners.update(daily_stats.keys())
+    owner_css = _build_owner_css(style_owners)
     filter_buttons = _build_filter_buttons(visible_owners, show_unassigned, owner_counts)
     filter_js = _build_filter_js(visible_owners, show_unassigned)
     title = f'Jira {label} 任务分析报告'
     nav_html = _build_report_nav(nav_links, label)
+    header_daily_link = ''
+    if daily_stats_href and daily_stats:
+        header_daily_link = (
+            f'<a class="header-stats-link" href="{daily_stats_href}">统计</a>'
+        )
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -564,6 +586,23 @@ def generate_html_report(
             padding: 30px;
             border-radius: 12px;
             margin-bottom: 30px;
+            position: relative;
+        }}
+        .header-top {{
+            margin-bottom: 4px;
+        }}
+        .header-stats-link {{
+            position: absolute;
+            right: 20px;
+            top: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            white-space: nowrap;
+        }}
+        .header-stats-link:hover {{
+            text-decoration: underline;
         }}
         .report-nav {{
             display: flex;
@@ -602,15 +641,19 @@ def generate_html_report(
         }}
         .stats {{
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
             margin-bottom: 30px;
         }}
         @media (max-width: 1100px) {{
-            .stats {{ grid-template-columns: repeat(3, 1fr); }}
+            .stats {{ grid-template-columns: repeat(2, 1fr); }}
         }}
         @media (max-width: 700px) {{
-            .stats {{ grid-template-columns: repeat(2, 1fr); }}
+            .stats {{ grid-template-columns: repeat(1, 1fr); }}
+            .header-stats-link {{
+                right: 16px;
+                top: 12px;
+            }}
         }}
         .stat-card {{
             background: white;
@@ -625,8 +668,6 @@ def generate_html_report(
         .total {{ color: #667eea; }}
         .processed {{ color: #10b981; }}
         .unprocessed {{ color: #ef4444; }}
-        .scheduled {{ color: #0d9488; }}
-        .scheduled-processed {{ color: #6366f1; }}
         .task-section {{
             background: white;
             border-radius: 12px;
@@ -683,18 +724,6 @@ def generate_html_report(
         }}
         .item-meta {{ margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }}
         .item-owners {{ display: flex; gap: 6px; flex-wrap: wrap; }}
-        .scheduled-tag {{
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            background: #ccfbf1;
-            color: #0f766e;
-        }}
-        .filter-btn.active-scheduled {{ background: #0d9488; border-color: #0d9488; color: white; }}
-        .filter-btn.active-unscheduled {{ background: #f59e0b; border-color: #f59e0b; color: white; }}
-        .filter-btn.active-scheduled-processed {{ background: #6366f1; border-color: #6366f1; color: white; }}
         .item-processed {{
             opacity: 0.85;
             border-left-color: #c7d2fe;
@@ -717,7 +746,7 @@ def generate_html_report(
             font-weight: 500;
         }}
 {owner_css}
-        .schedule-bar, .owner-bar {{
+        .owner-bar {{
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -829,7 +858,9 @@ def generate_html_report(
 <body>
     <div class="container">
         <div class="header">
-            {nav_html}
+            <div class="header-top">
+                {nav_html}{header_daily_link}
+            </div>
             <h1>{title}</h1>
             <p class="header-subtitle">{parent_issue} 所有项目概览</p>
             <p class="header-updated">数据更新到 {now}（UTC+8）</p>
@@ -849,14 +880,6 @@ def generate_html_report(
                 <div class="stat-label">未处理</div>
                 <div class="stat-number unprocessed">{analysis['unprocessed']}</div>
                 <div class="stat-sublabel">{analysis.get('unprocessed_jira', 0)} 个子任务</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">已排期</div>
-                <div class="stat-number scheduled">{analysis.get('scheduled_unprocessed', 0)}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">排期已处理</div>
-                <div class="stat-number scheduled-processed">{analysis.get('scheduled_processed', 0)}</div>
             </div>
         </div>
 """
@@ -891,21 +914,13 @@ def generate_html_report(
             <button class="sort-btn" data-sort="count-asc" onclick="sortSections('count-asc')">未处理数量 ↑</button>
         </div>
 
-        <div class="schedule-bar">
-            <span class="filter-label">排期状态:</span>
-            <button class="filter-btn active" data-schedule="all" onclick="filterSchedule('all')">全部</button>
-            <button class="filter-btn" data-schedule="scheduled" onclick="filterSchedule('scheduled')">已排期</button>
-            <button class="filter-btn" data-schedule="scheduled-processed" onclick="filterSchedule('scheduled-processed')">排期已处理</button>
-            <button class="filter-btn" data-schedule="unscheduled" onclick="filterSchedule('unscheduled')">未排期</button>
-        </div>
-
         <div class="owner-bar">
             <span class="filter-label">筛选人员:</span>
             {filter_buttons}
         </div>
 """
 
-    # 渲染条目（未处理 + 排期已处理）
+    # 渲染条目（仅未处理）
     html += '    <div id="task-container" class="task-container">' + "\n"
     has_any_items = False
     if analysis['grouped']:
@@ -917,19 +932,8 @@ def generate_html_report(
             has_any_items = True
 
             unprocessed_count = sum(1 for i in display_items if not i.get('is_processed'))
-            scheduled_unprocessed_count = sum(
-                1 for i in display_items
-                if not i.get('is_processed') and i.get('is_scheduled')
-            )
-            scheduled_done_count = sum(
-                1 for i in display_items if i.get('is_processed') and i.get('is_scheduled')
-            )
             summary_display = task['summary'][:50] + ('...' if len(task['summary']) > 50 else '')
-            count_hint = (
-                f"{unprocessed_count} 未处理 · "
-                f"{scheduled_unprocessed_count} 已排期 · "
-                f"{scheduled_done_count} 排期已处理"
-            )
+            count_hint = f"{unprocessed_count} 未处理"
 
             html += f"""
         <div class="task-section" data-key="{task_key}" data-count="{unprocessed_count}">
@@ -967,6 +971,80 @@ def generate_html_report(
     return html
 
 
+def generate_owner_daily_html_report(
+    analysis,
+    base_url,
+    parent_issue='KAT-11542',
+    *,
+    label='Q3',
+    back_href='./',
+):
+    """生成独立的季度 Daily 统计页。"""
+    now = _report_timestamp()
+    daily_stats = _count_daily_processed_by_owner(analysis)
+    owner_css = _build_owner_css(set(daily_stats.keys()))
+    chart_html = _build_owner_daily_chart(label, daily_stats) or (
+        '<div class="empty-state">暂无 Daily 处理数据</div>'
+    )
+    table_rows = _build_owner_daily_table_rows(daily_stats)
+
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira {label} Daily 处理量统计</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; padding: 20px; }}
+        .container {{ max-width: 1100px; margin: 0 auto; }}
+        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px 28px; border-radius: 12px; margin-bottom: 20px; }}
+        .header h1 {{ font-size: 24px; }}
+        .header p {{ margin-top: 8px; opacity: 0.92; }}
+        .back-link {{ display: inline-block; margin-top: 12px; color: white; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.7); }}
+        .back-link:hover {{ opacity: 0.9; }}
+        .panel {{ background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
+        .owner-daily-chart-title {{ font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; }}
+        .owner-daily-chart-subtitle {{ font-size: 12px; color: #6b7280; margin-bottom: 14px; }}
+        .owner-daily-chart-body {{ display: flex; flex-direction: column; gap: 10px; }}
+        .owner-daily-row {{ display: grid; grid-template-columns: 120px 1fr 150px; align-items: center; gap: 10px; padding: 6px 0; border-radius: 8px; }}
+        .owner-daily-name {{ display: flex; justify-content: flex-start; }}
+        .owner-daily-bar-track {{ position: relative; height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }}
+        .owner-daily-bar {{ height: 100%; border-radius: 999px; min-width: 4px; }}
+        .owner-daily-value {{ font-size: 13px; color: #374151; font-weight: 600; text-align: right; white-space: nowrap; }}
+        table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
+        th, td {{ padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }}
+        th {{ color: #374151; background: #f9fafb; }}
+        .owner-tag {{ display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }}
+{owner_css}
+        .empty-state {{ color: #9ca3af; padding: 16px 0; }}
+        @media (max-width: 780px) {{
+            .owner-daily-row {{ grid-template-columns: 1fr; gap: 6px; }}
+            .owner-daily-value {{ text-align: left; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{label} 季度 Daily 处理量统计</h1>
+            <p>父任务：{parent_issue} · 数据更新到 {now}（UTC+8）</p>
+            <a class="back-link" href="{back_href}">← 返回主报告</a>
+        </div>
+        <div class="panel">{chart_html}</div>
+        <div class="panel">
+            <div class="owner-daily-chart-title">统计明细</div>
+            <div class="owner-daily-chart-subtitle">按已处理条目数降序</div>
+            <table>
+                <thead><tr><th>排名</th><th>人员</th><th>已处理条目数</th></tr></thead>
+                <tbody>{table_rows}</tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
 def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
     """
     生成 Markdown 格式的分析报告
@@ -990,8 +1068,6 @@ def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
 | **总条目数** | {analysis['total']} |
 | **已处理** | {analysis['processed']}（{analysis.get('processed_jira', 0)} 个子任务） |
 | **未处理** | {analysis['unprocessed']}（{analysis.get('unprocessed_jira', 0)} 个子任务） |
-| **已排期** | {analysis.get('scheduled_unprocessed', 0)} |
-| **排期已处理** | {analysis.get('scheduled_processed', 0)} |
 
 ---
 
@@ -1024,23 +1100,6 @@ def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
                 md += _markdown_item_line(item)
             md += "\n"
 
-        md += "## 排期已处理\n\n"
-        has_scheduled_processed = False
-        for task_key in sorted(analysis['grouped'].keys(), reverse=True):
-            task = analysis['grouped'][task_key]
-            done_scheduled = [
-                i for i in task['items']
-                if i.get('is_processed') and i.get('is_scheduled')
-            ]
-            if not done_scheduled:
-                continue
-            has_scheduled_processed = True
-            md += f"### [{task_key}] {task['summary']}\n\n"
-            for item in done_scheduled:
-                md += _markdown_item_line(item, include_status=True)
-            md += "\n"
-        if not has_scheduled_processed:
-            md += "（无）\n\n"
     else:
         md += "🎉 太棒了！没有未处理的项目。\n"
 

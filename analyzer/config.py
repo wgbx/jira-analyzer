@@ -62,7 +62,18 @@ def get_reports(config):
     """
     reports = config.get('reports')
     if reports:
-        return reports
+        active_reports = []
+        for report in reports:
+            enabled = report.get('enabled')
+            if enabled is None:
+                # 兼容历史配置：季度中期默认只展示当前季度，
+                # 未显式配置时自动禁用上一季度 Q2；临时回看时把 enabled 改为 true。
+                report_id = str(report.get('id', '')).lower()
+                report_label = str(report.get('label', '')).upper()
+                enabled = not (report_id == 'q2' or report_label == 'Q2')
+            if enabled:
+                active_reports.append(report)
+        return active_reports
     return [{
         'id': 'default',
         'label': 'Q3',

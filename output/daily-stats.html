@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Q3 Daily 处理量统计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px 28px; border-radius: 12px; margin-bottom: 20px; }
+        .header h1 { font-size: 24px; }
+        .header p { margin-top: 8px; opacity: 0.92; }
+        .back-link { display: inline-block; margin-top: 12px; color: white; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.7); }
+        .back-link:hover { opacity: 0.9; }
+        .panel { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .owner-daily-chart-title { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+        .owner-daily-chart-subtitle { font-size: 12px; color: #6b7280; margin-bottom: 14px; }
+        .owner-daily-chart-body { display: flex; flex-direction: column; gap: 10px; }
+        .owner-daily-row { display: grid; grid-template-columns: 120px 1fr 150px; align-items: center; gap: 10px; padding: 6px 0; border-radius: 8px; }
+        .owner-daily-name { display: flex; justify-content: flex-start; }
+        .owner-daily-bar-track { position: relative; height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+        .owner-daily-bar { height: 100%; border-radius: 999px; min-width: 4px; }
+        .owner-daily-value { font-size: 13px; color: #374151; font-weight: 600; text-align: right; white-space: nowrap; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        th { color: #374151; background: #f9fafb; }
+        .owner-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+        .owner-jiangtian { background: #d1fae5; color: #065f46; }
+        .owner-daily-bar.owner-jiangtian { background: linear-gradient(90deg, #065f46 0%, #065f46cc 100%); }
+        .owner-chenglim { background: #ede9fe; color: #5b21b6; }
+        .owner-daily-bar.owner-chenglim { background: linear-gradient(90deg, #5b21b6 0%, #5b21b6cc 100%); }
+        .owner-tiancheng { background: #f3e8ff; color: #6b21a8; }
+        .owner-daily-bar.owner-tiancheng { background: linear-gradient(90deg, #6b21a8 0%, #6b21a8cc 100%); }
+        .owner-jayce { background: #dbeafe; color: #1e40af; }
+        .owner-daily-bar.owner-jayce { background: linear-gradient(90deg, #1e40af 0%, #1e40afcc 100%); }
+        .owner-lory { background: #e0f2fe; color: #0c4a6e; }
+        .owner-daily-bar.owner-lory { background: linear-gradient(90deg, #0c4a6e 0%, #0c4a6ecc 100%); }
+        .owner-cici { background: #fdf2f8; color: #9d174d; }
+        .owner-daily-bar.owner-cici { background: linear-gradient(90deg, #9d174d 0%, #9d174dcc 100%); }
+        .owner-jun { background: #fef3c7; color: #92400e; }
+        .owner-daily-bar.owner-jun { background: linear-gradient(90deg, #92400e 0%, #92400ecc 100%); }
+        .owner-jiaqi { background: #fee2e2; color: #991b1b; }
+        .owner-daily-bar.owner-jiaqi { background: linear-gradient(90deg, #991b1b 0%, #991b1bcc 100%); }
+        .owner-fengxia { background: #fef9c3; color: #854d0e; }
+        .owner-daily-bar.owner-fengxia { background: linear-gradient(90deg, #854d0e 0%, #854d0ecc 100%); }
+        .owner-june { background: #ecfdf5; color: #065f46; }
+        .owner-daily-bar.owner-june { background: linear-gradient(90deg, #065f46 0%, #065f46cc 100%); }
+        .owner-dajiang { background: #faf5ff; color: #6b21a8; }
+        .owner-daily-bar.owner-dajiang { background: linear-gradient(90deg, #6b21a8 0%, #6b21a8cc 100%); }
+        .owner-tianye { background: #fce7f3; color: #9d174d; }
+        .owner-daily-bar.owner-tianye { background: linear-gradient(90deg, #9d174d 0%, #9d174dcc 100%); }
+        .owner-neo { background: #eff6ff; color: #1e3a8a; }
+        .owner-daily-bar.owner-neo { background: linear-gradient(90deg, #1e3a8a 0%, #1e3a8acc 100%); }
+        .owner-zhiyong { background: #dcfce7; color: #166534; }
+        .owner-daily-bar.owner-zhiyong { background: linear-gradient(90deg, #166534 0%, #166534cc 100%); }
+        .filter-btn.active-jiangtian { background: #065f46; border-color: #065f46; color: white; }
+        .filter-btn.active-chenglim { background: #5b21b6; border-color: #5b21b6; color: white; }
+        .filter-btn.active-tiancheng { background: #6b21a8; border-color: #6b21a8; color: white; }
+        .filter-btn.active-jayce { background: #1e40af; border-color: #1e40af; color: white; }
+        .filter-btn.active-lory { background: #0c4a6e; border-color: #0c4a6e; color: white; }
+        .filter-btn.active-cici { background: #9d174d; border-color: #9d174d; color: white; }
+        .filter-btn.active-jun { background: #92400e; border-color: #92400e; color: white; }
+        .filter-btn.active-jiaqi { background: #991b1b; border-color: #991b1b; color: white; }
+        .filter-btn.active-fengxia { background: #854d0e; border-color: #854d0e; color: white; }
+        .filter-btn.active-june { background: #065f46; border-color: #065f46; color: white; }
+        .filter-btn.active-dajiang { background: #6b21a8; border-color: #6b21a8; color: white; }
+        .filter-btn.active-tianye { background: #9d174d; border-color: #9d174d; color: white; }
+        .filter-btn.active-neo { background: #1e3a8a; border-color: #1e3a8a; color: white; }
+        .filter-btn.active-zhiyong { background: #166534; border-color: #166534; color: white; }
+        .filter-btn.active-unassigned {{ background: #6b7280; border-color: #6b7280; color: white; }}
+
+        .empty-state { color: #9ca3af; padding: 16px 0; }
+        @media (max-width: 780px) {
+            .owner-daily-row { grid-template-columns: 1fr; gap: 6px; }
+            .owner-daily-value { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Q3 季度 Daily 处理量统计</h1>
+            <p>父任务：KAT-11542 · 数据更新到 2026-07-28 15:53:15（UTC+8）</p>
+            <a class="back-link" href="./">← 返回主报告</a>
+        </div>
+        <div class="panel"><div class="owner-daily-chart" id="owner-daily-chart"><div class="owner-daily-chart-title">Q3 季度 Daily 处理量</div><div class="owner-daily-chart-subtitle">按已处理条目数排序（多人协作条目会分别计入）</div><div class="owner-daily-chart-body"><div class="owner-daily-row" data-owner="jiaqi"><div class="owner-daily-name"><span class="owner-tag owner-jiaqi">Jiaqi</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-jiaqi" style="width: 100.00%"></div></div><div class="owner-daily-value">28 条</div></div><div class="owner-daily-row" data-owner="zhiyong"><div class="owner-daily-name"><span class="owner-tag owner-zhiyong">Zhiyong</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-zhiyong" style="width: 60.71%"></div></div><div class="owner-daily-value">17 条</div></div><div class="owner-daily-row" data-owner="lory"><div class="owner-daily-name"><span class="owner-tag owner-lory">Lory</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-lory" style="width: 57.14%"></div></div><div class="owner-daily-value">16 条</div></div><div class="owner-daily-row" data-owner="jun"><div class="owner-daily-name"><span class="owner-tag owner-jun">Jun</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-jun" style="width: 46.43%"></div></div><div class="owner-daily-value">13 条</div></div><div class="owner-daily-row" data-owner="tiancheng"><div class="owner-daily-name"><span class="owner-tag owner-tiancheng">Tiancheng</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-tiancheng" style="width: 42.86%"></div></div><div class="owner-daily-value">12 条</div></div><div class="owner-daily-row" data-owner="cici"><div class="owner-daily-name"><span class="owner-tag owner-cici">Cici</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-cici" style="width: 32.14%"></div></div><div class="owner-daily-value">9 条</div></div><div class="owner-daily-row" data-owner="jayce"><div class="owner-daily-name"><span class="owner-tag owner-jayce">Jayce</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-jayce" style="width: 21.43%"></div></div><div class="owner-daily-value">6 条</div></div><div class="owner-daily-row" data-owner="tianye"><div class="owner-daily-name"><span class="owner-tag owner-tianye">Tian Ye</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-tianye" style="width: 17.86%"></div></div><div class="owner-daily-value">5 条</div></div><div class="owner-daily-row" data-owner="june"><div class="owner-daily-name"><span class="owner-tag owner-june">June</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-june" style="width: 17.86%"></div></div><div class="owner-daily-value">5 条</div></div><div class="owner-daily-row" data-owner="neo"><div class="owner-daily-name"><span class="owner-tag owner-neo">Neo</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-neo" style="width: 14.29%"></div></div><div class="owner-daily-value">4 条</div></div><div class="owner-daily-row" data-owner="fengxia"><div class="owner-daily-name"><span class="owner-tag owner-fengxia">Feng Xia</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-fengxia" style="width: 10.71%"></div></div><div class="owner-daily-value">3 条</div></div><div class="owner-daily-row" data-owner="jiangtian"><div class="owner-daily-name"><span class="owner-tag owner-jiangtian">Joey</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-jiangtian" style="width: 7.14%"></div></div><div class="owner-daily-value">2 条</div></div><div class="owner-daily-row" data-owner="dajiang"><div class="owner-daily-name"><span class="owner-tag owner-dajiang">Dajiang</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-dajiang" style="width: 7.14%"></div></div><div class="owner-daily-value">2 条</div></div><div class="owner-daily-row" data-owner="chenglim"><div class="owner-daily-name"><span class="owner-tag owner-chenglim">Cheng Lim</span></div><div class="owner-daily-bar-track"><div class="owner-daily-bar owner-chenglim" style="width: 3.57%"></div></div><div class="owner-daily-value">1 条</div></div></div></div></div>
+        <div class="panel">
+            <div class="owner-daily-chart-title">统计明细</div>
+            <div class="owner-daily-chart-subtitle">按已处理条目数降序</div>
+            <table>
+                <thead><tr><th>排名</th><th>人员</th><th>已处理条目数</th></tr></thead>
+                <tbody><tr><td>1</td><td><span class="owner-tag owner-jiaqi">Jiaqi</span></td><td>28</td></tr><tr><td>2</td><td><span class="owner-tag owner-zhiyong">Zhiyong</span></td><td>17</td></tr><tr><td>3</td><td><span class="owner-tag owner-lory">Lory</span></td><td>16</td></tr><tr><td>4</td><td><span class="owner-tag owner-jun">Jun</span></td><td>13</td></tr><tr><td>5</td><td><span class="owner-tag owner-tiancheng">Tiancheng</span></td><td>12</td></tr><tr><td>6</td><td><span class="owner-tag owner-cici">Cici</span></td><td>9</td></tr><tr><td>7</td><td><span class="owner-tag owner-jayce">Jayce</span></td><td>6</td></tr><tr><td>8</td><td><span class="owner-tag owner-tianye">Tian Ye</span></td><td>5</td></tr><tr><td>9</td><td><span class="owner-tag owner-june">June</span></td><td>5</td></tr><tr><td>10</td><td><span class="owner-tag owner-neo">Neo</span></td><td>4</td></tr><tr><td>11</td><td><span class="owner-tag owner-fengxia">Feng Xia</span></td><td>3</td></tr><tr><td>12</td><td><span class="owner-tag owner-jiangtian">Joey</span></td><td>2</td></tr><tr><td>13</td><td><span class="owner-tag owner-dajiang">Dajiang</span></td><td>2</td></tr><tr><td>14</td><td><span class="owner-tag owner-chenglim">Cheng Lim</span></td><td>1</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

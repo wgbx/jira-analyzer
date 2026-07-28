@@ -24,7 +24,10 @@
   },
   "filters": {
     "subtasks_scope": "all",
-    "active_statuses": ["待办", "正在进行"],
+    "active_statuses": [
+      "待办",
+      "正在进行"
+    ],
     "exclude_keywords": [
       "(Done)",
       "(done)",
