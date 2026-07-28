@@ -680,6 +680,7 @@ def generate_html_report(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon.svg">
     <title>{title}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -1144,6 +1145,7 @@ def generate_owner_daily_html_report(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon.svg">
     <title>Jira {label} Daily 处理量统计</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
