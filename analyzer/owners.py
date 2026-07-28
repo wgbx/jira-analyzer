@@ -30,6 +30,7 @@ OWNER_REGISTRY = {
     'june':     {'mentions': ['@June Teng'],      'display': 'June',      'color': ('#ecfdf5', '#065f46')},
     'neo':      {'mentions': ['@Neo Wang'],       'display': 'Neo',       'color': ('#eff6ff', '#1e3a8a')},
     'dajiang':  {'mentions': ['@Dajiang Zuo'],    'display': 'Dajiang',   'color': ('#faf5ff', '#6b21a8')},
+    'pengfei':   {'mentions': ['@Pengfei Wu'],    'display': 'Pengfei',   'color': ('#f0fdf4', '#15803d')},
 }
 
 # 兼容导出（供现有 import 使用，勿手动编辑）

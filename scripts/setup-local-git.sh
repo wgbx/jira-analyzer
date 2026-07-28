@@ -6,7 +6,9 @@ cd "$ROOT"
 
 REPORTS=(
   "output/index.html"
+  "output/daily-stats.html"
   "output/2026q2/index.html"
+  "output/2026q2/daily-stats.html"
   "output/jira-report.html"
 )
 

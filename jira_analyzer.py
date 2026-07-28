@@ -69,6 +69,8 @@ def _print_stats(analysis, label=None):
     print(f"  总条目数: {analysis['total']}")
     print(f"  已处理: {analysis['processed']}（{analysis.get('processed_jira', 0)} 个子任务）")
     print(f"  未处理: {analysis['unprocessed']}（{analysis.get('unprocessed_jira', 0)} 个子任务）")
+    print(f"  已排期: {analysis.get('scheduled_unprocessed', 0)}")
+    print(f"  排期已处理: {analysis.get('scheduled_processed', 0)}")
 
 
 def _nav_href(from_output: str, to_output: str) -> str:

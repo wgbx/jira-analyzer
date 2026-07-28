@@ -157,11 +157,16 @@ def _find_all_done_active_tasks(analysis):
 
 
 def _report_items(task_items, analysis):
-    """报告中仅展示：活跃状态下的未处理条目。"""
-    return [
+    """报告中展示：活跃状态下的未处理 + 全部子任务的排期已处理。"""
+    unprocessed = [
         i for i in task_items
         if _counts_as_unprocessed(i, analysis)
     ]
+    processed_scheduled = [
+        i for i in task_items
+        if i.get('is_processed') and i.get('is_scheduled')
+    ]
+    return unprocessed + processed_scheduled
 
 
 def _processed_status_label(item):
@@ -184,10 +189,13 @@ def _escape_html(text):
 def _markdown_item_line(item, include_status=False):
     """Markdown 单条列表项。"""
     owners_str = ' '.join(f'`{OWNER_DISPLAY_NAMES.get(o, o)}`' for o in item['owners'])
+    schedule_str = ''
+    if item.get('is_scheduled') and item.get('scheduled_release'):
+        schedule_str = f' `[已排期: {item["scheduled_release"]}]`'
     status_str = ''
     if include_status and item.get('is_processed'):
         status_str = f' `[{_processed_status_label(item)}]`'
-    line = f"- **第 {item['index']} 点**: {item['text']}{status_str}"
+    line = f"- **第 {item['index']} 点**: {item['text']}{schedule_str}{status_str}"
     if owners_str:
         line += f"  {owners_str}"
     return line + "\n"
@@ -200,8 +208,16 @@ def _render_item_li(item):
         for o in item['owners']
     )
     owners_attr = ','.join(item['owners']) if item['owners'] else ''
+    is_scheduled = item.get('is_scheduled', False)
     is_processed = item.get('is_processed', False)
+    scheduled_attr = 'true' if is_scheduled else 'false'
     processed_attr = 'true' if is_processed else 'false'
+    release_label = item.get('scheduled_release') or ''
+    scheduled_tag = (
+        f'<span class="scheduled-tag">{release_label}</span>'
+        if is_scheduled and release_label
+        else ''
+    )
     status_tag = ''
     if is_processed:
         status_label = _processed_status_label(item)
@@ -211,12 +227,12 @@ def _render_item_li(item):
     item_class = 'item item-row' + (' item-processed' if is_processed else '')
 
     return f"""
-                <li class="{item_class}" data-owners="{owners_attr}" data-processed="{processed_attr}">
+                <li class="{item_class}" data-owners="{owners_attr}" data-scheduled="{scheduled_attr}" data-processed="{processed_attr}">
                     <span class="item-index">{item['index']}</span>
                     <span class="item-content">
                         <span class="item-text">{safe_text}</span>
                         <div class="item-meta">
-                            {status_tag}
+                            {scheduled_tag}{status_tag}
                             <div class="item-owners">{owner_tags}</div>
                         </div>
                     </span>
@@ -340,7 +356,7 @@ def _build_owner_filter_buttons(daily_stats):
 
 
 def _build_filter_js(visible_owners, show_unassigned):
-    """生成筛选功能的 JavaScript 代码（仅人员筛选 + URL 同步）。"""
+    """生成筛选功能的 JavaScript 代码（人员 + 排期状态）。"""
     owner_keys = list(visible_owners)
     count_keys = ['all'] + owner_keys + (['unassigned'] if show_unassigned else [])
     counts_init = ', '.join([f'{k}: 0' for k in count_keys])
@@ -372,11 +388,13 @@ def _build_filter_js(visible_owners, show_unassigned):
     return """
     <script>
         let currentOwnerFilter = 'all';
+        let currentScheduleFilter = 'all';
         let currentSort = 'key-desc';
         let currentProjectFilter = null;
 
-        const URL_DEFAULTS = { sort: 'key-desc', owner: 'all' };
+        const URL_DEFAULTS = { sort: 'key-desc', schedule: 'all', owner: 'all' };
         const VALID_SORTS = ['key-desc', 'key-asc', 'count-desc', 'count-asc'];
+        const VALID_SCHEDULES = ['all', 'scheduled', 'unscheduled', 'scheduled-processed'];
 
         function parseProjectParam(value) {
             if (!value) return null;
@@ -393,6 +411,8 @@ def _build_filter_js(visible_owners, show_unassigned):
             const params = new URLSearchParams(window.location.search);
             if (currentSort === URL_DEFAULTS.sort) params.delete('sort');
             else params.set('sort', currentSort);
+            if (currentScheduleFilter === URL_DEFAULTS.schedule) params.delete('schedule');
+            else params.set('schedule', currentScheduleFilter);
             if (currentOwnerFilter === URL_DEFAULTS.owner) params.delete('owner');
             else params.set('owner', currentOwnerFilter);
             if (!currentProjectFilter) params.delete('project');
@@ -402,12 +422,29 @@ def _build_filter_js(visible_owners, show_unassigned):
             history.replaceState(null, '', newUrl);
         }
 
+        function matchesScheduleFilter(processed, scheduled) {
+            if (currentScheduleFilter === 'all') {
+                return !processed;
+            }
+            if (currentScheduleFilter === 'scheduled') {
+                return scheduled && !processed;
+            }
+            if (currentScheduleFilter === 'unscheduled') {
+                return !scheduled && !processed;
+            }
+            if (currentScheduleFilter === 'scheduled-processed') {
+                return scheduled && processed;
+            }
+            return false;
+        }
+
         function updateCounts() {
             const allItems = document.querySelectorAll('li.item-row');
             const counts = { """ + counts_init + """ };
             allItems.forEach(li => {
+                const scheduled = li.getAttribute('data-scheduled') === 'true';
                 const processed = li.getAttribute('data-processed') === 'true';
-                if (processed) return;
+                if (!matchesScheduleFilter(processed, scheduled)) return;
                 counts.all++;
                 const owners = li.getAttribute('data-owners');
 """ + count_loop + """
@@ -422,6 +459,8 @@ def _build_filter_js(visible_owners, show_unassigned):
             const allItems = document.querySelectorAll('li.item-row');
             allItems.forEach(li => {
                 const owners = li.getAttribute('data-owners');
+                const scheduled = li.getAttribute('data-scheduled') === 'true';
+                const processed = li.getAttribute('data-processed') === 'true';
 
                 let showOwner = false;
                 if (currentOwnerFilter === 'all') {
@@ -432,7 +471,8 @@ def _build_filter_js(visible_owners, show_unassigned):
                     showOwner = owners && owners.split(',').includes(currentOwnerFilter);
                 }
 
-                li.style.display = showOwner ? '' : 'none';
+                const showSchedule = matchesScheduleFilter(processed, scheduled);
+                li.style.display = showOwner && showSchedule ? '' : 'none';
             });
 
             document.querySelectorAll('.task-section').forEach(section => {
@@ -461,6 +501,26 @@ def _build_filter_js(visible_owners, show_unassigned):
             }
         }
 
+        function applyScheduleFilterUI(filter) {
+            document.querySelectorAll('.schedule-bar .filter-btn').forEach(btn => {
+                btn.classList.remove(
+                    'active', 'active-scheduled', 'active-unscheduled', 'active-scheduled-processed'
+                );
+            });
+            const activeBtn = document.querySelector(`.schedule-bar .filter-btn[data-schedule="${filter}"]`);
+            if (activeBtn) {
+                if (filter === 'all') {
+                    activeBtn.classList.add('active');
+                } else if (filter === 'scheduled') {
+                    activeBtn.classList.add('active-scheduled');
+                } else if (filter === 'scheduled-processed') {
+                    activeBtn.classList.add('active-scheduled-processed');
+                } else {
+                    activeBtn.classList.add('active-unscheduled');
+                }
+            }
+        }
+
         function applySortUI(sortBy) {
             document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.querySelector(`.sort-btn[data-sort="${sortBy}"]`);
@@ -472,6 +532,16 @@ def _build_filter_js(visible_owners, show_unassigned):
             if (!btn) return;
             currentOwnerFilter = filter;
             applyOwnerFilterUI(filter);
+            if (!options.skipApply) {
+                applyFilters();
+                if (!options.skipUrl) syncUrlParams();
+            }
+        }
+
+        function filterSchedule(filter, options = {}) {
+            if (!VALID_SCHEDULES.includes(filter)) return;
+            currentScheduleFilter = filter;
+            applyScheduleFilterUI(filter);
             if (!options.skipApply) {
                 applyFilters();
                 if (!options.skipUrl) syncUrlParams();
@@ -511,6 +581,13 @@ def _build_filter_js(visible_owners, show_unassigned):
         function initFromUrl() {
             const params = new URLSearchParams(window.location.search);
             currentProjectFilter = parseProjectParam(params.get('project'));
+
+            const schedule = params.get('schedule');
+            if (schedule && VALID_SCHEDULES.includes(schedule)) {
+                filterSchedule(schedule, { skipApply: true, skipUrl: true });
+            } else {
+                applyScheduleFilterUI(currentScheduleFilter);
+            }
 
             const owner = params.get('owner');
             if (owner) {
@@ -673,15 +750,15 @@ def generate_html_report(
         }}
         .stats {{
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 16px;
             margin-bottom: 30px;
         }}
         @media (max-width: 1100px) {{
-            .stats {{ grid-template-columns: repeat(2, 1fr); }}
+            .stats {{ grid-template-columns: repeat(3, 1fr); }}
         }}
         @media (max-width: 700px) {{
-            .stats {{ grid-template-columns: repeat(1, 1fr); }}
+            .stats {{ grid-template-columns: repeat(2, 1fr); }}
             .header-stats-link {{
                 right: 16px;
                 top: 12px;
@@ -700,6 +777,8 @@ def generate_html_report(
         .total {{ color: #667eea; }}
         .processed {{ color: #10b981; }}
         .unprocessed {{ color: #ef4444; }}
+        .scheduled {{ color: #0d9488; }}
+        .scheduled-processed {{ color: #6366f1; }}
         .task-section {{
             background: white;
             border-radius: 12px;
@@ -756,6 +835,18 @@ def generate_html_report(
         }}
         .item-meta {{ margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }}
         .item-owners {{ display: flex; gap: 6px; flex-wrap: wrap; }}
+        .scheduled-tag {{
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #ccfbf1;
+            color: #0f766e;
+        }}
+        .filter-btn.active-scheduled {{ background: #0d9488; border-color: #0d9488; color: white; }}
+        .filter-btn.active-unscheduled {{ background: #f59e0b; border-color: #f59e0b; color: white; }}
+        .filter-btn.active-scheduled-processed {{ background: #6366f1; border-color: #6366f1; color: white; }}
         .item-processed {{
             opacity: 0.85;
             border-left-color: #c7d2fe;
@@ -778,7 +869,7 @@ def generate_html_report(
             font-weight: 500;
         }}
 {owner_css}
-        .owner-bar {{
+        .schedule-bar, .owner-bar {{
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -913,6 +1004,14 @@ def generate_html_report(
                 <div class="stat-number unprocessed">{analysis['unprocessed']}</div>
                 <div class="stat-sublabel">{analysis.get('unprocessed_jira', 0)} 个子任务</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-label">已排期</div>
+                <div class="stat-number scheduled">{analysis.get('scheduled_unprocessed', 0)}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">排期已处理</div>
+                <div class="stat-number scheduled-processed">{analysis.get('scheduled_processed', 0)}</div>
+            </div>
         </div>
 """
 
@@ -946,13 +1045,21 @@ def generate_html_report(
             <button class="sort-btn" data-sort="count-asc" onclick="sortSections('count-asc')">未处理数量 ↑</button>
         </div>
 
+        <div class="schedule-bar">
+            <span class="filter-label">排期状态:</span>
+            <button class="filter-btn active" data-schedule="all" onclick="filterSchedule('all')">全部</button>
+            <button class="filter-btn" data-schedule="scheduled" onclick="filterSchedule('scheduled')">已排期</button>
+            <button class="filter-btn" data-schedule="scheduled-processed" onclick="filterSchedule('scheduled-processed')">排期已处理</button>
+            <button class="filter-btn" data-schedule="unscheduled" onclick="filterSchedule('unscheduled')">未排期</button>
+        </div>
+
         <div class="owner-bar">
             <span class="filter-label">筛选人员:</span>
             {filter_buttons}
         </div>
 """
 
-    # 渲染条目（仅未处理）
+    # 渲染条目（未处理 + 排期已处理）
     html += '    <div id="task-container" class="task-container">' + "\n"
     has_any_items = False
     if analysis['grouped']:
@@ -964,8 +1071,19 @@ def generate_html_report(
             has_any_items = True
 
             unprocessed_count = sum(1 for i in display_items if not i.get('is_processed'))
+            scheduled_unprocessed_count = sum(
+                1 for i in display_items
+                if not i.get('is_processed') and i.get('is_scheduled')
+            )
+            scheduled_done_count = sum(
+                1 for i in display_items if i.get('is_processed') and i.get('is_scheduled')
+            )
             summary_display = task['summary'][:50] + ('...' if len(task['summary']) > 50 else '')
-            count_hint = f"{unprocessed_count} 未处理"
+            count_hint = (
+                f"{unprocessed_count} 未处理 · "
+                f"{scheduled_unprocessed_count} 已排期 · "
+                f"{scheduled_done_count} 排期已处理"
+            )
 
             html += f"""
         <div class="task-section" data-key="{task_key}" data-count="{unprocessed_count}">
@@ -1202,6 +1320,8 @@ def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
 | **总条目数** | {analysis['total']} |
 | **已处理** | {analysis['processed']}（{analysis.get('processed_jira', 0)} 个子任务） |
 | **未处理** | {analysis['unprocessed']}（{analysis.get('unprocessed_jira', 0)} 个子任务） |
+| **已排期** | {analysis.get('scheduled_unprocessed', 0)} |
+| **排期已处理** | {analysis.get('scheduled_processed', 0)} |
 
 ---
 
@@ -1234,6 +1354,23 @@ def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
                 md += _markdown_item_line(item)
             md += "\n"
 
+        md += "## 排期已处理\n\n"
+        has_scheduled_processed = False
+        for task_key in sorted(analysis['grouped'].keys(), reverse=True):
+            task = analysis['grouped'][task_key]
+            done_scheduled = [
+                i for i in task['items']
+                if i.get('is_processed') and i.get('is_scheduled')
+            ]
+            if not done_scheduled:
+                continue
+            has_scheduled_processed = True
+            md += f"### [{task_key}] {task['summary']}\n\n"
+            for item in done_scheduled:
+                md += _markdown_item_line(item, include_status=True)
+            md += "\n"
+        if not has_scheduled_processed:
+            md += "（无）\n\n"
     else:
         md += "🎉 太棒了！没有未处理的项目。\n"
 

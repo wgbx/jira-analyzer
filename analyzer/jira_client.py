@@ -9,6 +9,7 @@ import time
 
 from analyzer.jira_http import build_jira_session, jira_request
 from analyzer.parser import parse_list_items
+from analyzer.scheduled import get_scheduled_lookup
 
 # 连续请求间隔，减轻 macOS LibreSSL 下偶发 SSLEOFError
 _ISSUE_FETCH_DELAY_SEC = 0.35
@@ -179,6 +180,7 @@ def analyze_issues(config):
     all_items = []
     total_count = 0
     processed_count = 0
+    scheduled_lookup = get_scheduled_lookup(config)
     fetch_failures = 0
 
     for i, issue in enumerate(subtasks):
@@ -209,6 +211,7 @@ def analyze_issues(config):
             total_count += 1
             if item['is_processed']:
                 processed_count += 1
+            release_label = scheduled_lookup.get((key, item['index']))
             all_items.append({
                 'task_key': key,
                 'task_summary': summary,
@@ -222,6 +225,8 @@ def analyze_issues(config):
                 'backlog_label': item.get('backlog_label'),
                 'is_moved': item.get('is_moved', False),
                 'is_strikethrough': item.get('is_strikethrough', False),
+                'is_scheduled': release_label is not None,
+                'scheduled_release': release_label,
             })
 
     # 按任务编号分组
@@ -240,11 +245,21 @@ def analyze_issues(config):
         print(f"警告: {fetch_failures} 个子任务因网络错误未拉取，将使用其余任务生成报告")
 
     active_statuses = get_active_statuses(config)
-    # 总条目数 / 已处理：全部子任务；未处理：仅活跃 Jira 状态
+    # 总条目数 / 已处理：全部子任务；未处理 / 已排期：仅活跃 Jira 状态
     unprocessed = sum(
         1 for item in all_items
         if not item['is_processed']
         and is_active_issue_status(item['issue_status'], config)
+    )
+    scheduled_unprocessed = sum(
+        1 for item in all_items
+        if not item['is_processed']
+        and item.get('is_scheduled')
+        and is_active_issue_status(item['issue_status'], config)
+    )
+    scheduled_processed = sum(
+        1 for item in all_items
+        if item['is_processed'] and item.get('is_scheduled')
     )
     processed_jira = sum(
         1 for task in grouped.values()
@@ -265,6 +280,8 @@ def analyze_issues(config):
         'processed_jira': processed_jira,
         'unprocessed': unprocessed,
         'unprocessed_jira': unprocessed_jira,
+        'scheduled_unprocessed': scheduled_unprocessed,
+        'scheduled_processed': scheduled_processed,
         'active_statuses': active_statuses,
         'grouped': grouped,
     }
