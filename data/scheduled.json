@@ -60,7 +60,11 @@
         { "issue": "11768", "index": 1, "owner": "june" },
         { "issue": "11768", "index": 2, "owner": "neo" },
         { "issue": "11768", "index": 3, "owner": "tiancheng" },
-        { "issue": "11768", "index": 5, "owner": "neo" }
+        { "issue": "11768", "index": 5, "owner": "neo" },
+        { "issue": "11496", "index": 20, "owner": "june" },
+        { "issue": "11768", "index": 13, "owner": "june" },
+        { "issue": "11768", "index": 15, "owner": "june" },
+        { "issue": "11768", "index": 16, "owner": "neo" }
       ]
     }
   ]
