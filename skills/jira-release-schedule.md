@@ -140,4 +140,5 @@ npm start
 - `analyzer/scheduled.py` — `(task_key, index) → release label`
 - `analyzer/owners.py` — owner key / mention / 展示名
 - `output/index.html` — 排期与处理状态（`npm start` 生成）
+- `skills/jira-release-summary.md` — **只读**按人摘要表（确认 / 转发用）
 - `skills/jira-owner-mention.md` — 改 Jira @mention（与本 skill 互补）
