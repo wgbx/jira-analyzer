@@ -72,7 +72,6 @@ npm start
 | 命令 | 说明 |
 |------|------|
 | `npm start` | 拉取 Jira 数据并生成报告（默认） |
-| `npm run analyze` | 同 `npm start` |
 | `npm run serve` | 仅预览已有报告（静态文件，不拉 Jira） |
 | `npm run dev` | **推荐本地使用**：定时拉取 Jira、更新报告，浏览器自动刷新（默认每 120 秒，见 `config.json` → `watch`） |
 

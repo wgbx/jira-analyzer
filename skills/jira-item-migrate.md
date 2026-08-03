@@ -35,9 +35,6 @@ python3 scripts/jira-item-migrate.py strip-from KAT-11751:1
 
 # 预览，不写入 Jira（--dry-run 放在子命令前面）
 python3 scripts/jira-item-migrate.py --dry-run migrate --target KAT-11496 KAT-11267:3
-
-# 等价 npm 入口
-npm run migrate -- migrate --target KAT-11496 KAT-11267:3
 ```
 
 源条目格式为 `KAT-{编号}:{条目序号}`，可一次传多条。
