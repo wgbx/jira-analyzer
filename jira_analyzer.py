@@ -29,10 +29,15 @@ from analyzer.config import (
     OUTPUT_DIR,
 )
 from analyzer.jira_client import analyze_issues
+from analyzer.meeting_report import build_meeting_report
 from analyzer.report import (
     generate_html_report,
     generate_markdown_report,
     generate_owner_daily_html_report,
+)
+from analyzer.snapshots import (
+    build_processed_snapshot,
+    save_processed_snapshot,
 )
 
 REPORT_VERSION_FILE = OUTPUT_DIR / 'report-version.json'
@@ -161,6 +166,19 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
             daily_stats_path = _daily_stats_output_path(output_path)
             daily_stats_href = './daily-stats.html'
             favicon_href = _favicon_href(output_path)
+            report_id = str(report_cfg.get('id') or 'default')
+            current_snapshot = build_processed_snapshot(
+                analysis, label=label, parent_issue=parent,
+            )
+            snapshot_path = save_processed_snapshot(current_snapshot, report_id)
+            meeting = build_meeting_report(
+                analysis,
+                label=label,
+                parent_issue=parent,
+                report_id=report_id,
+                current_snapshot=current_snapshot,
+            )
+            baseline_date = meeting.get('baseline_date')
             content = generate_html_report(
                 analysis,
                 base_url,
@@ -177,11 +195,20 @@ def run_analyzer(config=None, *, quiet=False, open_browser=False):
                 label=label,
                 back_href='./',
                 favicon_href=favicon_href,
+                meeting_report=meeting,
             )
             with open(daily_stats_path, 'w', encoding='utf-8') as f:
                 f.write(daily_content)
             if not quiet:
                 print(f"✅ [{label}] Daily 统计页已生成: {daily_stats_path}")
+                print(
+                    f"   快照: {snapshot_path.name}"
+                    + (
+                        f"；发布周净增基线 {baseline_date}"
+                        if baseline_date else
+                        '；尚无发布周基线快照'
+                    )
+                )
 
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(content)

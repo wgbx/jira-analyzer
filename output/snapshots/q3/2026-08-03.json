@@ -1,0 +1,2649 @@
+{
+  "date": "2026-08-03",
+  "updated": "2026-08-03T06:17:00Z",
+  "label": "Q3",
+  "parent_issue": "KAT-11542",
+  "processed_count": 209,
+  "items": [
+    {
+      "ref": "KAT-11816:4",
+      "key": "KAT-11816",
+      "index": 4,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) Display issue when title is hidden  a. Mobile: Title (32px) fixed height to 390px, current is 414px  b. PC: Remove title placeholder space if title is hidden   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11816:6",
+      "key": "KAT-11816",
+      "index": 6,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) If an account’s marketing capability is disabled (disableMarketingCampaigns = true), then change the following menu item and page header  @zhiyong song @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11816:7",
+      "key": "KAT-11816",
+      "index": 7,
+      "owners": [
+        "june"
+      ],
+      "text": "(Done)(High priority. hotfix)  Protect platform  @June Teng",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11816:8",
+      "key": "KAT-11816",
+      "index": 8,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) Optimize the gap spacing here  @zhiyong song @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:1",
+      "key": "KAT-11796",
+      "index": 1,
+      "owners": [
+        "jayce",
+        "lory",
+        "fengxia",
+        "june"
+      ],
+      "text": "(Done)(Urgent. Sev0 Product incident)  Available items show as unavailable in post.  @Feng Xia   @June Teng   @jayce chen   @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:2",
+      "key": "KAT-11796",
+      "index": 2,
+      "owners": [
+        "june"
+      ],
+      "text": "(Done) The attendee export template was based on Ricardo provided Denver card show export template where the order level has contact info submission — but clearly that shouldn't be used as the generic template.   Will fix it by adding back email and phone number columns after first and last name columns.  @June Teng   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:3",
+      "key": "KAT-11796",
+      "index": 3,
+      "owners": [
+        "lory"
+      ],
+      "text": "(Done) (High priority)  Partner report:  @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:4",
+      "key": "KAT-11796",
+      "index": 4,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done ) The subtitle currently doesn’t wrap at the word level. For example, instead of keeping the word intact, it is currently being cut off in the middle of a word when reaching the character limit. Need to wrap by words instead of splitting words. (reported by  @Melody Zhang  )  @zhiyong song @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:5",
+      "key": "KAT-11796",
+      "index": 5,
+      "owners": [
+        "cici",
+        "june"
+      ],
+      "text": "( Done ) (High priority, need hotfix)  the following window from storefront is too narrow on mobile. Should consider utilizing the full mobile screen width. We need a bit more room to add several words in the consent checkbox  @Lia Gong   @cici Huang   @June Teng   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:6",
+      "key": "KAT-11796",
+      "index": 6,
+      "owners": [
+        "cici",
+        "june"
+      ],
+      "text": "( Done ) (High priority. Need hotfix)  Tweak checkout screen and form marketing consent copy:  @cici Huang   @June Teng   @Lia Gong   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11796:7",
+      "key": "KAT-11796",
+      "index": 7,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Solve it in 11812)   The SMS function needs to add the \"find them\" feature.  @Jun Li   (report jayce)",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11776:2",
+      "key": "KAT-11776",
+      "index": 2,
+      "owners": [
+        "jiangtian"
+      ],
+      "text": "(moved 11753 No. 4 )  The font size here seems too big  @Cynthia Yueh   @Jiangtian Hou   If the regular font size is X, then X + 2 (at most X + 4) should work. @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11776:3",
+      "key": "KAT-11776",
+      "index": 3,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) (Critical bug)  When there are items in a post that require bought-together,   adding new products to the post will fail  due to a logic error – assuming the UX is adding items to Cart.   It reveals dangerous FE or BE business logic without needed boundary.  @zhiyong song   @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11776:4",
+      "key": "KAT-11776",
+      "index": 4,
+      "owners": [
+        "cici"
+      ],
+      "text": "( Done )Remove “Cancel” button on a form, and center the “Submit” button (don’t make it full width)  @Lia Gong   @Yuxiao Zhu   @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11776:5",
+      "key": "KAT-11776",
+      "index": 5,
+      "owners": [],
+      "text": "(Moved to 11781)  (Critical UX flow bug. Need hotfix)   Move the terms and privacy policy to the checkout screen.  Use “By placing your order, you agree to Terms & Privacy.” and make sure it fits in one row on mobile. cc  @Yizhen Xin   @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11776:6",
+      "key": "KAT-11776",
+      "index": 6,
+      "owners": [
+        "jayce",
+        "june"
+      ],
+      "text": "(Done)  （yuxiao）For the Intro text, only one of the title and description needs to be filled in. If the user fills in the description, the program should not prevent the user from proceeding.  @June Teng   @jayce chen",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11768:4",
+      "key": "KAT-11768",
+      "index": 4,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(YuXiao)For tickets that have been cancelled, when attempting to redeem them on the details page of the scan interface, a prompt should appear stating \"Code Has Been Cancelled\".  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11768:7",
+      "key": "KAT-11768",
+      "index": 7,
+      "owners": [
+        "jiangtian"
+      ],
+      "text": "(moved 11753 No. 6 )  （Lury) Disabled “Create” button for Pear Sponsored purchase if the event that related to this post is completed  @Jiangtian Hou",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11768:9",
+      "key": "KAT-11768",
+      "index": 9,
+      "owners": [
+        "tianye"
+      ],
+      "text": "( Done )(Lury)The page is flickering when click view details  @Tian Ye",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11768:10",
+      "key": "KAT-11768",
+      "index": 10,
+      "owners": [],
+      "text": "( Done ) when guest view the invite link, the “Cost price “ shouldn’t display $0.   @Xuan Hu   https://pear.us/skyspresents/post/la-truck-invasion?invitationCode=jl6wxw",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:1",
+      "key": "KAT-11765",
+      "index": 1,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done)(Urgent)  why these items cannot set bought-together?  All four items were added from other posts.  https://pear.us/latto/post/1be1ah    @zhiyong song   @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:2",
+      "key": "KAT-11765",
+      "index": 2,
+      "owners": [],
+      "text": "(moved 11753 No.2)  ( Done) what’s going on. Clicking “X” to close an event but goes back to the history window   @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11765:3",
+      "key": "KAT-11765",
+      "index": 3,
+      "owners": [
+        "june"
+      ],
+      "text": "( Done ) Copy the post, but there is an error message.  @June Teng   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:4",
+      "key": "KAT-11765",
+      "index": 4,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )When the post product data is big, such as 62, the “ Must be bought with other items  “ and “ To replace other items “ will only loading partial of products.  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:5",
+      "key": "KAT-11765",
+      "index": 5,
+      "owners": [
+        "june"
+      ],
+      "text": "( Done )(Linda)When the product is big, such as 62 items. After psot created, select sections and Apply, page is loading, the post failed to add to the section.  @June Teng",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:6",
+      "key": "KAT-11765",
+      "index": 6,
+      "owners": [],
+      "text": "( Done )When purchasing together and entering PDD, the default quantity should be 1 instead of 0.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:7",
+      "key": "KAT-11765",
+      "index": 7,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Moved to 11775)  Event page refinements (design reference:   )  @Jiaqi Yu",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11765:8",
+      "key": "KAT-11765",
+      "index": 8,
+      "owners": [
+        "jiangtian"
+      ],
+      "text": "( Move to KAT-11772 )  (Lury)The tab name is displayed incompletely on iPhone SE  @Jiangtian Hou",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11765:10",
+      "key": "KAT-11765",
+      "index": 10,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( Done ) the title is too close to the nav buttons on post page, add spacing in between (24 px for desktop, 12 for mobile)  @Tiancheng Tang @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11762:1",
+      "key": "KAT-11762",
+      "index": 1,
+      "owners": [
+        "chenglim"
+      ],
+      "text": "（Lury) Event details page > sales> orders > filter order by ticket, click the order go to sale details page > back to order list > the filter criteria is cleared  @Cheng Lim",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11762:2",
+      "key": "KAT-11762",
+      "index": 2,
+      "owners": [
+        "lory"
+      ],
+      "text": "(Done)(High)( Lury) Cannot refund tips  @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11751:2",
+      "key": "KAT-11751",
+      "index": 2,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "Reduce buttons on an image as much as possible  @Yizhen Xin   @zhiyong song   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11751:3",
+      "key": "KAT-11751",
+      "index": 3,
+      "owners": [],
+      "text": "It’s better display “$29.80“ not “$29.8”",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11751:4",
+      "key": "KAT-11751",
+      "index": 4,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Form 10928 No.9) (Reported by YuXiao )The supported social types in the form should be consistent with those of the storefront.  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:1",
+      "key": "KAT-11745",
+      "index": 1,
+      "owners": [],
+      "text": "(Done)(Need hotfix)  To avoid any confusion, the table must be labeled as “KID TABLE”  @Melody Zhang   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:2",
+      "key": "KAT-11745",
+      "index": 2,
+      "owners": [
+        "dajiang"
+      ],
+      "text": "( Done )When clicking the unit, the UI automatically zooms in which is great! But how much to zoom in must be dynamically calculated based on the venue map size and the target size. Here: the target size should be decided as good enough for users to view the texts and make selection.    @Dajiang Zuo   @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:3",
+      "key": "KAT-11745",
+      "index": 3,
+      "owners": [
+        "june"
+      ],
+      "text": "( Done )(linda)Form submit > guest follower后， 没有 Name的情况下，显示<Unnamed follower>  @June Teng",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:4",
+      "key": "KAT-11745",
+      "index": 4,
+      "owners": [
+        "cici"
+      ],
+      "text": "(Done) UX bug - a checkbox must decide its default state is checked or unchecked  @Lia Gong   @cici Huang   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:5",
+      "key": "KAT-11745",
+      "index": 5,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) (Need hotfix) Im getting this error, i cant access sales when impersonating. If im logged into the account as a user it works fine.  @Dian Yuhong   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:6",
+      "key": "KAT-11745",
+      "index": 6,
+      "owners": [
+        "june"
+      ],
+      "text": "( Done )Unable to delete items on the cart  @Dian Yuhong    @June Teng   https://pear.us/latto/post/doja-cat-tour-with-latto-2026",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11745:7",
+      "key": "KAT-11745",
+      "index": 7,
+      "owners": [
+        "lory"
+      ],
+      "text": "(Moved to 11786)  (Update on Jul 24 by Hui: confirmed. It is a critical bug. 37 is pound, not USD:  Investigate Shopify Markets contextual pricing for both product and shipping prices. Prices may be market-specific (e.g., USD) instead of the shop's base currency (GBP). )  Why this shopify item’s retail price is $50, but our imported price is $37?  @Lory Jiang",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11745:8",
+      "key": "KAT-11745",
+      "index": 8,
+      "owners": [
+        "lory"
+      ],
+      "text": "(Moved to 11786)  (Update on Jul 24 by Hui: confirmed. It is a critical bug. shipping fee is pound, not USD:  Investigate Shopify Markets contextual pricing for both product and shipping prices. Prices may be market-specific (e.g., USD) instead of the shop's base currency (GBP) )  Why this shopify item’s shipping cost is not from the shipping rule:  @Lory Jiang",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11745:9",
+      "key": "KAT-11745",
+      "index": 9,
+      "owners": [
+        "lory"
+      ],
+      "text": "(Will implement in 11090)  (High priority)  Can KAT 10504 (Growth: allow a post to add products from other posts with read-only finance schema) support adding other posts' products to a co-selling post too, not just to original posts?  @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:2",
+      "key": "KAT-11724",
+      "index": 2,
+      "owners": [
+        "lory"
+      ],
+      "text": "(Move from 11342 no.17) (Demi) The “Tickets sold” in the event list is not the same as it is on the event landing page.    @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:3",
+      "key": "KAT-11724",
+      "index": 3,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done) (Yuxiao)The \"Create Link\" section is missing the music link.    @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:4",
+      "key": "KAT-11724",
+      "index": 4,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )(linda)Preview the Form, the page crash， when the social platform is empty  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:7",
+      "key": "KAT-11724",
+      "index": 7,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(linda) My content > Forms > view submission, a blank page flash  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:8",
+      "key": "KAT-11724",
+      "index": 8,
+      "owners": [
+        "june"
+      ],
+      "text": "( Done ) @June Teng  update the post url then visit the affiliate link, this issue will reproduce   https://s.pear.us/9uBQEO",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:9",
+      "key": "KAT-11724",
+      "index": 9,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) Is it possible to add an up/down arrow (⬆️ ⬇️）on the Event/Ticket link page so we can quickly rearrange the order of links by event date? This might need UX design. (reported by  @Melody Zhang  )  @Yuxiao Zhu     @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11724:11",
+      "key": "KAT-11724",
+      "index": 11,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) （zhiyong）Update action menu of Any-day Tickets list, rename \"Share\" to simple \"Copy link to share\" (remove native share logic)  @zhiyong song   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11723:1",
+      "key": "KAT-11723",
+      "index": 1,
+      "owners": [
+        "jiangtian",
+        "chenglim"
+      ],
+      "text": "(moved 11753 No. 3 )  Add the payment ID to venue app orders in the order list, so Ops team can easily find the matched order for purposes like refund.  @Cheng Lim   @Jiangtian Hou   @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11723:3",
+      "key": "KAT-11723",
+      "index": 3,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )Singular vs Plural    @Yuxiao Zhu    @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11723:4",
+      "key": "KAT-11723",
+      "index": 4,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done ) (Demi) Set the event time to empty, it should not show 8AM in the post RTE  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11723:5",
+      "key": "KAT-11723",
+      "index": 5,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )(Yuxiao)Customize shop-Style page. The right side will extend beyond the interface.  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11723:8",
+      "key": "KAT-11723",
+      "index": 8,
+      "owners": [
+        "jiangtian"
+      ],
+      "text": "(moved 11753 No. 5 )  (Lury)All orders in the event are full refunded, the sold in  Pear.Us  Venue tab is disappeared  @Jiangtian Hou      https://release.pear.us/events/ea0a5631-1f31-4efc-b4aa-2c34eb6a7940/view#eventTab=TicketsMerch,tab=SALES,salesTab=EventReport,sellerTab=co-sellers     token: K4ZwpgTgkgJgXADgKwE4UAYBMKDsBaAMwCMBDAFjzPTBL3JQGM8l0SBmARmpgDYGEUAGjAA7AG5wIYADY1wggJYkALnA44EbFJnWYywgB4AHNQg5IyOFGz1A.TJkd4Zb3GgjpDODPobNDxvry5vTJOn_8mjSIL9OdsFI",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11700:1",
+      "key": "KAT-11700",
+      "index": 1,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)  (Low effort high impact)  Some partners get confused by our sales progress presentation. Benchmark posh and make a quick display change    @Jiaqi Yu   @Yizhen Xin   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:2",
+      "key": "KAT-11700",
+      "index": 2,
+      "owners": [
+        "jiaqi",
+        "neo"
+      ],
+      "text": "(Done)  (Low effort high impact)  when creating an event ticket, automatically use the event’s flyer as the ticket’s media. 95% partners do the following flow anyway and it is unnecessary.    @Jiaqi Yu   @Neo Wang   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:3",
+      "key": "KAT-11700",
+      "index": 3,
+      "owners": [
+        "jiaqi",
+        "neo"
+      ],
+      "text": "(Done)  In the screenshot below, notice that the tickets have different thumbnails. What happened is that (to reproduce)  @Neo Wang   @Xuan Hu  :  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:4",
+      "key": "KAT-11700",
+      "index": 4,
+      "owners": [
+        "cici"
+      ],
+      "text": "(Done) (Low effort)  These settings are infrequently used and repeatedly shown under each product or ticket, and take a lot space  @Yizhen Xin   @Xuan Hu    @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:5",
+      "key": "KAT-11700",
+      "index": 5,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)(low effort high impact)  Set “Story only” as the default layout for all new posts (especially for event posts, since the post has the event flyer as the cover by default)   @Jiaqi Yu   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:6",
+      "key": "KAT-11700",
+      "index": 6,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)(low effort high impact)  Move the layout tab to the 3rd for:   @Jiaqi Yu   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:7",
+      "key": "KAT-11700",
+      "index": 7,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) Business logic tweak when clicking “Sales metrics” from a post’s context menu   @zhiyong song    @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:8",
+      "key": "KAT-11700",
+      "index": 8,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)  Refresh the info hierarchy of the event page  @Yizhen Xin   @Cynthia Yueh   @Xuan Hu   @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11700:9",
+      "key": "KAT-11700",
+      "index": 9,
+      "owners": [
+        "jiaqi",
+        "lory"
+      ],
+      "text": "(Moved to 11775 No.1)  Add convenient tools to manage tickets.  Consider changing “…” to “Tools”?   @Xuan Hu    @Jiaqi Yu   @Lory Jiang",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11691:1",
+      "key": "KAT-11691",
+      "index": 1,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)(Critical bug)  Adding products is missing.  Need to add a flow to add products from catalogs to storefront. The UX can leverage the post adding products flow, but the flow must be kept. Otherwise, how can partners add catalog products to their storefront sections?  @Jiaqi Yu    @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:2",
+      "key": "KAT-11691",
+      "index": 2,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(Embarrassing bug, visible on all storefront. Need hotfix)  section → sections  @Tiancheng Tang    @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:4",
+      "key": "KAT-11691",
+      "index": 4,
+      "owners": [
+        "jayce"
+      ],
+      "text": "(Will address in 11720)  Need to work on a better drawer title. “Add from” doesn’t work well with “New”.  @Chow Xia   @Yuxiao Zhu   @jayce chen",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:5",
+      "key": "KAT-11691",
+      "index": 5,
+      "owners": [
+        "lory"
+      ],
+      "text": "( Done )Indent breakdown items under the main metrics.   @Lory Jiang   @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:6",
+      "key": "KAT-11691",
+      "index": 6,
+      "owners": [
+        "lory"
+      ],
+      "text": "( Done )Tweak the event report page:  @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:7",
+      "key": "KAT-11691",
+      "index": 7,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(Lury) The error message is not clear and the color of it is green   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:8",
+      "key": "KAT-11691",
+      "index": 8,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) Where is the navigation row?   @Jiaqi Yu   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:9",
+      "key": "KAT-11691",
+      "index": 9,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) The nav bar setting window is still a natural place for users to rearrange their sections  @Jiaqi Yu   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:10",
+      "key": "KAT-11691",
+      "index": 10,
+      "owners": [
+        "lory",
+        "tianye"
+      ],
+      "text": "(Done) Multiple partners clicked the wrong button “Deposit” when they meant to “Withdraw”. Let’s only keep the “Withdraw” button (most frequently used) CTA and change the Deposit button to a regular button   @Tian Ye   @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:12",
+      "key": "KAT-11691",
+      "index": 12,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done) When adding new content, users are adding them one by one:  @Chow Xia   @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11691:14",
+      "key": "KAT-11691",
+      "index": 14,
+      "owners": [
+        "jiangtian"
+      ],
+      "text": "( Done )(Lury) UI issue on event report   @Jiangtian Hou",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:1",
+      "key": "KAT-11690",
+      "index": 1,
+      "owners": [],
+      "text": "( Done ) (Critical bug)  When tip is selected, the summary price is incorrect. The total is $1.14, but on the payment screen, it didn’t include tip amount.  $1.14 vs. $0.99 .  May reproduce: (1) have a product without tips configured (2) config tips in Pear web app (3) Refresh. Then purchase the product on Venue app.  After the first time, cannot reproduce.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:2",
+      "key": "KAT-11690",
+      "index": 2,
+      "owners": [],
+      "text": "( Done ) (Critical UX bug)  On the receipt screen, optimize the buttons position so they don’t easily get blocked by keyboard when typing the email or phone number.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:3",
+      "key": "KAT-11690",
+      "index": 3,
+      "owners": [],
+      "text": "(Done) (Critical bug)  card payment declined when there is a tip. Not sure if it is due to tips (related to No.1). The pending charge is shown in credit card statement (may be canceled after some time)",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:4",
+      "key": "KAT-11690",
+      "index": 4,
+      "owners": [],
+      "text": "( Done )(Not in critical path) when there is already a reader connected. Showing No reader found is misleading.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:5",
+      "key": "KAT-11690",
+      "index": 5,
+      "owners": [],
+      "text": "( Done ) (Critical issue)  When the card reader is power off, it still shows connected in the setting. Then, after some time, the UI shows no reader found and the existing connected reader was removed",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:6",
+      "key": "KAT-11690",
+      "index": 6,
+      "owners": [],
+      "text": "( Done )After turning the power on of a connected card reader, it doesn’t connect automatically. Instead, it asks to reconnect again.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:7",
+      "key": "KAT-11690",
+      "index": 7,
+      "owners": [],
+      "text": "( Done )After the payment is canceled, the status of the card reader remains “swiping card”",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:8",
+      "key": "KAT-11690",
+      "index": 8,
+      "owners": [
+        "lory"
+      ],
+      "text": "( Done )Cannot refund the full amount for orders with tips  @Lory Jiang   example order P349433",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:9",
+      "key": "KAT-11690",
+      "index": 9,
+      "owners": [
+        "fengxia"
+      ],
+      "text": "( Move to KAT-11346 )18.75 - 6.25 ≠ 18.75 in the order confirmation email of venue app if there is a coupon  @Feng Xia",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:10",
+      "key": "KAT-11690",
+      "index": 10,
+      "owners": [],
+      "text": "( Move to KAT-11346 )There are still some bug related to these input boxes. It’s frozen in the video - following normal flow, nothing tricky.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:11",
+      "key": "KAT-11690",
+      "index": 11,
+      "owners": [],
+      "text": "( Done )Avoid showing these errors while users are still typing. The error can be shown when “Confirm” button is tapped.  Don’t randomly interrupt users flow, they are still in the middle of typing",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:12",
+      "key": "KAT-11690",
+      "index": 12,
+      "owners": [],
+      "text": "(Done) (Critical Screen)  This is going to be a high frequent screen customers see, so spend time to iterate on this screen",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:13",
+      "key": "KAT-11690",
+      "index": 13,
+      "owners": [],
+      "text": "( Done )Add a ticket on home page, set tips for the ticket on web, back to home page, click refresh button, the tap to pay button is not changed to confirm and continue button",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:14",
+      "key": "KAT-11690",
+      "index": 14,
+      "owners": [],
+      "text": "( Move to KAT-11346 )The padding should be consistent",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:15",
+      "key": "KAT-11690",
+      "index": 15,
+      "owners": [],
+      "text": "( Move to KAT-11346 )UI issues on iPad",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:16",
+      "key": "KAT-11690",
+      "index": 16,
+      "owners": [],
+      "text": "( Move to KAT-11346 )It’s hard to click tick",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:17",
+      "key": "KAT-11690",
+      "index": 17,
+      "owners": [],
+      "text": "( Move to KAT-11346 )UI issue on pagination e.g. 20,22,23",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:18",
+      "key": "KAT-11690",
+      "index": 18,
+      "owners": [],
+      "text": "( Move to KAT-11346 )The connected info overlaps with confirm button on iPad",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:19",
+      "key": "KAT-11690",
+      "index": 19,
+      "owners": [],
+      "text": "( Move to KAT-11346 )UI issues on QR scan history page",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:20",
+      "key": "KAT-11690",
+      "index": 20,
+      "owners": [],
+      "text": "( Move to KAT-11346 )The max height of the drawer",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:21",
+      "key": "KAT-11690",
+      "index": 21,
+      "owners": [],
+      "text": "( Move to KAT-11346 )The button and input box are too width on login page",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11690:22",
+      "key": "KAT-11690",
+      "index": 22,
+      "owners": [],
+      "text": "( Move to KAT-11346 )There is no refunded info on order history > order details page",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:1",
+      "key": "KAT-11675",
+      "index": 1,
+      "owners": [
+        "jayce"
+      ],
+      "text": "(Done)(High)  @Dian Yuhong   Partner cannot change the event setting “Exclude  Pear.Us  Venue app sales from sales report“ even after the event is completed.  Comments from 11230:  @jayce chen",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:2",
+      "key": "KAT-11675",
+      "index": 2,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(High) @Xuan Hu   Sales email:  @Tiancheng Tang  [logo issue fixed]",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:3",
+      "key": "KAT-11675",
+      "index": 3,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(Linda)The “My content“ > “X“ button need to click 2 times to close it after create the first post on the content   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:4",
+      "key": "KAT-11675",
+      "index": 4,
+      "owners": [
+        "jayce",
+        "neo"
+      ],
+      "text": "(backlog)(Linda)(post级别 cart无法做判断)The setting “ Purchase Limit per customer “ doesn’t work now. the cart exceed 12, still can place order now.  @jayce chen    @Neo Wang",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:7",
+      "key": "KAT-11675",
+      "index": 7,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done ) (Demi) After changing the links' order on My content>Links page, the links will flash  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:8",
+      "key": "KAT-11675",
+      "index": 8,
+      "owners": [],
+      "text": "(Done) 调整下扫码报错文案，（背景： 工作人员扫描周六场（LA TARDE-SAT）门票时，签到后台页面选错了活动，切到了周日场（DAY CLUB）。 系统切换至正确活动前，1005 张门票均可正常核验；一旦页面绑定错误场次，扫码核验就全部失败。所有门票本身均真实有效。 当晚 latindistrictla 渠道也出现了完全相同的活动选错故障。 report jayce）  @Yuxiao Zhu   QR code is for a different event\nThis QR code is for {QR code event name}. Check-in is currently set to {selected event name}. Switch to the matching event, then scan again.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:9",
+      "key": "KAT-11675",
+      "index": 9,
+      "owners": [],
+      "text": "( Done )(Linda) The feature flag setting of “disablePoweredByPear“ doesn’t work",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:10",
+      "key": "KAT-11675",
+      "index": 10,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(Lury) Too close to the border   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11675:11",
+      "key": "KAT-11675",
+      "index": 11,
+      "owners": [],
+      "text": "( Done ) ui问题，没有间距   ，event Info 上下应该预留一些间距（report jayce）  @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:1",
+      "key": "KAT-11667",
+      "index": 1,
+      "owners": [
+        "lory"
+      ],
+      "text": "(moved 11762 No. 7 )  (Critical bug)  BD team found many cases the total number of orders from a post is smaller than the recorded funnel order number. This makes the analytics tool not usable and cannot be trusted.  Especially when date range filter is on.  @Lory Jiang   @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11667:2",
+      "key": "KAT-11667",
+      "index": 2,
+      "owners": [
+        "pengfei"
+      ],
+      "text": "( Done )(linda)When the section is hide, the post shouldn’t can be find on the explore page. @Pengfei Wu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:3",
+      "key": "KAT-11667",
+      "index": 3,
+      "owners": [
+        "cici"
+      ],
+      "text": "( Done )(Yuxiao)The points that need optimization in \"View submitted info\"  @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:4",
+      "key": "KAT-11667",
+      "index": 4,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done ) @Yuxiao Zhu  The Form title “Contact us“ shouldn’t display  https://onemarkettalk.slack.com/archives/C061Y4G7AER/p1783672737117959   @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:5",
+      "key": "KAT-11667",
+      "index": 5,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( Done )  @Xuan Hu  Catalog settings tweak:  @Yizhen Xin    @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:6",
+      "key": "KAT-11667",
+      "index": 6,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done ) @Yuxiao Zhu  apply the same radius 12px to both previews.  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:7",
+      "key": "KAT-11667",
+      "index": 7,
+      "owners": [
+        "cici"
+      ],
+      "text": "( Done )minor improvement: it would be good to a space between the words.   @cici Huang   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:8",
+      "key": "KAT-11667",
+      "index": 8,
+      "owners": [
+        "lory"
+      ],
+      "text": "( Done )It doesn’t include the tips amount on the refund window.  “$0.99 available for refund” is incorrect. P349030  @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11667:9",
+      "key": "KAT-11667",
+      "index": 9,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done ) this layout is off (event info section on event page). design reference:     @zhiyong song   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:1",
+      "key": "KAT-11625",
+      "index": 1,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) The toast notification banners should be consistent, especially from the same page  @Yizhen Xin   @Yuxiao Zhu    @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:3",
+      "key": "KAT-11625",
+      "index": 3,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done ) (Demi) The color of “From your original post“ should be the same as the postcard title  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:4",
+      "key": "KAT-11625",
+      "index": 4,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(backlog)(High) (Linda)switch Events and Posts tab, the page flash.  @zhiyong song",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:5",
+      "key": "KAT-11625",
+      "index": 5,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done ) In the event ticket and merch context menu, (1) change the “Sharing” to a straightforward “Copy link for sharing” (remove the native sharing logic) (2) for consistency, change Sharing to sharing   @zhiyong song   @Yizhen Xin   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:6",
+      "key": "KAT-11625",
+      "index": 6,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( Done ) Inefficient real estate utilization  @Yizhen Xin   @Xuan Hu    @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:9",
+      "key": "KAT-11625",
+      "index": 9,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( Done )we should expose the message history entry directly in the UI. (Design reference:   )  @Dian Yuhong    @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:10",
+      "key": "KAT-11625",
+      "index": 10,
+      "owners": [
+        "jun"
+      ],
+      "text": "( Done ) Post page important fixes: (Design reference:   )  @Xuan Hu   @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:11",
+      "key": "KAT-11625",
+      "index": 11,
+      "owners": [],
+      "text": "( Done )(Moved from 11581 No.11) @Chow Xia   @vanppo wang   @Dian Yuhong   This is to address 11581 No.8e.  The orders in the Event Report tab include all line items of the related merchant order. We already show a tip like “Includes $10.23 from outside this event.” When users are setting up a filter, we should let them know that earnings from products included in this event but excluded by the filter may still be included in Net earnings. After the filter is applied, we should also show an additional tip, such as “Includes $10.23 from outside this filter.”",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11625:13",
+      "key": "KAT-11625",
+      "index": 13,
+      "owners": [],
+      "text": "(Done) (Linda) reset the password on the login page,  the pear logo is missing on the email  , also the bottom “Copy right “ text need to center align.  Expect result:",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11625:14",
+      "key": "KAT-11625",
+      "index": 14,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )(linda) The edu UI about “X“button is overlay on the mobile side （Iphone SE）  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:1",
+      "key": "KAT-11600",
+      "index": 1,
+      "owners": [
+        "jun"
+      ],
+      "text": "( Done) @Dian Yuhong   When an SMS doesn’t include a link, prompt a drawer to remind the user. The should be the first thing to check (before checking special characters replacement)  @Jun Li   Title: No link detected Body This SMS does not contain a link. Consider adding one if recipients need to take action. Buttons: (1) Continue Anyway (2) CTA: Back to Edit",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:2",
+      "key": "KAT-11600",
+      "index": 2,
+      "owners": [
+        "jun"
+      ],
+      "text": "( Done) @Dian Yuhong “Campaign name” is missing  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:3",
+      "key": "KAT-11600",
+      "index": 3,
+      "owners": [
+        "jun"
+      ],
+      "text": "( Done) @Dian Yuhong  （From 11385 No.5) In the event SMS tool:  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:4",
+      "key": "KAT-11600",
+      "index": 4,
+      "owners": [
+        "jun"
+      ],
+      "text": "( Done ) @Dian Yuhong  (From 11385 No.17) In the email campaign RTE, when clicking ‘Insert Image,’ it should open the system file selector directly, without an additional image selection popup. Also, since video insertion isn’t supported, the ‘Media’ option should be renamed to ‘Image’.  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:5",
+      "key": "KAT-11600",
+      "index": 5,
+      "owners": [
+        "jun"
+      ],
+      "text": "（Backlog） @Dian Yuhong  (From 11385 No.18) When I send a test email campaign, the image doesn't appear to load or preview correctly in the email.  @Jun Li",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:6",
+      "key": "KAT-11600",
+      "index": 6,
+      "owners": [
+        "lory"
+      ],
+      "text": "(moved 11762 No. 4 )  @Dian Yuhong  (From 11385 No. 23) The credit card statement descriptor should display the details - this is important to avoid: what’s this charge?  @Lory Jiang",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11600:7",
+      "key": "KAT-11600",
+      "index": 7,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( Done ) @Dian Yuhong  (From 11385 No.24) The page is flickering when payment successful or failed  @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11600:8",
+      "key": "KAT-11600",
+      "index": 8,
+      "owners": [
+        "tianye"
+      ],
+      "text": "(moved 11762 No. 3 )  @Dian Yuhong  (From 11385 No.25) The available credit is wrong if pay&send on two tabs at the same time   @Tian Ye",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11600:9",
+      "key": "KAT-11600",
+      "index": 9,
+      "owners": [],
+      "text": "(Moved to 11653)  must remove SMS consent if a number is not-SMS-capable (received 30006 error code) so the number is not included in future campaigns",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11600:10",
+      "key": "KAT-11600",
+      "index": 10,
+      "owners": [
+        "lory",
+        "fengxia"
+      ],
+      "text": "(moved 11762 No. 5 )  (Critical bug) Campaign was charged but showing 0 recipients.  From Feng:  “send button was clicked twice but API is not idempotent, not blocking in-progress/completed campaigns. So while it didn't actually resend the SMS( it's idempotent here) , the count got bumped twice, and the second time, all numbers are 0.”   “I've fixed the count issue on release. @ Yuhang the usage_fee is also at risk of double charging  @Feng Xia   @Lory Jiang   @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11600:11",
+      "key": "KAT-11600",
+      "index": 11,
+      "owners": [
+        "lory"
+      ],
+      "text": "(moved 11762 No. 6 )  Need a payment timestamp when a campaign is sent and paid. This is important to accurately record Pear revenue weekly, monthly and so on.  @Lory Jiang   @Dian Yuhong",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11598:1",
+      "key": "KAT-11598",
+      "index": 1,
+      "owners": [],
+      "text": "(Done) The sales page header has a lot of room to optimize  @Yizhen Xin",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:2",
+      "key": "KAT-11598",
+      "index": 2,
+      "owners": [
+        "cici"
+      ],
+      "text": "(Done) (high)This design should be consistent with the Event Sales order list.  Simplify, simplify, and simplify.  Less, less and less.  @Yizhen Xin   @Yuxiao Zhu    @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:3",
+      "key": "KAT-11598",
+      "index": 3,
+      "owners": [],
+      "text": "(Done) We can benefit from simple and straightforward UI design  @Yizhen Xin   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:4",
+      "key": "KAT-11598",
+      "index": 4,
+      "owners": [],
+      "text": "(Done) There is no other content in this empty state UI, so let’s utilize the space  @Cynthia Yueh   @Xuan Hu   @Hui Xu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:5",
+      "key": "KAT-11598",
+      "index": 5,
+      "owners": [
+        "jun",
+        "cici"
+      ],
+      "text": "(Done) (linda)Add from my links, the padding of “Link“ and “test“ need to optimize  @cici Huang   @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:6",
+      "key": "KAT-11598",
+      "index": 6,
+      "owners": [],
+      "text": "( Done )(Linda)When preview the shop, the empty status no need to display for a time",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:7",
+      "key": "KAT-11598",
+      "index": 7,
+      "owners": [
+        "cici"
+      ],
+      "text": "(Done) (Linda)The “cookie preferences“ text no need to display when refresh the shop  @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:8",
+      "key": "KAT-11598",
+      "index": 8,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done ) (Demi) The product’s price is not displayed in the Preview window>Products module(Vertical Scroll Layout)   @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:9",
+      "key": "KAT-11598",
+      "index": 9,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Done)  (High)(Demi)The preview window should be the visitor view  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:10",
+      "key": "KAT-11598",
+      "index": 10,
+      "owners": [
+        "tianye"
+      ],
+      "text": "(moved 11762 No. 1 )  （Lury) Event details page > sales> orders > filter order by ticket, click the order go to sale details page > back to order list > the filter criteria is cleared  @Tian Ye",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11598:11",
+      "key": "KAT-11598",
+      "index": 11,
+      "owners": [
+        "jayce"
+      ],
+      "text": "(Yuxiao) Our system is still obtaining guest information (UA and FB Pixel) without the user's consent, which is incorrect  --Invalid  @jayce chen",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:12",
+      "key": "KAT-11598",
+      "index": 12,
+      "owners": [
+        "jayce"
+      ],
+      "text": "(Done) (Yuxiao)In Impersonate mode of Admin Profile, there is no need to pop up a cookie window  @jayce chen",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:13",
+      "key": "KAT-11598",
+      "index": 13,
+      "owners": [
+        "tianye"
+      ],
+      "text": "( Done )(Demi) Update the copy to “Customize commission“ for both co-sellers and affiliates  @Tian Ye",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:14",
+      "key": "KAT-11598",
+      "index": 14,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )(Yuxiao)When entering the partner store, the module without a name will jump for a moment.  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:15",
+      "key": "KAT-11598",
+      "index": 15,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) (Yuxiao)\"Explore-Shops\". If the number of shops browsed reaches exactly 20, a \"More\" CTA will appear here, which is quite unattractive.  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:16",
+      "key": "KAT-11598",
+      "index": 16,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) (Yuxiao)UX feedback: The response speed after clicking \"my content\" is still rather slow. A loading feedback is needed.  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:17",
+      "key": "KAT-11598",
+      "index": 17,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) (Yuxiao)The cover (GIF) of the \"past card\" cannot be displayed on the landing page of Post.  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11598:18",
+      "key": "KAT-11598",
+      "index": 18,
+      "owners": [],
+      "text": "( Done )(Lury)The qty sold is wrong after restocked it",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:1",
+      "key": "KAT-11584",
+      "index": 1,
+      "owners": [
+        "dajiang"
+      ],
+      "text": "（ Done )Optimize the floating window position so it doesn’t get hidden.  @Dajiang Zuo   @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:3",
+      "key": "KAT-11584",
+      "index": 3,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )(Linda)When the shop setting  feature flag “hideStorefrontHeader“ enabled. consumer view the shop, need to add a back button on the left top.  https://pear.us/lindazhou300   @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:4",
+      "key": "KAT-11584",
+      "index": 4,
+      "owners": [
+        "cici"
+      ],
+      "text": "(Done) Linda)When the Co-selling tab drag the width to 744px, the co-sellers width need to full display  @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:5",
+      "key": "KAT-11584",
+      "index": 5,
+      "owners": [],
+      "text": "( Done )  Hotfix (Demi) These two features do not work",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:6",
+      "key": "KAT-11584",
+      "index": 6,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(Linda) When delete a product which exist sold, the pop up text need to consistence with the API response “Cannot delete this product as it has already been sold (1 sold).“, not the “Delelte failed“  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:7",
+      "key": "KAT-11584",
+      "index": 7,
+      "owners": [
+        "cici"
+      ],
+      "text": "(Backlog)(High) （Le）The background color should grey (图2为期望结果)   @cici Huang",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:8",
+      "key": "KAT-11584",
+      "index": 8,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( Done ) (Demi) When there are three events on the Insert ticket banner>Select event drawer, scroll the page, “Edit post content“ page is scrolling  @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11584:10",
+      "key": "KAT-11584",
+      "index": 10,
+      "owners": [
+        "lory"
+      ],
+      "text": "(moved 11762 No. 2 )  (High)( Lury) Cannot refund tips  @Lory Jiang",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11584:11",
+      "key": "KAT-11584",
+      "index": 11,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done) If a module has no title and is arranged in a vertical layout, it will be placed very close to the social icon, without any space in between.   @Jiaqi Yu   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:3",
+      "key": "KAT-11543",
+      "index": 3,
+      "owners": [],
+      "text": "( Done ) ( From 11304 No.6 ) Shift+click must select from cursor placement to current location",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:8",
+      "key": "KAT-11543",
+      "index": 8,
+      "owners": [],
+      "text": "( Done ) Adjust lineup section settings to be consistent with Media section and lineup in event settings. (Details marked in Figma   )",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:10",
+      "key": "KAT-11543",
+      "index": 10,
+      "owners": [],
+      "text": "( Done ) Change new icons for event info widget and adjust size to 16 px (Details marked in Figma   )",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:12",
+      "key": "KAT-11543",
+      "index": 12,
+      "owners": [],
+      "text": "( Done ) \"Widget\" feels like an internal term. Let's rename all event widgets to \"Section\" for better clarity and consistency.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:13",
+      "key": "KAT-11543",
+      "index": 13,
+      "owners": [],
+      "text": "( Invalid )( From 11304 No.22 ) (Lury) The image is displayed incorrectly",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:14",
+      "key": "KAT-11543",
+      "index": 14,
+      "owners": [],
+      "text": "( Done ) Don’t show multiple floating toolbars when using tabs with columns/collapsible sections/etc.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:15",
+      "key": "KAT-11543",
+      "index": 15,
+      "owners": [],
+      "text": "( Done ) Ensure nested components (CTA) don’t escape containers (e.g., tab → column → CTA currently is too wide and escapes column)",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11543:16",
+      "key": "KAT-11543",
+      "index": 16,
+      "owners": [],
+      "text": "( Done ) Click+drag from any cursor location allow selection of content, including cursor before/after custom elements",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:1",
+      "key": "KAT-11496",
+      "index": 1,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done)(From 11405 No.9)   (YuXiao)For tickets that have been cancelled, when attempting to redeem them on the details page of the scan interface, a prompt should appear stating \"Code Has Been Cancelled\".  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:2",
+      "key": "KAT-11496",
+      "index": 2,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done)(From 11405 No.21)  (Lury)The page is flickering when click view details  @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:3",
+      "key": "KAT-11496",
+      "index": 3,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Backlog) (From 11405 No.27)  (Demi) Edit one variant’s name, and this variant’s prices become 0  @zhiyong song",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:5",
+      "key": "KAT-11496",
+      "index": 5,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(From 11349 No.5)  The convention is to put the control on the left  @Yizhen Xin    @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:8",
+      "key": "KAT-11496",
+      "index": 8,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "( OUTDATED )    @Tiancheng Tang @Xuan Hu   Verify the sales notification settings:",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:9",
+      "key": "KAT-11496",
+      "index": 9,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(From 11098 No.11)  (reported by YuXiao)When a users duplicates a post, they still end up using the old route.  @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:10",
+      "key": "KAT-11496",
+      "index": 10,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done) (From 11377 No.8)  Ticket thumbnail:  @Yizhen Xin  provide flyer as the default ticket thumbnail ( Figma reference  ). Eng team needs to record that if the thumbnail is using the default (I.e. connected to the flyer) or is selected manually.   When the flyer changes, the default ones will be updated to use the new one.    Need the same logic for post listing view’s thumbnail (Slack:   )  @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:11",
+      "key": "KAT-11496",
+      "index": 11,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done) (From 11386 No.4) (From 11194 No.2)  please make sure the these media (event media / post media / post card media) are synced for auto-sync event post. @Tiancheng Tang   @Yuxiao Zhu   If the post media is different (maybe it’s a video), show a window to ask users if they want to apply the new event media to the posts and post card.",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:13",
+      "key": "KAT-11496",
+      "index": 13,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(From 11405 No.18)  (YuXiao)For posts in the \"draft\" state, they should not be directly added to the store of co-seller.   @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:14",
+      "key": "KAT-11496",
+      "index": 14,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(From 11405 No.3)  (Linda)Add links on the  link tab , the “Link card style” setting need to remove because is not working.   @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:15",
+      "key": "KAT-11496",
+      "index": 15,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(From 11405 No.5)  (Linda)Add general link, if no Thumnail image upload, the default shop logo hasn’t display  @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:18",
+      "key": "KAT-11496",
+      "index": 18,
+      "owners": [],
+      "text": "(Done)(From 10424 No.3)  (Linda)  https://pear.us/post/029c9ae4-5e98-4ac0-a633-59fa5a54b223/view?redirect=%2Fevents%2F96ffcd11-fd28-44dc-a7b8-dbbc5b2099e2%2Fview%23eventTab%3DTicketsMerch%2Ctab%3DPOSTS&source=event#tab=CoSelling,coSellingTab=Affiliates",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:19",
+      "key": "KAT-11496",
+      "index": 19,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Done)(From 10424 No.5) (Linda)New partner and create “test“ module, the “Create my firser event“ drawer no need to display twice.  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:21",
+      "key": "KAT-11496",
+      "index": 21,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Done)(From 11405 No.23)  Customers often mistype their email address when purchasing tickets, for example typing  .con  instead of  .com , and therefore don’t receive their confirmation email. We should detect common typos at this step and prompt customers to correct them before placing the order.   @Jun Li   @Dian Yuhong",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:23",
+      "key": "KAT-11496",
+      "index": 23,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Done)(From 11386 No.14) (Lury)The campaign should show in campaign list after duplicating and close it  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:27",
+      "key": "KAT-11496",
+      "index": 27,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Done)(From 11113 No.4) Replace “Follow” button with “Visit” button at the bottom of a post. Clicking Visit goes to the storefront   @Dian Yuhong   @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:29",
+      "key": "KAT-11496",
+      "index": 29,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done) (From 11109 No. 1 )  Post version history feature is broken.  @Yuxiao Zhu    @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:30",
+      "key": "KAT-11496",
+      "index": 30,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(Done)(From 11109 No. 5 )  Avoid such UI when the screen can’t fit all tabs. Users won’t know there are more tabs hidden.  @Yizhen Xin   @Yuxiao Zhu    @Tiancheng Tang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:32",
+      "key": "KAT-11496",
+      "index": 32,
+      "owners": [
+        "zhiyong",
+        "neo"
+      ],
+      "text": "(invalid)(From 11267 No.3)  Reported by Thomas: “when bulk import existing linktree links it ends up creating multiple modules. A default mix content module that house all the links is prolly better for this use case”  @zhiyong song   @Neo Wang   @Yuxiao Zhu",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:33",
+      "key": "KAT-11496",
+      "index": 33,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(From 11267 No.5)  Reduce buttons on an image as much as possible  @Yizhen Xin   @zhiyong song   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:34",
+      "key": "KAT-11496",
+      "index": 34,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done)(From 11109 No.2)  Let’s relax the post duplication restrictions and just clone the post even with unavailable items  @Yuxiao Zhu    @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:35",
+      "key": "KAT-11496",
+      "index": 35,
+      "owners": [
+        "jun"
+      ],
+      "text": "(From 10839 No.5)  It’s better display “$29.80“ not “$29.8”  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:36",
+      "key": "KAT-11496",
+      "index": 36,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done)(From 10951 No.10)  (Reported by YuXiao)For overly long names, it is recommended that the full name be displayed when the cursor moves over it.   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:39",
+      "key": "KAT-11496",
+      "index": 39,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Backlog) (Form 11292 No.9) (Demi) In wholesale mode, edit the ticket price, the new fees and cost price should not update from the co-seller view  @Jiaqi Yu",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:40",
+      "key": "KAT-11496",
+      "index": 40,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Backlog)(From 11386 No.6)  (From Melody)  If the Post tab is hidden, posts that have not been added to any module will not be displayed on the co-seller’s Explore page when resell settings are enabled. @Jiaqi Yu @Yuxiao Zhu",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:41",
+      "key": "KAT-11496",
+      "index": 41,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)(Form 11386 No.6)  (Reported by  @Melody Zhang  ) When importing from Linktree, the brand logo gets blurry. Example:  https://linktr.ee/frndsonly   @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:42",
+      "key": "KAT-11496",
+      "index": 42,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Backlog)(Form 11386 No.15)    The gif on iPhone 16 Pro (version 26.5) only displays the first frame image and cannot be played (report by Grace)     @Yuxiao Zhu    @Jiaqi Yu   Check it。",
+      "is_done": false,
+      "is_backlog": true,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:43",
+      "key": "KAT-11496",
+      "index": 43,
+      "owners": [
+        "jiaqi",
+        "neo"
+      ],
+      "text": "(Done)(Form 11424 No.2) （YuXiao）The Manage Cover Media function is unable to use the latest uploaded images.  @Jiaqi Yu   @Neo Wang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:59",
+      "key": "KAT-11496",
+      "index": 59,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "(Done)(Form 11424 No.6)  (Linda)  @Cynthia Yueh    the co-seller is unable to create “products”, the  edu may need to optimize when co-seller signup.   @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11496:60",
+      "key": "KAT-11496",
+      "index": 60,
+      "owners": [
+        "jun"
+      ],
+      "text": "(Form 10928 No.9) (Reported by YuXiao )The supported social types in the form should be consistent with those of the storefront .  @Jun Li",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11424:2",
+      "key": "KAT-11424",
+      "index": 2,
+      "owners": [
+        "jiaqi",
+        "neo"
+      ],
+      "text": "( Done )（YuXiao）The Manage Cover Media function is unable to use the latest uploaded images.  @Jiaqi Yu   @Neo Wang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11424:3",
+      "key": "KAT-11424",
+      "index": 3,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(Linda)  https://pear.us/post/029c9ae4-5e98-4ac0-a633-59fa5a54b223/view?redirect=%2Fevents%2F96ffcd11-fd28-44dc-a7b8-dbbc5b2099e2%2Fview%23eventTab%3DTicketsMerch%2Ctab%3DPOSTS&source=event#tab=CoSelling,coSellingTab=Affiliates       @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11424:4",
+      "key": "KAT-11424",
+      "index": 4,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )(Linda)When the width scroll to “763*929“, the pop up window  width need to  self-adaptive  @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11424:5",
+      "key": "KAT-11424",
+      "index": 5,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "( Done )(Linda)New partner and create “test“ module, the “Create my firser event“ drawer no need to display twice.   @zhiyong song",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11424:6",
+      "key": "KAT-11424",
+      "index": 6,
+      "owners": [
+        "cici"
+      ],
+      "text": "( Done )(Linda) (see comments) @Cynthia Yueh    the co-seller is unable to create “products”, the  edu may need to optimize when co-seller signup.   @cici Huang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-11424:7",
+      "key": "KAT-11424",
+      "index": 7,
+      "owners": [
+        "chenglim"
+      ],
+      "text": "(moved 11753 No.1) （YuXiao）The query efficiency of the \"Admin-Metrics and Reports\" page is poor (especially for \"Weekly Stats\") cc  @Cheng Lim",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11424:8",
+      "key": "KAT-11424",
+      "index": 8,
+      "owners": [
+        "tiancheng"
+      ],
+      "text": "(moved to 11496 No.31)No need to display the ‘0’ total number of orders and “$0.00” total sales when co-sellers or affiliates are in an empty state  @Tiancheng Tang",
+      "is_done": false,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": true
+    },
+    {
+      "ref": "KAT-11424:9",
+      "key": "KAT-11424",
+      "index": 9,
+      "owners": [
+        "jiaqi"
+      ],
+      "text": "( Done )Increase the size of the three primary CTA buttons on mobile. The URL outline is too subtle—make it visually stronger to improve contrast and readability.  @Le Gong    @Jiaqi Yu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    }
+  ]
+}

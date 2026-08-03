@@ -1123,6 +1123,148 @@ def generate_html_report(
     return html
 
 
+def _escape_attr(text):
+    return _escape_html(text).replace('"', '&quot;')
+
+
+def _build_meeting_report_html(meeting, base_url):
+    """统计页顶部：发布周排期进度三列 + 按人表。"""
+    if not meeting:
+        return ''
+
+    release = _escape_html(meeting.get('release_label') or '当前发布周')
+    week_start = meeting.get('week_start') or meeting.get('previous_date')
+    week_end = meeting.get('week_end') or meeting.get('release_date')
+    if meeting.get('has_diff'):
+        added_value = f"+{meeting['unique_added']}"
+        range_parts = []
+        if week_start and week_end:
+            range_parts.append(f"发布周 {week_start} → {week_end}")
+        range_parts.append(
+            f"快照 {meeting.get('baseline_date')} → {meeting.get('current_date')}"
+        )
+        range_parts.append(
+            f"已处理 {meeting.get('baseline_count')} → {meeting.get('current_count')}"
+        )
+        range_note = '；'.join(range_parts)
+    else:
+        added_value = '—'
+        if week_start:
+            range_note = (
+                f"发布周自 {week_start} 起；尚无周起点快照，净增暂不可算"
+            )
+        else:
+            range_note = '尚无上一发布周，净增暂不可算'
+
+    if meeting.get('previous_label'):
+        leftover_note = (
+            f"上一发布周未清 {meeting.get('leftover_previous', 0)} + "
+            f"当前发布周未完成 {meeting.get('leftover_current', 0)}"
+        )
+    else:
+        leftover_note = '当前发布周仍未处理的排期条目'
+
+    promise_rate = ''
+    if meeting.get('promised'):
+        rate = round(100 * meeting['done_promised'] / meeting['promised'])
+        promise_rate = f"已完成 {meeting['done_promised']}/{meeting['promised']}（{rate}%）"
+
+    owner_rows = []
+    detail_blocks = []
+    for row in meeting.get('owners') or []:
+        owner = row['owner']
+        display = _escape_html(row['display'])
+        rate = '—' if row.get('promise_rate') is None else f"{row['promise_rate']}%"
+        owner_rows.append(
+            f'<tr class="meeting-owner-row" data-owner="{owner}" '
+            f'onclick="toggleMeetingOwner(\'{owner}\')">'
+            f'<td><span class="owner-tag owner-{owner}">{display}</span></td>'
+            f'<td>{row["promised"]}</td>'
+            f'<td>{row["done_promised"]}</td>'
+            f'<td class="num-added">+{row["added"]}</td>'
+            f'<td>{row["leftover"]}</td>'
+            f'<td>{rate}</td>'
+            f'</tr>'
+        )
+
+        added_lines = []
+        for item in row.get('added_items') or []:
+            href = f'{base_url}/browse/{item["key"]}'
+            added_lines.append(
+                f'<li><a href="{href}" target="_blank">{item["key"]}</a> '
+                f'No.{item["index"]} — {_escape_html(item["summary"])}</li>'
+            )
+        leftover_lines = []
+        for item in row.get('leftover_items') or []:
+            href = f'{base_url}/browse/{item["key"]}'
+            empty_summary = '（无摘要）'
+            summary = _escape_html(item["summary"]) or empty_summary
+            leftover_lines.append(
+                f'<li><a href="{href}" target="_blank">{item["key"]}</a> '
+                f'No.{item["index"]} — {summary}</li>'
+            )
+        if not added_lines and not leftover_lines:
+            continue
+        added_list = ''.join(added_lines) or '<li class="muted">无</li>'
+        leftover_list = ''.join(leftover_lines) or '<li class="muted">无</li>'
+        detail_blocks.append(
+            f'<div class="meeting-owner-detail" id="meeting-detail-{owner}" hidden>'
+            f'<div class="meeting-detail-title">{display}</div>'
+            f'<div class="meeting-detail-grid">'
+            f'<div><div class="meeting-detail-label">区间净增</div>'
+            f'<ul>{added_list}</ul></div>'
+            f'<div><div class="meeting-detail-label">未完成排期</div>'
+            f'<ul>{leftover_list}</ul></div>'
+            f'</div></div>'
+        )
+
+    table_body = ''.join(owner_rows) or (
+        '<tr><td colspan="6" class="muted">暂无按人数据</td></tr>'
+    )
+    range_note_html = _escape_html(range_note)
+    promise_note = _escape_html(promise_rate) or '当前发布周排期条数'
+    leftover_note_html = _escape_html(leftover_note)
+
+    return f"""
+        <div class="panel meeting-panel" id="meeting-report">
+            <div class="owner-daily-chart-title">{release}</div>
+            <div class="owner-daily-chart-subtitle">{range_note_html}</div>
+            <div class="meeting-stats">
+                <div class="meeting-stat">
+                    <div class="meeting-stat-label">排期</div>
+                    <div class="meeting-stat-value">{meeting['promised']}</div>
+                    <div class="meeting-stat-note">{promise_note}</div>
+                </div>
+                <div class="meeting-stat meeting-stat-added">
+                    <div class="meeting-stat-label">已处理净增</div>
+                    <div class="meeting-stat-value">{added_value}</div>
+                    <div class="meeting-stat-note">Daily 条目，含 Done / Backlog / Moved</div>
+                </div>
+                <div class="meeting-stat meeting-stat-leftover">
+                    <div class="meeting-stat-label">未完成</div>
+                    <div class="meeting-stat-value">{meeting['leftover']}</div>
+                    <div class="meeting-stat-note">{leftover_note_html}</div>
+                </div>
+            </div>
+            <table class="meeting-table">
+                <thead>
+                    <tr>
+                        <th>负责人</th>
+                        <th>排期</th>
+                        <th>已完成</th>
+                        <th>净增</th>
+                        <th>未完成</th>
+                        <th>完成率</th>
+                    </tr>
+                </thead>
+                <tbody>{table_body}</tbody>
+            </table>
+            <div class="meeting-hint">点击某人展开净增 / 未完成明细</div>
+            <div class="meeting-details">{''.join(detail_blocks)}</div>
+        </div>
+    """
+
+
 def generate_owner_daily_html_report(
     analysis,
     base_url,
@@ -1131,11 +1273,19 @@ def generate_owner_daily_html_report(
     label='Q3',
     back_href='./',
     favicon_href='favicon.svg',
+    meeting_report=None,
 ):
     """生成独立的季度 Daily 统计页。"""
     now = _report_timestamp()
     daily_stats = _count_daily_processed_by_owner(analysis)
-    owner_css = _build_owner_css(set(daily_stats.keys()))
+    style_owners = set(daily_stats.keys())
+    if meeting_report:
+        style_owners.update(
+            row['owner'] for row in meeting_report.get('owners') or []
+            if row.get('owner') and row['owner'] != 'unassigned'
+        )
+    owner_css = _build_owner_css(style_owners)
+    meeting_html = _build_meeting_report_html(meeting_report, base_url)
     chart_html = _build_owner_daily_chart(label, daily_stats) or (
         '<div class="empty-state">暂无 Daily 处理数据</div>'
     )
@@ -1167,6 +1317,49 @@ def generate_owner_daily_html_report(
         .owner-daily-bar-track {{ position: relative; height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }}
         .owner-daily-bar {{ height: 100%; border-radius: 999px; min-width: 4px; }}
         .owner-daily-value {{ font-size: 13px; color: #374151; font-weight: 600; text-align: right; white-space: nowrap; }}
+        .meeting-stats {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 14px 0 18px;
+        }}
+        .meeting-stat {{
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }}
+        .meeting-stat-added {{ border-color: #bbf7d0; background: #f0fdf4; }}
+        .meeting-stat-leftover {{ border-color: #fde68a; background: #fffbeb; }}
+        .meeting-stat-label {{ font-size: 12px; color: #6b7280; font-weight: 600; }}
+        .meeting-stat-value {{ font-size: 28px; font-weight: 700; color: #111827; margin-top: 4px; }}
+        .meeting-stat-note {{ font-size: 12px; color: #6b7280; margin-top: 6px; line-height: 1.4; }}
+        .meeting-table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
+        .meeting-table th, .meeting-table td {{ padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }}
+        .meeting-table th {{ color: #374151; background: #f9fafb; }}
+        .meeting-owner-row {{ cursor: pointer; }}
+        .meeting-owner-row:hover {{ background: #f3f4f6; }}
+        .meeting-owner-row.active {{ background: #eef2ff; }}
+        .num-added {{ color: #15803d; font-weight: 700; }}
+        .meeting-hint {{ font-size: 12px; color: #9ca3af; margin-top: 10px; }}
+        .meeting-owner-detail {{
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }}
+        .meeting-detail-title {{ font-weight: 700; margin-bottom: 10px; color: #111827; }}
+        .meeting-detail-grid {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }}
+        .meeting-detail-label {{ font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 6px; }}
+        .meeting-owner-detail ul {{ margin: 0; padding-left: 18px; color: #374151; font-size: 13px; line-height: 1.55; }}
+        .meeting-owner-detail a {{ color: #667eea; text-decoration: none; font-weight: 600; }}
+        .meeting-owner-detail a:hover {{ text-decoration: underline; }}
+        .muted {{ color: #9ca3af; }}
         table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
         th, td {{ padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }}
         th {{ color: #374151; background: #f9fafb; }}
@@ -1252,6 +1445,8 @@ def generate_owner_daily_html_report(
         @media (max-width: 780px) {{
             .owner-daily-row {{ grid-template-columns: 1fr; gap: 6px; }}
             .owner-daily-value {{ text-align: left; }}
+            .meeting-stats {{ grid-template-columns: 1fr; }}
+            .meeting-detail-grid {{ grid-template-columns: 1fr; }}
         }}
     </style>
 </head>
@@ -1262,6 +1457,7 @@ def generate_owner_daily_html_report(
             <p>父任务：{parent_issue} · 数据更新到 {now}（UTC+8）</p>
             <a class="back-link" href="{back_href}">← 返回主报告</a>
         </div>
+        {meeting_html}
         <div class="panel">{chart_html}</div>
         <div class="panel">
             <div class="owner-daily-chart-title">已处理条目明细</div>
@@ -1275,6 +1471,7 @@ def generate_owner_daily_html_report(
     </div>
     <script>
         let currentOwnerFilter = 'all';
+        let currentMeetingOwner = null;
         function applyFilterButtonUI(owner) {{
             document.querySelectorAll('.filter-bar .filter-btn').forEach(btn => {{
                 btn.classList.remove('active');
@@ -1295,6 +1492,25 @@ def generate_owner_daily_html_report(
                 const ownerList = owners ? owners.split(',') : [];
                 row.style.display = ownerList.includes(owner) ? '' : 'none';
             }});
+        }}
+        function toggleMeetingOwner(owner) {{
+            const detail = document.getElementById('meeting-detail-' + owner);
+            document.querySelectorAll('.meeting-owner-row').forEach(row => {{
+                row.classList.toggle('active', row.getAttribute('data-owner') === owner && currentMeetingOwner !== owner);
+            }});
+            document.querySelectorAll('.meeting-owner-detail').forEach(el => {{
+                el.hidden = true;
+            }});
+            if (!detail) {{
+                currentMeetingOwner = null;
+                return;
+            }}
+            if (currentMeetingOwner === owner) {{
+                currentMeetingOwner = null;
+                return;
+            }}
+            detail.hidden = false;
+            currentMeetingOwner = owner;
         }}
     </script>
 </body>
