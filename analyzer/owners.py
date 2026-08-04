@@ -13,25 +13,31 @@ Owner 识别模块
 """
 
 # 唯一真相来源：所有 owner 信息集中在这里维护
+# 书写顺序 = 筛选栏展示顺序
 OWNER_REGISTRY = {
+    # —— 武汉团队 ——
+    # 前端
     'jayce':    {'mentions': ['@Jayce'],         'display': 'Jayce',     'color': ('#dbeafe', '#1e40af')},
     'zhiyong':  {'mentions': ['@zhiyong song'],  'display': 'Zhiyong',   'color': ('#dcfce7', '#166534')},
     'tiancheng':{'mentions': ['@Tiancheng Tang'],'display': 'Tiancheng', 'color': ('#f3e8ff', '#6b21a8')},
     'jun':      {'mentions': ['@Jun Li'],         'display': 'Jun',       'color': ('#fef3c7', '#92400e')},
+    'cici':     {'mentions': ['@cici Huang'],     'display': 'Cici',      'color': ('#fdf2f8', '#9d174d')},
     'jiaqi':    {'mentions': ['@Jiaqi Yu'],       'display': 'Jiaqi',     'color': ('#fee2e2', '#991b1b')},
+    'zhengzhu': {'mentions': ['@Zheng Zhu'],      'display': 'Zheng Zhu', 'color': ('#ffedd5', '#9a3412')},
+    'dajiang':  {'mentions': ['@Dajiang Zuo'],    'display': 'Dajiang',   'color': ('#faf5ff', '#6b21a8')},
+    # 后端
+    'fengxia':  {'mentions': ['@Feng Xia'],       'display': 'Feng Xia',  'color': ('#fef9c3', '#854d0e')},
+    'june':     {'mentions': ['@June Teng'],      'display': 'June',      'color': ('#ecfdf5', '#065f46')},
+    'neo':      {'mentions': ['@Neo Wang'],       'display': 'Neo',       'color': ('#eff6ff', '#1e3a8a')},
+    'pengfei':  {'mentions': ['@Pengfei Wu'],     'display': 'Pengfei',   'color': ('#f0fdf4', '#15803d')},
+    'zhengchun':{'mentions': ['@zhengchun Zhou'], 'display': 'Zhengchun', 'color': ('#fff7ed', '#c2410c')},
+    # —— 成都团队 ——
     'lory':     {'mentions': ['@Lory Jiang'],     'display': 'Lory',      'color': ('#e0f2fe', '#0c4a6e')},
     'tianye':   {'mentions': ['@Tian Ye'],        'display': 'Tian Ye',   'color': ('#fce7f3', '#9d174d')},
-    'fengxia':  {'mentions': ['@Feng Xia'],       'display': 'Feng Xia',  'color': ('#fef9c3', '#854d0e')},
+    # —— 美国团队 ——
     'fred':     {'mentions': ['@Fred Steger'],    'display': 'Fred',      'color': ('#e2e8f0', '#334155')},
     'jiangtian':{'mentions': ['@Jiangtian Hou'], 'display': 'Joey',      'color': ('#d1fae5', '#065f46')},
     'chenglim': {'mentions': ['@Cheng Lim'],      'display': 'Cheng Lim', 'color': ('#ede9fe', '#5b21b6')},
-    'zhengzhu': {'mentions': ['@Zheng Zhu'],      'display': 'Zheng Zhu', 'color': ('#ffedd5', '#9a3412')},
-    'cici':     {'mentions': ['@cici Huang'],     'display': 'Cici',      'color': ('#fdf2f8', '#9d174d')},
-    'june':     {'mentions': ['@June Teng'],      'display': 'June',      'color': ('#ecfdf5', '#065f46')},
-    'neo':      {'mentions': ['@Neo Wang'],       'display': 'Neo',       'color': ('#eff6ff', '#1e3a8a')},
-    'dajiang':  {'mentions': ['@Dajiang Zuo'],    'display': 'Dajiang',   'color': ('#faf5ff', '#6b21a8')},
-    'pengfei':   {'mentions': ['@Pengfei Wu'],    'display': 'Pengfei',   'color': ('#f0fdf4', '#15803d')},
-    'zhengchun':{'mentions': ['@zhengchun Zhou'], 'display': 'Zhengchun', 'color': ('#fff7ed', '#c2410c')},
 }
 
 # 兼容导出（供现有 import 使用，勿手动编辑）
