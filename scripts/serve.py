@@ -48,7 +48,7 @@ def _run_analyzer_fresh(*, quiet: bool, open_browser: bool) -> None:
     """
     每次调用前重新加载 jira_analyzer 模块。
 
-    这样在 `pnpm run dev` 过程中修改 report.py / jira_analyzer.py 后，
+    这样在 `npm run dev` 过程中修改报告代码后，
     下一次定时刷新会自动使用最新代码，无需重启 serve 进程。
     """
     if str(ROOT) not in sys.path:
