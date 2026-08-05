@@ -15,6 +15,7 @@
 | 只预览已有报告 | `npm run serve` |
 | 本地定时刷新 | `npm run dev` |
 | 不连 Jira 冒烟 | `npm run smoke` |
+| 单测 | `npm test` |
 
 ## 模块地图
 
@@ -24,7 +25,7 @@
 | 列表解析 / Done·Backlog·划线 | `analyzer/parser.py`、`analyzer/statuses.py` |
 | Jira API / 活跃状态 | `analyzer/jira_client.py`、`config` 的 `filters` |
 | 排期标签 | `data/scheduled.json` + `analyzer/scheduled.py` |
-| HTML / 筛选 UI | `analyzer/report.py`（颜色来自 registry） |
+| HTML / 筛选 UI | `analyzer/report/`（`html_main.py` 主报告；`daily.py` / `meeting.py` / `markdown.py`；颜色来自 registry） |
 | 入口 / 多报告编排 | `jira_analyzer.py` |
 | 配置模板（可提交） | `config.example.json` |
 | 本地密钥（勿提交） | `config.json` |
@@ -33,10 +34,10 @@
 ## 铁律
 
 1. 不提交 `config.json`、API Token、真实密钥。
-2. 加成员只动 `OWNER_REGISTRY`；勿手改导出的 `OWNERS` / `OWNER_DISPLAY_NAMES`；勿在 `report.py` 再维护第二份调色板。
+2. 加成员只动 `OWNER_REGISTRY`；勿手改导出的 `OWNERS` / `OWNER_DISPLAY_NAMES`；勿在 `analyzer/report/` 再维护第二份调色板。
 3. 改 Jira 内容时优先跑现有 `scripts/jira-*.py`，禁止为单次任务临时拼 disposable inline Python。
 4. `output/` 是生成物；改报告逻辑后用 `npm start`（有 Token）或 `npm run serve` 验收。
-5. 除非用户明确要求，不要顺手大拆 `report.py`（留给 Phase 3）。
+5. 除非用户明确要求，不要把 `analyzer/report/` 各模块重新合并成单文件。
 
 ## 常见改动菜谱
 
@@ -56,8 +57,8 @@
 
 ### 3. 改主报告 UI
 
-1. 主报告：`generate_html_report` 及 `_build_filter_*` / 相关 `_build_owner_*`。
-2. 会议报告：`_build_meeting_report_html` 一带；Owner Daily：`generate_owner_daily_html_report`；Markdown：`generate_markdown_report`。勿混改。
+1. 主报告：`analyzer/report/html_main.py` → `generate_html_report`；筛选 JS：`filters.py`；共享 helpers：`common.py`。
+2. 会议块：`meeting.py`；Owner Daily：`daily.py`；Markdown：`markdown.py`。勿混改。
 3. 验证：`npm start` 或 `npm run serve` 打开对应 HTML。
 
 ### 4. 改 / 加 Skill
@@ -65,15 +66,19 @@
 1. 先改 `skills/*.md` 的契约（含 frontmatter `description`，影响何时被选用）。
 2. 再改对应 `scripts/jira-*.py`。
 3. 保持「优先脚本、禁临时 Python」。
-4. 验证：按 skill 文档中的命令跑一遍；`npm run smoke` 确保仓库仍健康。
+4. 验证：按 skill 文档中的命令跑一遍；`npm run smoke && npm test` 确保仓库仍健康。
 
 ## 验证清单
 
 - [ ] `npm run smoke` 通过
+- [ ] `npm test` 通过
 - [ ] 有 Token：`npm start`，检查 `output/index.html`
 - [ ] 仅预览：`npm run serve`
 
-## 后续（勿在日常任务里展开）
+## 已完成 / 后续
 
-- Phase 2：parser / owners / scheduled 单测 + CI  
-- Phase 3：拆分 `report.py`，并同步更新本文件与 rules  
+- Phase 1：AGENTS + Cursor rules + smoke  
+- Phase 2：unittest（owners/parser/statuses/scheduled）+ CI  
+- Phase 3：`analyzer/report/` 分包  
+
+新功能优先落在对应子模块；勿再造巨型单文件。

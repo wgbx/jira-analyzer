@@ -13,6 +13,7 @@ alwaysApply: true
 - `npm start` — 拉 Jira 生成报告（需 `config.json`）
 - `npm run serve` / `npm run dev` — 预览 / 热更新
 - `npm run smoke` — 不连 Jira 冒烟
+- `npm test` — 单测
 
 ## 改哪里
 
@@ -22,7 +23,7 @@ alwaysApply: true
 | 解析/状态 | `parser.py`, `statuses.py` |
 | 筛选口径 | `config.example.json` → `filters` |
 | 排期 | `data/scheduled.json` |
-| 报告 UI | `report.py`（按函数入口分流） |
+| 报告 UI | `analyzer/report/`（见 report-ui 规则） |
 | Jira 操作流程 | `skills/*.md` + `scripts/jira-*.py` |
 
 ## 铁律
@@ -30,5 +31,5 @@ alwaysApply: true
 1. 勿提交 `config.json` / Token。
 2. Owner 唯一源：`OWNER_REGISTRY`；勿第二份调色板。
 3. 改 Jira 优先现有脚本，禁 disposable inline Python。
-4. 勿无故大拆 `report.py`。
-5. 改完跑 `npm run smoke`；行为验收用 `npm start` 或 `serve`。
+4. 勿把 `analyzer/report/` 重新合并成单文件。
+5. 改完跑 `npm run smoke && npm test`；行为验收用 `npm start` 或 `serve`。

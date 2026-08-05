@@ -1,35 +1,19 @@
-# AI 友好开发体验（Phase 1）设计
+# AI 友好开发体验设计
 
 日期：2026-08-05  
-状态：已批准并实现
+状态：Phase 1–3 已实现
 
 ## 目标
 
-本仓库由 AI 编写与维护。Phase 1 目标：常见改动（加 Owner、改筛选、调主报告 UI、改 skill）时，新对话几乎不需要人再口头补项目上下文。
+本仓库由 AI 编写与维护。目标：常见改动时几乎不需要口头补上下文；改完可自跑验证；报告逻辑可按表面编辑。
 
-成功标准对齐「零口头补课」，不以大重构或完整测试套件为第一阶段交付。
+## 阶段
 
-## 方案
-
-采用「说明书优先」：
-
-- 写 `AGENTS.md` + Cursor rules
-- 加不连 Jira 的冒烟脚本
-- 不拆 `report.py`，不引入测试框架（留给 Phase 2/3）
-
-## 产物
-
-| 文件 | 作用 |
-|------|------|
-| `AGENTS.md` | 仓库级 Agent 地图 |
-| `.cursor/rules/project.mdc` | 每轮自动带上的短总览 |
-| `.cursor/rules/add-owner.mdc` | 加成员 |
-| `.cursor/rules/report-ui.mdc` | 报告 UI 入口分流 |
-| `.cursor/rules/config-filters.mdc` | 配置与筛选口径 |
-| `.cursor/rules/skills.mdc` | skills ↔ scripts |
-| `scripts/smoke-check.sh` | 无网络冒烟 |
-| `package.json` → `npm run smoke` | 冒烟入口 |
-| README | 链到 AGENTS；修正过时的加成员说明 |
+| 阶段 | 状态 | 内容 |
+|------|------|------|
+| Phase 1 | 完成 | `AGENTS.md` + Cursor rules + `npm run smoke` |
+| Phase 2 | 完成 | `tests/` unittest + `npm test` + `.github/workflows/ci.yml` |
+| Phase 3 | 完成 | `analyzer/report/` 分包 |
 
 ## 原则
 
@@ -37,19 +21,24 @@
 - `skills/` 服务操作 Jira；`.cursor/rules/` 服务改本仓库代码
 - Owner 唯一真相：`OWNER_REGISTRY`
 - 业务操作优先现有 `scripts/jira-*.py`
+- 报告公开 API 保持：`from analyzer.report import generate_html_report, ...`
 
-## 路线图
+## `analyzer/report/` 分包
 
-| 阶段 | 目标 |
+| 模块 | 职责 |
 |------|------|
-| Phase 1（本设计） | 零口头补课 |
-| Phase 2 | parser/owners/scheduled 单测 + CI |
-| Phase 3 | 拆分 `report.py`，同步更新规则 |
+| `html_main.py` | 主报告 `generate_html_report` |
+| `filters.py` | 筛选 JS、报告导航 |
+| `daily.py` | Owner Daily 页 |
+| `meeting.py` | 发布周会议统计块 |
+| `markdown.py` | Markdown 报告 |
+| `common.py` | 共享 helpers |
+| `__init__.py` | 对外 re-export |
 
 ## 验收
 
 - 「加 Owner」只改 `OWNER_REGISTRY`
-- 「改口径」改对 `filters`（example + 本地 config）
-- 「主报告 UI」落到正确入口，不误改 meeting/daily
-- 「改 skill」走 skills + scripts，不写 disposable Python
-- `npm run smoke` 通过
+- 「改口径」改对 `filters`
+- 「主报告 UI」落到 `html_main` / `filters`，不误改 daily/meeting
+- 「改 skill」走 skills + scripts
+- `npm run smoke && npm test` 通过

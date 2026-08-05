@@ -1,21 +1,22 @@
 ---
 description: HTML/Markdown 报告 UI 改动入口分流
-globs: analyzer/report.py
+globs: analyzer/report/**/*.py
 alwaysApply: false
 ---
 
 # 报告 UI
 
-先认准入口，再改对应 `_build_*`，避免误改其它报告。
+`analyzer/report/` 分包；公共 API 仍从 `analyzer.report` 导入。
 
-| 报告 | 入口 |
-|------|------|
-| 主报告（Q3/Q2 等） | `generate_html_report` + `_build_filter_*` / 相关 `_build_owner_*` |
-| 会议报告 | `_build_meeting_report_html` |
-| Owner Daily | `generate_owner_daily_html_report` |
-| Markdown | `generate_markdown_report` |
+| 报告 | 文件 / 入口 |
+|------|-------------|
+| 主报告（Q3/Q2 等） | `html_main.py` → `generate_html_report`；筛选 JS → `filters.py` |
+| 会议块 | `meeting.py` → `_build_meeting_report_html` |
+| Owner Daily | `daily.py` → `generate_owner_daily_html_report` |
+| Markdown | `markdown.py` → `generate_markdown_report` |
+| 共享 helpers | `common.py`（计数、颜色、条目渲染） |
 
-- 颜色：`_owner_color` ← `OWNER_REGISTRY`；禁止第二份 `OWNER_COLORS`。
+- 颜色：`_owner_color` ← `OWNER_REGISTRY`；禁止第二份调色板。
 - 统计口径须与 `filters.active_statuses` / README「统计口径」一致。
-- 除非用户明确要求，不做结构性大拆分（Phase 3）。
-- 验证：`npm start` 或 `npm run serve` 打开对应 HTML。
+- 勿把分包重新合并成单文件。
+- 验证：`npm start` 或 `npm run serve`；改完跑 `npm run smoke && npm test`。

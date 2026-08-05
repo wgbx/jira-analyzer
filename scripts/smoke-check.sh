@@ -12,7 +12,8 @@ REQUIRED_PATHS=(
   AGENTS.md
   analyzer/owners.py
   analyzer/parser.py
-  analyzer/report.py
+  analyzer/report/__init__.py
+  analyzer/report/html_main.py
   analyzer/config.py
   analyzer/jira_client.py
   config.example.json
@@ -38,7 +39,12 @@ ok "config.example.json"
 python3 - <<'PY' || fail "import or OWNER_REGISTRY check failed"
 from analyzer.owners import OWNER_REGISTRY, OWNERS, OWNER_DISPLAY_NAMES
 from analyzer.parser import parse_list_items, extract_text_from_adf
-from analyzer import report, config, jira_client  # noqa: F401
+from analyzer.report import (
+    generate_html_report,
+    generate_markdown_report,
+    generate_owner_daily_html_report,
+)
+from analyzer import config, jira_client  # noqa: F401
 
 assert OWNER_REGISTRY, "OWNER_REGISTRY empty"
 assert set(OWNERS) == set(OWNER_REGISTRY), "OWNERS keys mismatch registry"
@@ -46,7 +52,10 @@ assert set(OWNER_DISPLAY_NAMES) == set(OWNER_REGISTRY), "DISPLAY keys mismatch r
 for key, entry in OWNER_REGISTRY.items():
     assert entry.get("mentions"), f"{key}: mentions required"
     assert entry.get("display"), f"{key}: display required"
-print(f"registry ok ({len(OWNER_REGISTRY)} owners); parser exports ok")
+assert callable(generate_html_report)
+assert callable(generate_markdown_report)
+assert callable(generate_owner_daily_html_report)
+print(f"registry ok ({len(OWNER_REGISTRY)} owners); report package ok")
 PY
 ok "imports + OWNER_REGISTRY"
 

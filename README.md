@@ -2,7 +2,7 @@
 
 定期分析 Jira 父任务下的子任务（当前默认 Q3：KAT-11542，并保留 Q2：KAT-10938），解析描述中的列表项，统计未处理的项目并生成可视化报告。
 
-> AI / Agent 改代码请先读 [AGENTS.md](./AGENTS.md)。本地健康检查：`npm run smoke`。
+> AI / Agent 改代码请先读 [AGENTS.md](./AGENTS.md)。本地健康检查：`npm run smoke && npm test`。
 
 ## 功能
 
@@ -26,11 +26,16 @@ jira-analyzer/
 │   ├── owners.py              # 团队成员定义与匹配
 │   ├── parser.py              # ADF 解析与状态检测
 │   ├── jira_client.py         # Jira API 封装
-│   └── report.py              # HTML/Markdown 报告生成
+│   ├── report/                # HTML/Markdown/Daily 报告（分包）
+│   │   ├── html_main.py       # 主报告
+│   │   ├── daily.py / meeting.py / markdown.py / filters.py / common.py
+│   ├── ...
+├── tests/                      # 不连 Jira 的 unittest
+├── AGENTS.md                   # AI / Agent 改代码地图
 ├── config.example.json         # 配置模板
 ├── requirements.txt            # Python 依赖
 ├── output/                     # 报告与定时任务日志（git 忽略）
-└── .github/workflows/          # GitHub Actions 工作流
+└── .github/workflows/          # CI + GitHub Actions 报告部署
 ```
 
 ## 本地运行
@@ -77,6 +82,7 @@ npm start
 | `npm run serve` | 仅预览已有报告（静态文件，不拉 Jira） |
 | `npm run dev` | **推荐本地使用**：定时拉取 Jira、更新报告，浏览器自动刷新（默认每 120 秒，见 `config.json` → `watch`） |
 | `npm run smoke` | 不连 Jira：检查关键文件、配置、import 与语法 |
+| `npm test` | 不连 Jira：owners / parser / statuses / scheduled 单测 |
 
 开发时改完 `data/scheduled.json` 或 Jira 后，保持 `npm run dev` 运行即可，无需反复手动 `npm start`。单次生成仍用 `npm start`。
 
