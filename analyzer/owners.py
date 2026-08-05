@@ -34,6 +34,7 @@ OWNER_REGISTRY = {
     # —— 成都团队 ——
     'lory':     {'mentions': ['@Lory Jiang'],     'display': 'Lory',      'color': ('#e0f2fe', '#0c4a6e')},
     'tianye':   {'mentions': ['@Tian Ye'],        'display': 'Tian Ye',   'color': ('#fce7f3', '#9d174d')},
+    'lei':      {'mentions': ['@Lei Liu'],        'display': 'Lei',       'color': ('#cffafe', '#155e75')},
     # —— 美国团队 ——
     'fred':     {'mentions': ['@Fred Steger'],    'display': 'Fred',      'color': ('#e2e8f0', '#334155')},
     'jiangtian':{'mentions': ['@Jiangtian Hou'], 'display': 'Joey',      'color': ('#d1fae5', '#065f46')},
