@@ -1,0 +1,21 @@
+---
+description: HTML/Markdown 报告 UI 改动入口分流
+globs: analyzer/report.py
+alwaysApply: false
+---
+
+# 报告 UI
+
+先认准入口，再改对应 `_build_*`，避免误改其它报告。
+
+| 报告 | 入口 |
+|------|------|
+| 主报告（Q3/Q2 等） | `generate_html_report` + `_build_filter_*` / 相关 `_build_owner_*` |
+| 会议报告 | `_build_meeting_report_html` |
+| Owner Daily | `generate_owner_daily_html_report` |
+| Markdown | `generate_markdown_report` |
+
+- 颜色：`_owner_color` ← `OWNER_REGISTRY`；禁止第二份 `OWNER_COLORS`。
+- 统计口径须与 `filters.active_statuses` / README「统计口径」一致。
+- 除非用户明确要求，不做结构性大拆分（Phase 3）。
+- 验证：`npm start` 或 `npm run serve` 打开对应 HTML。

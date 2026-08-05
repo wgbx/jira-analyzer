@@ -1,0 +1,16 @@
+---
+description: 配置、筛选口径与排期数据
+globs: config.example.json,config.json,data/scheduled.json,analyzer/config.py,analyzer/scheduled.py
+alwaysApply: false
+---
+
+# 配置与筛选
+
+- **可提交**：改 `config.example.json`。
+- **本地密钥**：只写 `config.json`，勿提交 Token。
+- **多报告**：`reports[]` 的 `id` / `label` / `parent_issue` / `output`。
+- **`filters.active_statuses`**：未处理统计只计这些 Jira 状态名的子任务（如 `待办`、`正在进行`）。
+- **`filters.exclude_keywords`**：识别描述中已处理前缀（Done/Backlog/Invalid/Moved 等）。
+- **排期**：改 `data/scheduled.json`（`issue` 数字部分 + `index`），勿把排期表硬编码进 `report.py`。
+
+验证：改口径后 `npm start` 看汇总；仅结构检查用 `npm run smoke`。

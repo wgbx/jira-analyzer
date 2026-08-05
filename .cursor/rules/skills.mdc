@@ -1,0 +1,19 @@
+---
+description: skills 与 jira 脚本的对应关系及铁律
+globs: skills/**/*.md,scripts/jira-*.py
+alwaysApply: false
+---
+
+# Skills ↔ Scripts
+
+`skills/` = 操作 Jira 的 Agent 流程；改本仓库报告逻辑走 `analyzer/`，不要混用。
+
+| Skill | 脚本 |
+|-------|------|
+| `jira-item-status` | `scripts/jira-item-status.py` |
+| `jira-item-migrate` | `scripts/jira-item-migrate.py` |
+| 其它 `jira-*.md` | 以 skill 正文为准 |
+
+- 改行为：先更新 skill frontmatter 的 `description`（影响何时被选用）与正文契约，再改脚本。
+- **铁律**：优先跑现有脚本；禁止为单次任务写 disposable inline Python。
+- 验证：按 skill 文档命令试跑；仓库健康用 `npm run smoke`。

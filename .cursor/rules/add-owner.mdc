@@ -1,0 +1,21 @@
+---
+description: 添加或修改团队成员（Owner）
+globs: analyzer/owners.py
+alwaysApply: false
+---
+
+# 加 / 改 Owner
+
+只在 `OWNER_REGISTRY` 增改条目。勿手改导出的 `OWNERS` / `OWNER_DISPLAY_NAMES`。
+
+```python
+'key': {
+    'mentions': ['@Jira 显示名'],  # 必填，与 Jira @mention 完全一致
+    'display': '筛选栏名',         # 必填
+    'color': ('#背景', '#文字'),   # 可选，默认灰
+},
+```
+
+- 书写顺序 = 筛选栏展示顺序；按文件内团队注释分区插入。
+- 颜色由 `report.py` 的 `_owner_color` 读 registry，勿在 report 再维护调色板。
+- 验证：`npm start` → 筛选栏出现新名字与颜色；或至少 `npm run smoke`。

@@ -1,0 +1,34 @@
+---
+description: jira-analyzer 项目总览、命令、铁律（每轮必读）
+alwaysApply: true
+---
+
+# jira-analyzer — Agent 总览
+
+拉 Jira 父任务子列表 → 解析状态/负责人 → 多份可筛选 HTML 报告。完整地图见 `AGENTS.md`。
+
+## 命令
+
+- `npm run setup` — 依赖
+- `npm start` — 拉 Jira 生成报告（需 `config.json`）
+- `npm run serve` / `npm run dev` — 预览 / 热更新
+- `npm run smoke` — 不连 Jira 冒烟
+
+## 改哪里
+
+| 需求 | 位置 |
+|------|------|
+| 成员 | `owners.py` → `OWNER_REGISTRY` only |
+| 解析/状态 | `parser.py`, `statuses.py` |
+| 筛选口径 | `config.example.json` → `filters` |
+| 排期 | `data/scheduled.json` |
+| 报告 UI | `report.py`（按函数入口分流） |
+| Jira 操作流程 | `skills/*.md` + `scripts/jira-*.py` |
+
+## 铁律
+
+1. 勿提交 `config.json` / Token。
+2. Owner 唯一源：`OWNER_REGISTRY`；勿第二份调色板。
+3. 改 Jira 优先现有脚本，禁 disposable inline Python。
+4. 勿无故大拆 `report.py`。
+5. 改完跑 `npm run smoke`；行为验收用 `npm start` 或 `serve`。

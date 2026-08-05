@@ -2,6 +2,8 @@
 
 定期分析 Jira 父任务下的子任务（当前默认 Q3：KAT-11542，并保留 Q2：KAT-10938），解析描述中的列表项，统计未处理的项目并生成可视化报告。
 
+> AI / Agent 改代码请先读 [AGENTS.md](./AGENTS.md)。本地健康检查：`npm run smoke`。
+
 ## 功能
 
 - 一次生成多份报告：首页 Q3 + `/2026q2/`（见 `config.example.json` → `reports`）
@@ -74,6 +76,7 @@ npm start
 | `npm start` | 拉取 Jira 数据并生成报告（默认） |
 | `npm run serve` | 仅预览已有报告（静态文件，不拉 Jira） |
 | `npm run dev` | **推荐本地使用**：定时拉取 Jira、更新报告，浏览器自动刷新（默认每 120 秒，见 `config.json` → `watch`） |
+| `npm run smoke` | 不连 Jira：检查关键文件、配置、import 与语法 |
 
 开发时改完 `data/scheduled.json` 或 Jira 后，保持 `npm run dev` 运行即可，无需反复手动 `npm start`。单次生成仍用 `npm start`。
 
@@ -202,10 +205,14 @@ launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 
 ## 添加团队成员
 
-编辑 `analyzer/owners.py`，在 `OWNERS` 字典中添加新成员：
+编辑 `analyzer/owners.py`，**只在 `OWNER_REGISTRY` 增加一条**（展示名、颜色、@mention 都在这里；筛选栏顺序 = 书写顺序）：
 
 ```python
-'username': ['Name', 'name', '@Name', '@Full Name'],
+'username': {
+    'mentions': ['@Jira 显示名'],
+    'display': '筛选栏名',
+    'color': ('#背景色', '#文字色'),  # 可选
+},
 ```
 
-同时在 `OWNER_DISPLAY_NAMES` 中设置展示名称，在 `analyzer/report.py` 的 `OWNER_COLORS` 中设置颜色。
+勿手改导出的 `OWNERS` / `OWNER_DISPLAY_NAMES`，也不要在 `report.py` 另维护调色板。
