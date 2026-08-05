@@ -16,7 +16,6 @@ REQUIRED_PATHS=(
   analyzer/report/html_main.py
   analyzer/config.py
   analyzer/jira_client.py
-  config.example.json
   package.json
   skills
 )
@@ -26,15 +25,15 @@ for p in "${REQUIRED_PATHS[@]}"; do
 done
 ok "required paths exist"
 
-python3 - <<'PY' || fail "config.example.json invalid"
-import json
-from pathlib import Path
-cfg = json.loads(Path("config.example.json").read_text(encoding="utf-8"))
-assert "reports" in cfg and isinstance(cfg["reports"], list) and cfg["reports"], "reports missing/empty"
-assert "filters" in cfg and "active_statuses" in cfg["filters"], "filters.active_statuses missing"
-print("config.example.json ok")
+python3 - <<'PY' || fail "DEFAULT_REPORTS invalid"
+from analyzer.config import DEFAULT_REPORTS, DEFAULT_OUTPUT, CONFIG_PATH
+assert DEFAULT_REPORTS and isinstance(DEFAULT_REPORTS, list)
+assert all(r.get("parent_issue") and r.get("output") for r in DEFAULT_REPORTS)
+assert DEFAULT_OUTPUT.get("format")
+assert CONFIG_PATH.name == "config.json"
+print(f"DEFAULT_REPORTS ok ({len(DEFAULT_REPORTS)} reports)")
 PY
-ok "config.example.json"
+ok "config defaults"
 
 python3 - <<'PY' || fail "import or OWNER_REGISTRY check failed"
 from analyzer.owners import OWNER_REGISTRY, OWNERS, OWNER_DISPLAY_NAMES

@@ -27,8 +27,8 @@
 | 排期标签 | `data/scheduled.json` + `analyzer/scheduled.py` |
 | HTML / 筛选 UI | `analyzer/report/`（`html_main.py` 主报告；`daily.py` / `meeting.py` / `markdown.py`；颜色来自 registry） |
 | 入口 / 多报告编排 | `jira_analyzer.py` |
-| 配置模板（可提交） | `config.example.json` |
-| 本地密钥（勿提交） | `config.json` |
+| 配置模板（勿提交） | 本地 `config.json`（模板在 README）；Actions 用 Secrets + `DEFAULT_REPORTS` |
+| 本地密钥（勿提交） | `config.json` 的 `jira` 段 |
 | 操作 Jira 的 Agent 流程 | `skills/*.md` + 对应 `scripts/jira-*.py` |
 
 ## 铁律
@@ -48,11 +48,11 @@
 3. 书写顺序 = 筛选栏展示顺序。
 4. 验证：`npm start` → 筛选栏出现新名字与颜色。
 
-### 2. 改活跃状态 / 排除词
+### 2. 改活跃状态 / 排除词 / 父任务
 
-1. 改 `config.example.json` 的 `filters`（提交用模板）。
-2. 同步本地 `config.json`（若存在）。
-3. 口径：未处理统计只计 Jira 状态在 `active_statuses` 内的子任务；`exclude_keywords` 用于识别已处理前缀。
+1. **本地**：改 `config.json` 的 `filters` / `reports`（模板见 README）。
+2. **Actions 默认父任务**：改 `analyzer/config.py` 的 `DEFAULT_REPORTS`。
+3. 口径：未处理统计只计 Jira 状态在 `active_statuses` 内的子任务（未配则用代码默认）。
 4. 验证：`npm start` 看汇总卡片数字是否符合预期。
 
 ### 3. 改主报告 UI

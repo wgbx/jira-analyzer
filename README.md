@@ -6,7 +6,7 @@
 
 ## 功能
 
-- 一次生成多份报告：首页 Q3 + `/2026q2/`（见 `config.example.json` → `reports`）
+- 一次生成多份报告：首页 Q3 + `/2026q2/`（见本地 `config.json` 的 `reports`，或 `analyzer/config.py` 的 `DEFAULT_REPORTS`）
 - 默认拉取各父任务下**全部**子任务并统计列表条目
 - 解析 ADF（Atlassian Document Format）描述中的列表项
 - 检测条目状态：Done / Backlog（含 Invalid）/ Moved / 删除线
@@ -41,12 +41,11 @@ jira-analyzer/
 ├── scripts/                    # serve、jira-* 脚本、smoke-check
 ├── tests/                      # 不连 Jira 的 unittest
 ├── data/scheduled.json         # 已排期条目
-├── config.example.json         # 可提交的配置模板
 ├── output/                     # 生成报告（通常 git 忽略本地改动）
 └── .github/workflows/          # 仅报告生成与 Pages 部署
 ```
 
-人读本 README；**改代码**先看 [AGENTS.md](./AGENTS.md)。
+本地需自建 `config.json`（已 gitignore，模板见下方「配置」）。人读本 README；**改代码**先看 [AGENTS.md](./AGENTS.md)。
 
 ## 本地运行
 
@@ -64,13 +63,62 @@ npm run setup
 
 ### 2. 配置
 
-复制配置模板并填写 Jira API Token：
+在项目根目录新建 `config.json`（已在 `.gitignore`，**不要提交**），内容可直接复制下面模板，填入自己的 Jira 凭据：
 
-```bash
-cp config.example.json config.json
+```json
+{
+  "jira": {
+    "base_url": "https://your-domain.atlassian.net",
+    "email": "your-email@example.com",
+    "api_token": "YOUR_JIRA_API_TOKEN_HERE"
+  },
+  "reports": [
+    {
+      "id": "q3",
+      "label": "Q3",
+      "parent_issue": "KAT-11542",
+      "output": "output/index.html"
+    },
+    {
+      "id": "q2",
+      "label": "Q2",
+      "parent_issue": "KAT-10938",
+      "output": "output/2026q2/index.html"
+    }
+  ],
+  "assignee": "your name",
+  "output": {
+    "format": "html"
+  },
+  "filters": {
+    "subtasks_scope": "all",
+    "active_statuses": [
+      "待办",
+      "正在进行"
+    ],
+    "exclude_keywords": [
+      "(Done)",
+      "(done)",
+      "(Backlog)",
+      "(backlog)",
+      "(Invalid)",
+      "(invalid)",
+      "(Moved)",
+      "(moved)"
+    ]
+  },
+  "scheduled": {
+    "path": "data/scheduled.json"
+  },
+  "watch": {
+    "refresh_interval_seconds": 120
+  }
+}
 ```
 
 API Token 获取地址：https://id.atlassian.net/manage-profile/security/api-tokens
+
+> GitHub Actions 不读本地 `config.json`：凭据来自 Secrets；父任务列表默认用 `analyzer/config.py` 里的 `DEFAULT_REPORTS`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`）。
 
 ### 3. 运行
 
@@ -116,7 +164,7 @@ npm start
 | `JIRA_EMAIL` | Jira 账号邮箱 |
 | `JIRA_API_TOKEN` | Jira API Token |
 
-父任务编号写在仓库内的 `config.example.json` → `reports`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`），Actions 生成报告时会直接读取，无需 Secret。
+父任务编号默认写在 `analyzer/config.py` → `DEFAULT_REPORTS`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`），Actions 无 `config.json` 时使用，无需 Secret。本地可在自己的 `config.json` → `reports` 覆盖。
 
 ### 3. 启用 GitHub Pages
 

@@ -21,7 +21,7 @@ alwaysApply: true
 |------|------|
 | 成员 | `owners.py` → `OWNER_REGISTRY` only |
 | 解析/状态 | `parser.py`, `statuses.py` |
-| 筛选口径 | `config.example.json` → `filters` |
+| 筛选口径 | 本地 `config.json` → `filters`；Actions 默认见 `config.py` |
 | 排期 | `data/scheduled.json` |
 | 报告 UI | `analyzer/report/`（见 report-ui 规则） |
 | Jira 操作流程 | `skills/*.md` + `scripts/jira-*.py` |

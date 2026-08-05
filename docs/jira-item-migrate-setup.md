@@ -46,13 +46,7 @@ Skill 需要通过 Jira REST API 读取/写入 issue 描述与附件。凭据与
 
 ### 方式 A：本地 `config.json`（推荐）
 
-1. 复制配置模板：
-
-   ```bash
-   cp config.example.json config.json
-   ```
-
-2. 编辑 `config.json`，填写 `jira` 段：
+1. 按 [README](../README.md)「本地运行 → 配置」新建 `config.json`：
 
    ```json
    {
@@ -70,7 +64,7 @@ Skill 需要通过 Jira REST API 读取/写入 issue 描述与附件。凭据与
    | `email` | 登录 Jira 的 Atlassian 账号邮箱 |
    | `api_token` | Atlassian API Token |
 
-3. 获取 API Token：打开 [Atlassian 账户安全设置](https://id.atlassian.net/manage-profile/security/api-tokens)，创建 Token 后粘贴到 `api_token`。
+2. 获取 API Token：打开 [Atlassian 账户安全设置](https://id.atlassian.net/manage-profile/security/api-tokens)，创建 Token 后粘贴到 `api_token`。
 
 > `config.json` 已在 `.gitignore` 中，**不要**提交到 Git。
 
@@ -215,7 +209,7 @@ ln -sf ../../skills/jira-item-migrate.md .cursor/skills/jira-item-migrate/SKILL.
 
 ### 1. 提示「配置文件不存在」
 
-复制 `config.example.json` 为 `config.json`，或设置 `JIRA_BASE_URL`、`JIRA_EMAIL`、`JIRA_API_TOKEN` 环境变量。
+按 [README](../README.md)「本地运行 → 配置」新建 `config.json`，或设置 `JIRA_BASE_URL`、`JIRA_EMAIL`、`JIRA_API_TOKEN` 环境变量。
 
 ### 2. PUT 返回 403 Forbidden
 
