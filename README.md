@@ -79,7 +79,9 @@ npm start
 
 ## GitHub 部署
 
-项目使用 GitHub Actions 每 3 小时自动运行（与本地相同：`npm run setup` → `npm start`），并将报告部署到 GitHub Pages。
+推送到 `main`、手动触发，或由**外部定时器**调用 `workflow_dispatch` 时，GitHub Actions 会运行分析（`npm run setup` → `npm start`）并部署到 GitHub Pages。
+
+> 不使用 GitHub 自带的 `schedule`：免费计划下常延迟数小时甚至漏跑。定时请用下方「外部定时触发」。
 
 ### 1. 创建仓库
 
@@ -114,7 +116,45 @@ git push -u origin main
 
 推送后 Actions 会自动运行。也可以在 Actions 页面手动触发。
 
-### 5. 查看报告
+### 5. 外部定时触发（推荐）
+
+用免费 cron 服务准点调用 GitHub API，Actions 仍走免费额度。
+
+**A. 创建 PAT**
+
+1. GitHub → **Settings → Developer settings → Personal access tokens**
+2. 推荐 **Fine-grained token**：只选本仓库，Permissions → **Actions: Read and write**
+3. 复制 token（只显示一次）
+
+**B. 配置 [cron-job.org](https://cron-job.org)（免费）**
+
+1. 注册并创建 Cronjob
+2. URL：
+
+```text
+https://api.github.com/repos/wgbx/jira-analyzer/actions/workflows/jira-report.yml/dispatches
+```
+
+3. Method：`POST`
+4. Headers：
+
+| Header | Value |
+|---|---|
+| `Authorization` | `Bearer <你的PAT>` |
+| `Accept` | `application/vnd.github+json` |
+| `Content-Type` | `application/json` |
+
+5. Body：`{"ref":"main"}`
+6. Schedule（北京时间工作时段每 2 小时）：`0 9,11,13,15,17,19 * * *`（若界面用 UTC，改为 `0 1,3,5,7,9,11 * * *`）
+
+成功时 API 返回 **204**。也可本地试跑：
+
+```bash
+export GITHUB_TOKEN=你的PAT
+./scripts/trigger-github-report.sh
+```
+
+### 6. 查看报告
 
 部署完成后，访问：
 - Q3：`https://your-username.github.io/jira-analyzer/`
