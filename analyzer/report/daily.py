@@ -99,6 +99,7 @@ def generate_owner_daily_html_report(
     *,
     label='Q3',
     back_href='./',
+    favicon_href='favicon.svg',
     meeting_report=None,
 ):
     """生成独立的季度 Daily 统计页。"""
@@ -123,6 +124,7 @@ def generate_owner_daily_html_report(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{favicon_href}" type="image/svg+xml">
     <title>Jira {label} Daily 处理量统计</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}

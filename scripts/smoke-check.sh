@@ -16,6 +16,7 @@ REQUIRED_PATHS=(
   analyzer/report/html_main.py
   analyzer/config.py
   analyzer/jira_client.py
+  assets/favicon.svg
   package.json
   skills
 )
