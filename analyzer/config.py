@@ -7,7 +7,6 @@ Jira 凭据优先读环境变量（GitHub Actions）；reports 等非敏感项�
 
 import json
 import os
-import shutil
 import sys
 from pathlib import Path
 
@@ -122,8 +121,5 @@ def load_config():
 
 
 def ensure_output_dir():
-    """确保输出目录存在，并同步静态资源"""
+    """确保输出目录存在。"""
     OUTPUT_DIR.mkdir(exist_ok=True)
-    favicon_src = PROJECT_ROOT / 'assets' / 'favicon.svg'
-    if favicon_src.is_file():
-        shutil.copy2(favicon_src, OUTPUT_DIR / 'favicon.svg')

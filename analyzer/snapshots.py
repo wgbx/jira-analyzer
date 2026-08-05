@@ -14,7 +14,6 @@ from pathlib import Path
 from analyzer.config import OUTPUT_DIR
 
 SNAPSHOTS_DIR = OUTPUT_DIR / 'snapshots'
-_ITEM_REF_RE = re.compile(r'^(KAT-\d+):(\d+)$')
 _DAILY_TASK_RE = re.compile(r'\bDaily\b', re.IGNORECASE)
 
 
@@ -24,13 +23,6 @@ def _is_daily_task(summary):
 
 def item_ref(task_key: str, index: int) -> str:
     return f'{task_key}:{int(index)}'
-
-
-def parse_item_ref(ref: str) -> tuple[str, int] | None:
-    match = _ITEM_REF_RE.match(ref)
-    if not match:
-        return None
-    return match.group(1), int(match.group(2))
 
 
 def snapshot_dir_for(report_id: str = 'q3') -> Path:
@@ -125,18 +117,6 @@ def find_week_baseline_snapshot(
     if week_end:
         return find_earliest_snapshot_before(report_id, before_date=week_end)
     return None
-
-
-def find_baseline_snapshot(report_id: str = 'q3', *, before_date: str | None = None):
-    """
-    兼容旧用法：严格早于 before_date（默认今天）的最近一份。
-    发布周场景请用 find_week_baseline_snapshot。
-    """
-    cutoff = before_date or date.today().isoformat()
-    candidates = [p for p in list_snapshots(report_id) if p.stem < cutoff]
-    if not candidates:
-        return None
-    return load_snapshot(candidates[-1])
 
 
 def snapshot_item_map(snapshot) -> dict[str, dict]:

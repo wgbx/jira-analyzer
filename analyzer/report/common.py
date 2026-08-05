@@ -20,9 +20,6 @@ def _report_timestamp():
     """报告展示的拉取时间（东八区）。"""
     return datetime.now(_REPORT_TZ).strftime('%Y-%m-%d %H:%M:%S')
 
-def _active_statuses_for_analysis(analysis):
-    return tuple(analysis.get('active_statuses') or DEFAULT_ACTIVE_STATUSES)
-
 
 def _counts_as_unprocessed(item, analysis):
     """描述未处理，且子任务 Jira 状态在活跃集合内。"""

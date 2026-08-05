@@ -46,11 +46,6 @@ def _build_owner_daily_chart(label, daily_stats):
     )
 
 
-def _build_owner_daily_table_rows(daily_stats):
-    # 统计明细面板已下线，保留函数占位避免影响历史引用。
-    return ''
-
-
 def _build_owner_processed_item_rows(analysis, base_url):
     """生成统计页已处理条目明细行（仅 Daily 子任务）。"""
     rows = []
@@ -104,7 +99,6 @@ def generate_owner_daily_html_report(
     *,
     label='Q3',
     back_href='./',
-    favicon_href='favicon.svg',
     meeting_report=None,
 ):
     """生成独立的季度 Daily 统计页。"""
@@ -129,7 +123,6 @@ def generate_owner_daily_html_report(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{favicon_href}">
     <title>Jira {label} Daily 处理量统计</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}

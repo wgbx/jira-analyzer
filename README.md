@@ -86,7 +86,6 @@ npm run setup
       "output": "output/2026q2/index.html"
     }
   ],
-  "assignee": "your name",
   "output": {
     "format": "html"
   },
@@ -95,16 +94,6 @@ npm run setup
     "active_statuses": [
       "待办",
       "正在进行"
-    ],
-    "exclude_keywords": [
-      "(Done)",
-      "(done)",
-      "(Backlog)",
-      "(backlog)",
-      "(Invalid)",
-      "(invalid)",
-      "(Moved)",
-      "(moved)"
     ]
   },
   "scheduled": {

@@ -24,7 +24,6 @@ def generate_html_report(
     label='Q3',
     nav_links=None,
     daily_stats_href=None,
-    favicon_href='favicon.svg',
 ):
     """
     生成 HTML 格式的分析报告
@@ -65,7 +64,6 @@ def generate_html_report(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{favicon_href}">
     <title>{title}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
