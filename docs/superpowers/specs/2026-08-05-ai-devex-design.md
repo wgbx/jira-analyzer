@@ -12,7 +12,7 @@
 | 阶段 | 状态 | 内容 |
 |------|------|------|
 | Phase 1 | 完成 | `AGENTS.md` + Cursor rules + `npm run smoke` |
-| Phase 2 | 完成 | `tests/` unittest + `npm test` + `.github/workflows/ci.yml` |
+| Phase 2 | 完成 | `tests/` unittest + `npm test`（本地；不在 Actions 重复跑） |
 | Phase 3 | 完成 | `analyzer/report/` 分包 |
 
 ## 原则

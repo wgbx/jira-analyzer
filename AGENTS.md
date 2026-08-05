@@ -78,7 +78,7 @@
 ## 已完成 / 后续
 
 - Phase 1：AGENTS + Cursor rules + smoke  
-- Phase 2：unittest（owners/parser/statuses/scheduled）+ CI  
+- Phase 2：unittest（owners/parser/statuses/scheduled），本地 `npm test`  
 - Phase 3：`analyzer/report/` 分包  
 
 新功能优先落在对应子模块；勿再造巨型单文件。

@@ -2,11 +2,11 @@
 
 > **For agentic workers:** Implement task-by-task. Steps use checkbox syntax.
 
-**Goal:** Add offline unit tests + CI gates, then split `analyzer/report.py` so AI can edit report surfaces without loading a 1600-line file.
+**Goal:** Add offline unit tests (local), then split `analyzer/report.py` so AI can edit report surfaces without loading a 1600-line file.
 
-**Architecture:** stdlib `unittest` under `tests/`; package `analyzer/report/` with thin `__init__.py` re-exports; CI job runs `npm run smoke` + `npm test` without Jira secrets.
+**Architecture:** stdlib `unittest` under `tests/`; package `analyzer/report/` with thin `__init__.py` re-exports. Verification is local (`npm run smoke` / `npm test`); GitHub Actions only generates/deploys reports.
 
-**Tech Stack:** Python 3.11 / unittest / GitHub Actions / existing npm scripts.
+**Tech Stack:** Python 3.11 / unittest / existing npm scripts.
 
 ## Global Constraints
 
@@ -14,6 +14,7 @@
 - No Jira network in tests or smoke
 - Do not change report HTML behavior in the split (move-only refactor)
 - Keep Cursor rules / AGENTS.md in sync after the split
+- Do not add a separate Actions CI job for smoke/test (local only)
 
 ---
 
@@ -26,10 +27,10 @@
 - [x] `package.json` → `"test": "python3 -m unittest discover -s tests -v"`
 - [x] `npm test` passes
 
-### Task 2: CI
+### Task 2: CI on Actions — cancelled
 
-- [x] `.github/workflows/ci.yml` — on push/PR: setup → smoke → test (no secrets)
-- [x] Optional: add smoke+test step to `jira-report.yml` before `npm start`
+- [x] ~~`.github/workflows/ci.yml`~~ 已移除；不在 Actions 重复跑 smoke/test
+- [x] ~~jira-report 前置检查~~ 已移除
 
 ### Task 3: Split report.py
 
@@ -50,4 +51,4 @@
 
 - [x] Update `AGENTS.md` / `.cursor/rules/report-ui.mdc` for new paths
 - [x] Note Phase 2/3 done in design spec
-- [ ] Commit
+- [x] Commit

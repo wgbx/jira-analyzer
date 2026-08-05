@@ -35,7 +35,7 @@ jira-analyzer/
 ├── config.example.json         # 配置模板
 ├── requirements.txt            # Python 依赖
 ├── output/                     # 报告与定时任务日志（git 忽略）
-└── .github/workflows/          # CI + GitHub Actions 报告部署
+└── .github/workflows/          # GitHub Actions 报告部署
 ```
 
 ## 本地运行

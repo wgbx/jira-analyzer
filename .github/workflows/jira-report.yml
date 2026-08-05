@@ -37,9 +37,6 @@ jobs:
       - name: 安装依赖
         run: npm run setup
 
-      - name: 冒烟与单测
-        run: npm run smoke && npm test
-
       - name: 运行分析器
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
