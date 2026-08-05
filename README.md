@@ -217,21 +217,6 @@ export GITHUB_TOKEN=你的PAT
 - Q3：`https://your-username.github.io/jira-analyzer/`
 - Q2：`https://your-username.github.io/jira-analyzer/2026q2/`
 
-## 本地定时运行（macOS launchd）
-
-编辑 `com.jira.analyzer.plist` 中的路径，然后：
-
-```bash
-cp com.jira.analyzer.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.jira.analyzer.plist
-```
-
-卸载：
-
-```bash
-launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
-```
-
 ## 维护已排期列表
 
 编辑 `data/scheduled.json`，按发布周录入子任务编号与列表序号（与 Google Sheet 中 `11047 No.15` 格式一致：`issue` 为数字部分，`index` 为 No. 后的序号）：

@@ -7,9 +7,6 @@ Jira 任务分析器 - 入口脚本
 使用方式:
     python jira_analyzer.py
 
-定时运行（macOS launchd）:
-    详见 com.jira.analyzer.plist
-
 GitHub Actions:
     详见 .github/workflows/jira-report.yml
 """
