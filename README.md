@@ -19,24 +19,34 @@
 
 ```
 jira-analyzer/
-├── package.json                # npm 脚本入口（推荐本地启动方式）
-├── jira_analyzer.py            # Python 入口脚本
-├── analyzer/                   # 核心模块
-│   ├── config.py              # 配置管理（支持环境变量）
-│   ├── owners.py              # 团队成员定义与匹配
-│   ├── parser.py              # ADF 解析与状态检测
-│   ├── jira_client.py         # Jira API 封装
-│   ├── report/                # HTML/Markdown/Daily 报告（分包）
-│   │   ├── html_main.py       # 主报告
-│   │   ├── daily.py / meeting.py / markdown.py / filters.py / common.py
-│   ├── ...
-├── tests/                      # 不连 Jira 的 unittest
+├── package.json                # npm 脚本入口
+├── jira_analyzer.py            # 入口：拉 Jira、写多份报告
 ├── AGENTS.md                   # AI / Agent 改代码地图
-├── config.example.json         # 配置模板
-├── requirements.txt            # Python 依赖
-├── output/                     # 报告与定时任务日志（git 忽略）
-└── .github/workflows/          # GitHub Actions 报告部署
+├── analyzer/                   # 核心模块
+│   ├── config.py               # 配置（支持环境变量）
+│   ├── owners.py               # OWNER_REGISTRY（成员唯一源）
+│   ├── parser.py / statuses.py # ADF 列表解析与 Done/Backlog 等
+│   ├── jira_client.py          # Jira API
+│   ├── scheduled.py            # 排期查找表
+│   ├── meeting_report.py       # 发布周会议统计数据
+│   ├── snapshots.py            # 已处理快照
+│   └── report/                 # HTML / Markdown / Daily 报告（分包）
+│       ├── html_main.py        # 主报告
+│       ├── daily.py            # Owner Daily 页
+│       ├── meeting.py          # 会议块 HTML
+│       ├── markdown.py         # Markdown 报告
+│       ├── filters.py          # 筛选 JS / 导航
+│       └── common.py           # 共享 helpers
+├── skills/                     # 操作 Jira 的 Agent 流程说明
+├── scripts/                    # serve、jira-* 脚本、smoke-check
+├── tests/                      # 不连 Jira 的 unittest
+├── data/scheduled.json         # 已排期条目
+├── config.example.json         # 可提交的配置模板
+├── output/                     # 生成报告（通常 git 忽略本地改动）
+└── .github/workflows/          # 仅报告生成与 Pages 部署
 ```
+
+人读本 README；**改代码**先看 [AGENTS.md](./AGENTS.md)。
 
 ## 本地运行
 
@@ -106,7 +116,7 @@ npm start
 | `JIRA_EMAIL` | Jira 账号邮箱 |
 | `JIRA_API_TOKEN` | Jira API Token |
 
-父任务编号写在仓库内的 `config.example.json` → `reports`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`），CI 会直接读取，无需 Secret。
+父任务编号写在仓库内的 `config.example.json` → `reports`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`），Actions 生成报告时会直接读取，无需 Secret。
 
 ### 3. 启用 GitHub Pages
 
@@ -221,4 +231,4 @@ launchctl unload ~/Library/LaunchAgents/com.jira.analyzer.plist
 },
 ```
 
-勿手改导出的 `OWNERS` / `OWNER_DISPLAY_NAMES`，也不要在 `report.py` 另维护调色板。
+勿手改导出的 `OWNERS` / `OWNER_DISPLAY_NAMES`，也不要在 `analyzer/report/` 另维护调色板。
