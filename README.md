@@ -41,6 +41,7 @@ jira-analyzer/
 ├── scripts/                    # serve、jira-* 脚本、smoke-check
 ├── tests/                      # 不连 Jira 的 unittest
 ├── data/scheduled.json         # 已排期条目
+├── assets/favicon.svg          # 站点图标（生成报告时复制到 output/）
 ├── output/                     # 生成报告（通常 git 忽略本地改动）
 └── .github/workflows/          # 仅报告生成与 Pages 部署
 ```
