@@ -15,6 +15,10 @@ def _report_timestamp():
     """报告展示的拉取时间（东八区）。"""
     return datetime.now(_REPORT_TZ).strftime('%Y-%m-%d %H:%M:%S')
 
+
+# 与外部 cron（北京时间 9–20 点整点）及 workflow_dispatch / push main 一致
+_UPDATE_RULE = '更新规则：北京时间 9:00–20:00 每小时自动更新'
+
 from analyzer.config import OUTPUT_DIR
 from analyzer.jira_client import DEFAULT_ACTIVE_STATUSES, is_active_issue_status
 from analyzer.owners import OWNERS, OWNER_DISPLAY_NAMES, OWNER_REGISTRY
@@ -750,6 +754,13 @@ def generate_html_report(
             opacity: 0.88;
             font-weight: 500;
         }}
+        .header-update-rule {{
+            margin-top: 6px;
+            font-size: 13px;
+            opacity: 0.75;
+            font-weight: 400;
+            line-height: 1.45;
+        }}
         .stats {{
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -989,6 +1000,7 @@ def generate_html_report(
             <h1>{title}</h1>
             <p class="header-subtitle">{parent_issue} 所有项目概览</p>
             <p class="header-updated">数据更新到 {now}（UTC+8）</p>
+            <p class="header-update-rule">{_UPDATE_RULE}</p>
         </div>
 
         <div class="stats">
@@ -1455,6 +1467,7 @@ def generate_owner_daily_html_report(
         <div class="header">
             <h1>{label} 季度 Daily 处理量统计</h1>
             <p>父任务：{parent_issue} · 数据更新到 {now}（UTC+8）</p>
+            <p style="margin-top:8px;opacity:0.85;font-size:14px">{_UPDATE_RULE}</p>
             <a class="back-link" href="{back_href}">← 返回主报告</a>
         </div>
         {meeting_html}
@@ -1531,6 +1544,7 @@ def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
     md = f"""# Jira {label} 任务分析报告
 
 **数据更新到**: {now}（UTC+8）
+**{_UPDATE_RULE}**
 **父任务**: {parent_issue}
 
 ## 统计概览

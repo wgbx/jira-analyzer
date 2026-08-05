@@ -145,7 +145,7 @@ https://api.github.com/repos/wgbx/jira-analyzer/actions/workflows/jira-report.ym
 | `Content-Type` | `application/json` |
 
 5. Body：`{"ref":"main"}`
-6. Schedule（北京时间工作时段每 2 小时）：`0 9,11,13,15,17,19 * * *`（若界面用 UTC，改为 `0 1,3,5,7,9,11 * * *`）
+6. Schedule（北京时间 9:00–20:00 每小时）：`0 9-20 * * *`（若界面用 UTC，改为 `0 1-12 * * *`）
 
 成功时 API 返回 **204**。也可本地试跑：
 
