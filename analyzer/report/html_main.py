@@ -161,6 +161,7 @@ def generate_html_report(
         }}
         .stat-number {{ font-size: 36px; font-weight: bold; margin: 10px 0; }}
         .stat-sublabel {{ color: #9ca3af; font-size: 13px; margin-top: -4px; }}
+        .stat-team-breakdown {{ color: #9ca3af; font-size: 13px; margin-top: 10px; }}
         .stat-label {{ color: #666; font-size: 14px; }}
         .total {{ color: #667eea; }}
         .processed {{ color: #10b981; }}
@@ -391,7 +392,7 @@ def generate_html_report(
                 <div class="stat-label">未处理</div>
                 <div class="stat-number unprocessed">{analysis['unprocessed']}</div>
                 <div class="stat-sublabel">{analysis.get('unprocessed_jira', 0)} 个子任务</div>
-                <div class="stat-sublabel">武汉 {team_counts['wuhan']} · 成都 {team_counts['chengdu']} · US {team_counts['us']}</div>
+                <div class="stat-team-breakdown">武汉 {team_counts['wuhan']} · 成都 {team_counts['chengdu']} · US {team_counts['us']}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">已排期</div>
