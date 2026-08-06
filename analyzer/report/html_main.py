@@ -6,6 +6,7 @@ from analyzer.report.common import (
     _build_owner_css,
     _count_daily_processed_by_owner,
     _count_unprocessed_by_owner,
+    _count_unprocessed_by_team,
     _find_all_done_active_tasks,
     _owners_needing_css,
     _render_item_li,
@@ -44,6 +45,7 @@ def generate_html_report(
     """
     now = _report_timestamp()
     owner_counts = _count_unprocessed_by_owner(analysis)
+    team_counts = _count_unprocessed_by_team(analysis)
     daily_stats = _count_daily_processed_by_owner(analysis)
     visible_owners = _visible_filter_owners(analysis)
     show_unassigned = owner_counts.get('unassigned', 0) > 0
@@ -389,6 +391,7 @@ def generate_html_report(
                 <div class="stat-label">未处理</div>
                 <div class="stat-number unprocessed">{analysis['unprocessed']}</div>
                 <div class="stat-sublabel">{analysis.get('unprocessed_jira', 0)} 个子任务</div>
+                <div class="stat-sublabel">武汉 {team_counts['wuhan']} · 成都 {team_counts['chengdu']} · US {team_counts['us']}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">已排期</div>
