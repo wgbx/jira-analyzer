@@ -86,6 +86,26 @@ def _count_unprocessed_by_owner(analysis):
     return counts
 
 
+def _count_unprocessed_by_team(analysis):
+    """
+    按地区团队统计未处理条目数。
+
+    每条只计 1 次；取第一个在 OWNER_REGISTRY 内的 owner 的 team。
+    无已知 owner 的条目不计。
+    """
+    counts = {'wuhan': 0, 'chengdu': 0, 'us': 0}
+    for task in analysis.get('grouped', {}).values():
+        for item in task.get('items', []):
+            if not _counts_as_unprocessed(item, analysis):
+                continue
+            for owner in item.get('owners') or []:
+                team = (OWNER_REGISTRY.get(owner) or {}).get('team')
+                if team in counts:
+                    counts[team] += 1
+                    break
+    return counts
+
+
 def _visible_filter_owners(analysis):
     """返回在未处理条目中有数量的 owner 标识列表"""
     counts = _count_unprocessed_by_owner(analysis)
