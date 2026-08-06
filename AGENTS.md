@@ -44,7 +44,7 @@
 ### 1. 加 Owner
 
 1. 在 `analyzer/owners.py` 的 `OWNER_REGISTRY` 按团队分区插入一条。
-2. 必填：`mentions`（与 Jira @ 显示名一致）、`display`；可选 `color`。
+2. 必填：`mentions`（与 Jira @ 显示名一致）、`display`、`team`（`wuhan` / `chengdu` / `us`）；可选 `color`。
 3. 书写顺序 = 筛选栏展示顺序。
 4. 验证：`npm start` → 筛选栏出现新名字与颜色。
 

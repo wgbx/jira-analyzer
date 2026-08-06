@@ -9,6 +9,8 @@ from analyzer.owners import (
     detect_owner,
 )
 
+_VALID_TEAMS = {'wuhan', 'chengdu', 'us'}
+
 
 class OwnerRegistryTests(unittest.TestCase):
     def test_registry_keys_align_with_exports(self):
@@ -19,6 +21,10 @@ class OwnerRegistryTests(unittest.TestCase):
         for key, entry in OWNER_REGISTRY.items():
             self.assertTrue(entry.get('mentions'), msg=key)
             self.assertTrue(entry.get('display'), msg=key)
+
+    def test_entries_have_valid_team(self):
+        for key, entry in OWNER_REGISTRY.items():
+            self.assertIn(entry.get('team'), _VALID_TEAMS, msg=key)
 
     def test_detect_owner_by_mention_text(self):
         self.assertIn('zhiyong', detect_owner('please ask @zhiyong song'))
