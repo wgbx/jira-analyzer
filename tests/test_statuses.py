@@ -37,6 +37,31 @@ class StatusFlagTests(unittest.TestCase):
         done, _, _, _ = detect_processed_flags('（Done）fullwidth')
         self.assertTrue(done)
 
+    def test_paren_contains_reproduce(self):
+        _, backlog, label, _ = detect_processed_flags('(Unable to reproduce) flake')
+        self.assertTrue(backlog)
+        self.assertEqual(label, 'Cannot reproduce')
+
+        _, backlog, label, _ = detect_processed_flags('（cannot reproduce）fullwidth')
+        self.assertTrue(backlog)
+        self.assertEqual(label, 'Cannot reproduce')
+
+    def test_paren_contains_duplication(self):
+        _, backlog, label, _ = detect_processed_flags('(Duplication of KAT-1) same bug')
+        self.assertTrue(backlog)
+        self.assertEqual(label, 'Duplication')
+
+        _, backlog, label, _ = detect_processed_flags('（duplication）fullwidth')
+        self.assertTrue(backlog)
+        self.assertEqual(label, 'Duplication')
+
+    def test_reproduce_outside_parens_not_processed(self):
+        done, backlog, label, moved = detect_processed_flags('try to reproduce @Jayce')
+        self.assertFalse(done)
+        self.assertFalse(backlog)
+        self.assertIsNone(label)
+        self.assertFalse(moved)
+
 
 if __name__ == '__main__':
     unittest.main()
