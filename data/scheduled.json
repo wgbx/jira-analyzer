@@ -38,12 +38,12 @@
         { "issue": "11751", "index": 1, "owner": "tiancheng" },
         { "issue": "11584", "index": 2, "owner": "june" },
         { "issue": "11691", "index": 11, "owner": "june" },
-        { "issue": "11691", "index": 13, "owner": "jiaqi" },
+        { "issue": "11691", "index": 13, "owner": "june" },
         { "issue": "11691", "index": 15, "owner": "jiaqi" },
         { "issue": "11723", "index": 2, "owner": "tiancheng" },
         { "issue": "11723", "index": 6, "owner": "zhiyong" },
         { "issue": "11723", "index": 7, "owner": "jiaqi" },
-        { "issue": "11724", "index": 1, "owner": "tiancheng" },
+        { "issue": "11724", "index": 1, "owner": "june" },
         { "issue": "11724", "index": 5, "owner": "june" },
         { "issue": "11724", "index": 6, "owner": "zhiyong" },
         { "issue": "11625", "index": 7, "owner": "cici" },
@@ -57,13 +57,13 @@
         { "issue": "11816", "index": 10, "owner": "cici" },
         { "issue": "11816", "index": 11, "owner": "cici" },
         { "issue": "11768", "index": 1, "owner": "pengfei" },
-        { "issue": "11768", "index": 2, "owner": "neo" },
+        { "issue": "11768", "index": 2, "owner": "june" },
         { "issue": "11768", "index": 3, "owner": "june" },
-        { "issue": "11768", "index": 5, "owner": "neo" },
+        { "issue": "11768", "index": 5, "owner": "june" },
         { "issue": "11496", "index": 20, "owner": "june" },
         { "issue": "11768", "index": 13, "owner": "pengfei" },
         { "issue": "11768", "index": 15, "owner": "zhengchun" },
-        { "issue": "11768", "index": 16, "owner": "neo" }
+        { "issue": "11768", "index": 16, "owner": "june" }
       ]
     },
     {
@@ -82,11 +82,11 @@
         { "issue": "11841", "index": 9, "owner": "zhengchun" },
         { "issue": "11841", "index": 13, "owner": "pengfei" },
         { "issue": "11768", "index": 6, "owner": "june" },
-        { "issue": "11768", "index": 11, "owner": "jiaqi" },
+        { "issue": "11768", "index": 11, "owner": "june" },
         { "issue": "11496", "index": 4, "owner": "zhiyong" },
         { "issue": "11496", "index": 6, "owner": "zhiyong" },
         { "issue": "11496", "index": 7, "owner": "tiancheng" },
-        { "issue": "11496", "index": 12, "owner": "tiancheng" },
+        { "issue": "11496", "index": 12, "owner": "june" },
         { "issue": "11496", "index": 24, "owner": "jun" },
         { "issue": "11496", "index": 26, "owner": "jun" },
         { "issue": "11496", "index": 28, "owner": "jun" },
@@ -94,6 +94,19 @@
         { "issue": "11496", "index": 38, "owner": "jiaqi" },
         { "issue": "11496", "index": 61, "owner": "jiaqi" },
         { "issue": "11496", "index": 62, "owner": "jun" }
+      ]
+    },
+    {
+      "date": "2026-08-17",
+      "label": "8/17/2026 Release",
+      "items": [
+        { "issue": "11871", "index": 5, "owner": "cici" },
+        { "issue": "11871", "index": 6, "owner": "tianye" },
+        { "issue": "11888", "index": 1, "owner": "fred" },
+        { "issue": "11888", "index": 5, "owner": "cici" },
+        { "issue": "11888", "index": 9, "owner": "tiancheng" },
+        { "issue": "11888", "index": 10, "owner": "jiaqi" },
+        { "issue": "11888", "index": 11, "owner": "tianye" }
       ]
     }
   ]
