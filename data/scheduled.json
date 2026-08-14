@@ -101,7 +101,7 @@
       "label": "8/17/2026 Release",
       "items": [
         { "issue": "11871", "index": 5, "owner": "cici" },
-        { "issue": "11888", "index": 5, "owner": "cici" },
+        { "issue": "11888", "index": 5, "owner": "jiaqi" },
         { "issue": "11888", "index": 9, "owner": "tiancheng" },
         { "issue": "11888", "index": 10, "owner": "jiaqi" }
       ]
