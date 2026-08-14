@@ -7,6 +7,7 @@ from analyzer.report.common import (
     _count_daily_processed_by_owner,
     _count_unprocessed_by_owner,
     _count_unprocessed_by_team,
+    _escape_html,
     _find_all_done_active_tasks,
     _owners_needing_css,
     _render_item_li,
