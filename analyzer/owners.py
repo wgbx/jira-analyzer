@@ -36,6 +36,7 @@ OWNER_REGISTRY = {
     'lory':     {'mentions': ['@Lory Jiang'],     'display': 'Lory',      'team': 'chengdu', 'color': ('#e0f2fe', '#0c4a6e')},
     'tianye':   {'mentions': ['@Tian Ye'],        'display': 'Tian Ye',   'team': 'chengdu', 'color': ('#fce7f3', '#9d174d')},
     'lei':      {'mentions': ['@Lei Liu'],         'display': 'Lei',       'team': 'chengdu', 'color': ('#cffafe', '#155e75')},
+    'vanppo':   {'mentions': ['@vanppo wang'],    'display': 'Vanppo',    'team': 'chengdu', 'color': ('#e0e7ff', '#3730a3')},
     # —— 美国团队 ——
     'fred':     {'mentions': ['@Fred Steger'],    'display': 'Fred',      'team': 'us',      'color': ('#e2e8f0', '#334155')},
     'jiangtian':{'mentions': ['@Jiangtian Hou'], 'display': 'Joey',      'team': 'us',      'color': ('#d1fae5', '#065f46')},

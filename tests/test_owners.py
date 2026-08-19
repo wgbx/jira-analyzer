@@ -34,6 +34,11 @@ class OwnerRegistryTests(unittest.TestCase):
         mention = OWNER_REGISTRY['jayce']['mentions'][0]
         self.assertIn('jayce', detect_owner(mention.upper()))
 
+    def test_vanppo_is_chengdu_owner(self):
+        self.assertIn('vanppo', OWNER_REGISTRY)
+        self.assertEqual(OWNER_REGISTRY['vanppo']['team'], 'chengdu')
+        self.assertIn('vanppo', detect_owner('@vanppo wang'))
+
 
 if __name__ == '__main__':
     unittest.main()
