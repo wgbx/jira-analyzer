@@ -4,8 +4,8 @@ description: >
   为下一发布周编排 data/scheduled.json（Release plan）。
   使用场景：用户说「排下一期」「排下周」「release plan」「维护排期」、提供 Google Sheet 式条目列表、
   要求按人出表、或「Jira 改了 owner 请同步」。
-  原则：优先排做完即可关闭 ticket 的条目；本周优先清掉上周遗留；排除不在 release plan 的 owner；
-  items 保持单行 JSON；写完后 npm start 刷新报告并按人汇总表格。
+  原则：只排武汉团队（OWNER_REGISTRY team=wuhan）；优先关票；清上周遗留；
+  成都 / US 不进 plan；排除名单不排；items 单行 JSON；写完后 npm start 并按人汇总。
 ---
 
 # Jira 发布周排期
@@ -25,9 +25,11 @@ description: >
 3. **不重复排**：`(issue, index)` 已在任意 release 中则跳过
 4. **owner 来自 Jira mention**（报告 `data-owners`），不是主观重分配；用户改完 Jira 后要同步时，以最新报告为准覆盖 `owner` 字段
 5. **未分配不排**（无 owner 的条目跳过）
-6. **排除名单不进 plan**（默认，用户可改）：`lory`、`jiangtian`、`chenglim`、`dajiang`  
-   - 条目任一 owner 落在排除名单 → 整条不排  
-   - 多人协作时若含排除名单成员，同样跳过（留给对方自己的计划）
+6. **只排武汉团队**：`OWNER_REGISTRY[owner].team == 'wuhan'` 才进 plan  
+   - **成都**（`tianye` / `lei` / `lory` / `vanppo` 等）**不排**  
+   - **US**（`fred` / `jiangtian` / `chenglim` 等）**不排**  
+   - 额外排除（即便是武汉）：默认 `dajiang`（用户可改）  
+   - 条目任一 owner 落在排除名单 / 非武汉 → 整条不排（多人协作含成都/US 时同样跳过，留给对方计划）
 
 ## 排期规则（优先级）
 
@@ -55,12 +57,12 @@ npm start
 
 | 条件 | 处理 |
 |------|------|
-| 未处理 + 未排期 + owner 合法 + 不在排除名单 | 可排 |
-| 剩余少（1–5）且剩余均可排 | ★ 优先整票排入 |
-| 仅差排除名单成员的条目才能关票 | 仍可排我方条目，但不声称「可关票」 |
-| 全未分配 | 跳过，汇报给用户 |
+| 未处理 + 未排期 + **武汉** owner + 不在排除名单 | 可排 |
+| 剩余少（1–5）且剩余均可排（仅计武汉侧） | ★ 优先整票排入 |
+| 仅差成都 / US / 排除名单才能关票 | 仍可排武汉条目，但不声称「可关票」 |
+| 全未分配 / 仅成都或 US | 跳过 |
 
-多 owner 时 `scheduled.json` 的 `owner` 取**第一个非排除**的 key。
+多 owner 时 `scheduled.json` 的 `owner` 取**第一个武汉且非排除**的 key。
 
 ### Step 3：写入 `data/scheduled.json`
 
