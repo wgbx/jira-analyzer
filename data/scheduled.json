@@ -127,6 +127,21 @@
         { "issue": "11950", "index": 8, "owner": "tiancheng" },
         { "issue": "11928", "index": 7, "owner": "jayce" }
       ]
+    },
+    {
+      "date": "2026-08-31",
+      "label": "8/31/2026 Release",
+      "items": [
+        { "issue": "11985", "index": 1, "owner": "cici" },
+        { "issue": "11985", "index": 2, "owner": "jiaqi" },
+        { "issue": "11985", "index": 3, "owner": "jayce" },
+        { "issue": "11985", "index": 4, "owner": "jayce" },
+        { "issue": "11985", "index": 5, "owner": "cici" },
+        { "issue": "11985", "index": 6, "owner": "jiaqi" },
+        { "issue": "11968", "index": 7, "owner": "jayce" },
+        { "issue": "11968", "index": 8, "owner": "jayce" },
+        { "issue": "11968", "index": 9, "owner": "jayce" }
+      ]
     }
   ]
 }

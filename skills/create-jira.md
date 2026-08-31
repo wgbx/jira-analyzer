@@ -31,20 +31,20 @@ description: >
 
 ## 固定写法（必须遵守）
 
-1. **Summary 前缀**
+1. **Summary 前缀 + 主题写「要做的事」**
    - 产品体验：`Usability: ...`
    - 运营/配置/流程：`Operation: ...`
    - 平台效率 / 资产治理：`Scalability: ...`（标题前缀 ≠ 必须挂某父项）
-   - 写问题或目标，不写已定方案  
-     ❌ `Build an extensible social solution`  
-     ✅ `Social links lack a reusable extension model`
+   - **主题写动作/交付，不写问题本身**（问题放正文）  
+     ❌ `Social links lack a reusable extension model`  
+     ✅ `remove unused files from the project` / `improve social-link add/edit flow`  
+     锚点：`KAT-11874`（`remove outdated frontend routes and dead files`）
 
-2. **描述开头：执行信息（缺的写 TBD，不要编）**
-   - `Owner: @xxx (due: Mon D, YYYY)`
-   - `Design: @xxx / TBD`
-   - `FE: @xxx`
-   - `BE POC: @xxx`
-   - 有 Figma 再补：`Figma: ...`
+2. **描述开头：执行信息**
+   - `Owner:` 默认 `@zhiyong song`（用户另指定再改）；due 未知写 `TBD`
+   - `FE:` 按实际；纯 FE 清理票可与 Owner 同为 `@zhiyong song`
+   - `Design:` / `BE POC:` — **明显不需要设计或 BE 时写 `N/A`**，不要写 TBD 占位
+   - 需要设计/BE 但人未定时才写 TBD；有 Figma 再补 `Figma: ...`
 
 3. **问题段：写具体问题，不写空泛背景**
    - 推荐标题：`Usability problems to solve:`（可用性类）；其它类型可用等价短标题
@@ -102,13 +102,13 @@ description: >
 
 ```markdown
 Summary
-[Usability|Operation|Scalability]: <问题或目标，不是已定方案>
+[Usability|Operation|Scalability]: <要做的事 / 动作，不是问题陈述>
 
 Description
-Owner: @<owner or TBD> (due: <Mon D, YYYY or TBD>)
-Design: @<design or TBD>
-FE: @<fe or TBD>
-BE POC: @<be or TBD>
+Owner: @zhiyong song (due: <Mon D, YYYY or TBD>)
+Design: N/A   ← 或 @design；明显不需要就 N/A
+FE: @<fe>
+BE POC: N/A   ← 或 @be；明显不需要就 N/A
 
 Usability problems to solve: <一句总问题：谁痛、什么坏了、后果>
 - <具体痛点 1：场景 + 现象>
@@ -129,7 +129,8 @@ UI copy (if needed):
 
 ## 快速规则（写前 / 建前 / 改前自检）
 
-- Summary 有正确前缀，且不是方案口号
+- Summary 有正确前缀，且写的是**要做的事**（不是问题陈述）
+- Design / BE 明显不需要时是否已写 `N/A`（而不是 TBD）？
 - 问题段是否**条条具体**？有没有空话（obvious / modern / gap）？
 - To do 是否产品动作？有没有 `redesign`？有没有「对齐/定义/hand off」官话？
 - 是否误加了默认的 AC / Out of scope？
@@ -159,6 +160,8 @@ UI copy (if needed):
 
 ## 红旗
 
+- Summary 在描述问题（缺动作），正文才该写问题
+- 纯 FE 清理票仍把 Design/BE 写成 TBD
 - `the gap vs … is obvious` / `feels modern` / 无事实的「体验不好」
 - To do 含 `redesign` 而用户要的是提升
 - 套满 AC / Out of scope / Rules 只为「完整」
