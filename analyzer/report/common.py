@@ -1,7 +1,7 @@
 """Shared helpers for HTML/Markdown report rendering."""
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 from analyzer.jira_client import DEFAULT_ACTIVE_STATUSES, is_active_issue_status
@@ -11,6 +11,37 @@ _REPORT_TZ = ZoneInfo('Asia/Shanghai')
 
 # 与外部 cron（北京时间 9–20 点整点）一致；推送 main / 手动触发也会更新
 _UPDATE_RULE_SHORT = '9:00–20:00 每小时自动更新'
+
+# 「全部条目已处理但仍活跃」提醒：仅当子任务创建时间严格大于该天数时展示
+_STALE_DONE_MIN_AGE = timedelta(days=3)
+
+
+def _utcnow():
+    return datetime.now(timezone.utc)
+
+
+def _parse_jira_datetime(value):
+    """Parse Jira ISO timestamps like 2024-01-15T10:30:00.000+0000."""
+    if not value:
+        return None
+    text = str(value).strip()
+    if text.endswith('Z'):
+        text = text[:-1] + '+0000'
+    for fmt in ('%Y-%m-%dT%H:%M:%S.%f%z', '%Y-%m-%dT%H:%M:%S%z'):
+        try:
+            return datetime.strptime(text, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _created_older_than_stale_threshold(created):
+    """True only when created age is strictly greater than 3 days."""
+    created_dt = _parse_jira_datetime(created)
+    if created_dt is None:
+        return False
+    return _utcnow() - created_dt > _STALE_DONE_MIN_AGE
+
 
 _DEFAULT_OWNER_COLOR = ('#f3f4f6', '#374151')
 _DAILY_TASK_RE = re.compile(r'\bDaily\b', re.IGNORECASE)
@@ -146,7 +177,7 @@ def _find_all_done_active_tasks(analysis):
     """
     找出「所有条目都已处理，但 Jira 状态仍是活跃」的子任务。
 
-    用于提醒用户去 Jira 上把状态改为 Done / Closed。
+    仅当子任务创建时间严格大于 3 天时纳入，避免新建后刚处理完就提醒关单。
     """
     results = []
     active_statuses = tuple(analysis.get('active_statuses') or DEFAULT_ACTIVE_STATUSES)
@@ -159,6 +190,8 @@ def _find_all_done_active_tasks(analysis):
         if not all(item.get('is_processed') for item in items):
             continue
         if resolved not in active_statuses:
+            continue
+        if not _created_older_than_stale_threshold(task.get('created')):
             continue
         results.append({
             'key': task_key,

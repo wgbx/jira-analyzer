@@ -120,7 +120,7 @@ def get_issue_description(config, issue_key, session=None):
         issue_key: 任务编号（如 KAT-11330）
 
     Returns:
-        dict | None: 任务信息，包含 key、summary、status、description；
+        dict | None: 任务信息，包含 key、summary、status、created、description；
                      获取失败时返回 None
     """
     session = session or build_jira_session(config)
@@ -131,7 +131,7 @@ def get_issue_description(config, issue_key, session=None):
             session,
             'GET',
             url,
-            params={'fields': 'description,summary,status'},
+            params={'fields': 'description,summary,status,created'},
         )
     except Exception as exc:
         print(f'获取任务 {issue_key} 失败: {exc}')
@@ -142,11 +142,13 @@ def get_issue_description(config, issue_key, session=None):
         return None
 
     data = response.json()
+    fields = data.get('fields', {})
     return {
         'key': data.get('key'),
-        'summary': data.get('fields', {}).get('summary', ''),
-        'status': data.get('fields', {}).get('status', {}).get('name', ''),
-        'description': data.get('fields', {}).get('description', {}),
+        'summary': fields.get('summary', ''),
+        'status': fields.get('status', {}).get('name', ''),
+        'created': fields.get('created'),
+        'description': fields.get('description', {}),
     }
 
 
@@ -197,6 +199,9 @@ def analyze_issues(config):
         issue_status = issue_data.get('status') or (
             issue.get('fields', {}).get('status', {}).get('name', '')
         )
+        issue_created = issue_data.get('created') or (
+            issue.get('fields', {}).get('created')
+        )
         if not issue_data['description']:
             continue
 
@@ -216,6 +221,7 @@ def analyze_issues(config):
                 'task_key': key,
                 'task_summary': summary,
                 'issue_status': issue_status,
+                'issue_created': issue_created,
                 'index': item['index'],
                 'text': item['text'],
                 'owners': item['owners'],
@@ -237,6 +243,7 @@ def analyze_issues(config):
             grouped[key] = {
                 'summary': item['task_summary'],
                 'issue_status': item['issue_status'],
+                'created': item.get('issue_created'),
                 'items': [],
             }
         grouped[key]['items'].append(item)
