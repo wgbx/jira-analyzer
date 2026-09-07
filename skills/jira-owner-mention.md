@@ -105,12 +105,24 @@ account_id = users[0]['accountId']
 
 ### Step 5a：添加 mention
 
-在目标 `paragraph['content']` 中插入 ADF mention 节点（建议插在**已有 mention 组之前**，或段落末尾 mention 之前）：
+在目标 `paragraph['content']` 中插入 ADF mention 节点。
+
+**插入位置（易错）**：必须落在**第一个视觉行**上，不要贴到段尾。
+
+1. 若段落内有 `hardBreak`，插入点必须在**第一个 `hardBreak` 之前**（否则 Jira 看起来像「换行后再 @」）
+2. 优先接在该视觉行已有 mention 组之后；否则接在该行正文末尾
+3. 只改第一个有正文/mention 的 `paragraph`，不要写进图片后的空段落
 
 ```python
 import uuid
 
 mention_text = OWNERS[owner_key][0]   # 如 "@Tiancheng Tang"
+
+def insert_index(para_content):
+    end = next((i for i, n in enumerate(para_content) if n.get('type') == 'hardBreak'), len(para_content))
+    while end > 0 and para_content[end - 1].get('type') == 'text' and not para_content[end - 1].get('text', '').strip():
+        end -= 1
+    return end
 
 new_mention = {
     "type": "mention",
@@ -121,6 +133,7 @@ new_mention = {
         "localId": str(uuid.uuid4()),
     },
 }
+idx = insert_index(para_content)
 # 前后各加一个空格 text 节点，与现有条目风格一致
 para_content.insert(idx, {"type": "text", "text": " "})
 para_content.insert(idx, new_mention)
@@ -188,7 +201,8 @@ OWNER_DISPLAY_NAMES = {
 1. **单 orderedList 多条目**：编号 4 往往是 `order=1` 的 `content[3]`，不是 `order=4` 的节点
 2. **Yuxiao Zhu 等未在 OWNERS 的人**：Jira 里可有 mention，但报告 owner 筛选用不到；需用户确认是否写入 `owners.py`。**替换（给）操作绝对不能删除这些 mention**——只删 OWNERS 中定义的 owner mention
 3. **inlineCard / 截图**：条目内可能有 Slack 链接或 `mediaSingle`，插入 mention 时勿碰这些节点
-4. **config 凭据**：勿在 skill 或回复中泄露 `api_token`
+4. **`hardBreak` 换行**：段落里若已有硬换行（正文下一行是 URL/补充说明），mention 若插到段尾会看起来像「换行后加 @」；必须插在第一个 `hardBreak` 之前
+5. **凭据**：勿在 skill 或回复中泄露 `api_token`
 
 ## 相关文件
 

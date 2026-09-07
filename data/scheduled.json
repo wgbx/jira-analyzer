@@ -142,6 +142,20 @@
         { "issue": "11968", "index": 8, "owner": "jayce" },
         { "issue": "11968", "index": 9, "owner": "jayce" }
       ]
+    },
+    {
+      "date": "2026-09-07",
+      "label": "9/7/2026 Release",
+      "items": [
+        { "issue": "11985", "index": 8, "owner": "jiaqi" },
+        { "issue": "11993", "index": 2, "owner": "cici" },
+        { "issue": "11993", "index": 4, "owner": "tiancheng" },
+        { "issue": "11993", "index": 6, "owner": "june" },
+        { "issue": "11993", "index": 9, "owner": "jun" },
+        { "issue": "11993", "index": 11, "owner": "june" },
+        { "issue": "11993", "index": 12, "owner": "tiancheng" },
+        { "issue": "11993", "index": 13, "owner": "cici" }
+      ]
     }
   ]
 }
