@@ -2,7 +2,7 @@
 """
 Jira 任务分析器 - 入口脚本
 
-按 config.reports 拉取多个父任务并生成多份 HTML 报告（如 Q3 首页 + /2026q2）。
+按 config.reports 拉取多个父任务并生成多份 HTML 报告（如 Q4 首页 + /2026q3）。
 
 使用方式:
     python jira_analyzer.py

@@ -10,7 +10,7 @@ alwaysApply: false
 
 | 报告 | 文件 / 入口 |
 |------|-------------|
-| 主报告（Q3/Q2 等） | `html_main.py` → `generate_html_report`；筛选 JS → `filters.py` |
+| 主报告（Q4/Q3 等） | `html_main.py` → `generate_html_report`；筛选 JS → `filters.py` |
 | 会议块 | `meeting.py` → `_build_meeting_report_html` |
 | Owner Daily | `daily.py` → `generate_owner_daily_html_report` |
 | Markdown | `markdown.py` → `generate_markdown_report` |

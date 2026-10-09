@@ -25,13 +25,13 @@ def item_ref(task_key: str, index: int) -> str:
     return f'{task_key}:{int(index)}'
 
 
-def snapshot_dir_for(report_id: str = 'q3') -> Path:
+def snapshot_dir_for(report_id: str = 'q4') -> Path:
     path = SNAPSHOTS_DIR / report_id
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
-def build_processed_snapshot(analysis, *, label='Q3', parent_issue='KAT-11542'):
+def build_processed_snapshot(analysis, *, label='Q4', parent_issue='KAT-12205'):
     """从分析结果提取 Daily 已处理条目集合。"""
     items = []
     for task_key, task in analysis.get('grouped', {}).items():
@@ -64,7 +64,7 @@ def build_processed_snapshot(analysis, *, label='Q3', parent_issue='KAT-11542'):
     }
 
 
-def save_processed_snapshot(snapshot, report_id: str = 'q3') -> Path:
+def save_processed_snapshot(snapshot, report_id: str = 'q4') -> Path:
     """写入当日快照（同日重复运行覆盖）。"""
     day = snapshot.get('date') or date.today().isoformat()
     path = snapshot_dir_for(report_id) / f'{day}.json'
@@ -78,12 +78,12 @@ def load_snapshot(path: Path):
         return json.load(f)
 
 
-def list_snapshots(report_id: str = 'q3') -> list[Path]:
+def list_snapshots(report_id: str = 'q4') -> list[Path]:
     directory = snapshot_dir_for(report_id)
     return sorted(directory.glob('????-??-??.json'))
 
 
-def find_snapshot_on_or_before(report_id: str = 'q3', *, on_or_before: str):
+def find_snapshot_on_or_before(report_id: str = 'q4', *, on_or_before: str):
     """取 date <= on_or_before 的最近一份快照。"""
     candidates = [p for p in list_snapshots(report_id) if p.stem <= on_or_before]
     if not candidates:
@@ -91,7 +91,7 @@ def find_snapshot_on_or_before(report_id: str = 'q3', *, on_or_before: str):
     return load_snapshot(candidates[-1])
 
 
-def find_earliest_snapshot_before(report_id: str = 'q3', *, before_date: str):
+def find_earliest_snapshot_before(report_id: str = 'q4', *, before_date: str):
     """取 date < before_date 的最早一份快照。"""
     candidates = [p for p in list_snapshots(report_id) if p.stem < before_date]
     if not candidates:
@@ -100,7 +100,7 @@ def find_earliest_snapshot_before(report_id: str = 'q3', *, before_date: str):
 
 
 def find_week_baseline_snapshot(
-    report_id: str = 'q3',
+    report_id: str = 'q4',
     *,
     week_start: str | None,
     week_end: str | None,

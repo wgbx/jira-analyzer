@@ -71,9 +71,9 @@ def _scheduled_rows(release, project_key, item_lookup):
 def build_meeting_report(
     analysis,
     *,
-    label='Q3',
-    parent_issue='KAT-11542',
-    report_id='q3',
+    label='Q4',
+    parent_issue='KAT-12205',
+    report_id='q4',
     scheduled=None,
     current_snapshot=None,
     baseline_snapshot=None,

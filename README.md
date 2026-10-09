@@ -1,12 +1,12 @@
 # Jira 任务分析器
 
-定期分析 Jira 父任务下的子任务（当前默认 Q3：KAT-11542，并保留 Q2：KAT-10938），解析描述中的列表项，统计未处理的项目并生成可视化报告。
+定期分析 Jira 父任务下的子任务（当前默认 Q4：KAT-12205，并保留 Q3：KAT-11542），解析描述中的列表项，统计未处理的项目并生成可视化报告。
 
 > AI / Agent 改代码请先读 [AGENTS.md](./AGENTS.md)。本地健康检查：`npm run smoke && npm test`。
 
 ## 功能
 
-- 一次生成多份报告：首页 Q3 + `/2026q2/`（见本地 `config.json` 的 `reports`，或 `analyzer/config.py` 的 `DEFAULT_REPORTS`）
+- 一次生成多份报告：首页 Q4 + `/2026q3/`（见本地 `config.json` 的 `reports`，或 `analyzer/config.py` 的 `DEFAULT_REPORTS`）
 - 默认拉取各父任务下**全部**子任务并统计列表条目
 - 解析 ADF（Atlassian Document Format）描述中的列表项
 - 检测条目状态：Done / Backlog（含 Invalid）/ Moved / 删除线
@@ -75,16 +75,16 @@ npm run setup
   },
   "reports": [
     {
-      "id": "q3",
-      "label": "Q3",
-      "parent_issue": "KAT-11542",
+      "id": "q4",
+      "label": "Q4",
+      "parent_issue": "KAT-12205",
       "output": "output/index.html"
     },
     {
-      "id": "q2",
-      "label": "Q2",
-      "parent_issue": "KAT-10938",
-      "output": "output/2026q2/index.html"
+      "id": "q3",
+      "label": "Q3",
+      "parent_issue": "KAT-11542",
+      "output": "output/2026q3/index.html"
     }
   ],
   "output": {
@@ -108,7 +108,7 @@ npm run setup
 
 API Token 获取地址：https://id.atlassian.net/manage-profile/security/api-tokens
 
-> GitHub Actions 不读本地 `config.json`：凭据来自 Secrets；父任务列表默认用 `analyzer/config.py` 里的 `DEFAULT_REPORTS`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`）。
+> GitHub Actions 不读本地 `config.json`：凭据来自 Secrets；父任务列表默认用 `analyzer/config.py` 里的 `DEFAULT_REPORTS`（当前 Q4=`KAT-12205`，Q3=`KAT-11542`）。某条报告想暂时不生成，可在该项加 `"enabled": false`。
 
 ### 3. 运行
 
@@ -117,10 +117,10 @@ npm start
 ```
 
 报告会生成到：
-- `output/index.html`（Q3，对应站点 `/`）
-- `output/2026q2/index.html`（Q2，对应站点 `/2026q2/`）
+- `output/index.html`（Q4，对应站点 `/`）
+- `output/2026q3/index.html`（Q3，对应站点 `/2026q3/`）
 
-并在本地自动用浏览器打开 Q3 报告。
+并在本地自动用浏览器打开 Q4 报告。
 
 ### 常用脚本
 
@@ -154,7 +154,7 @@ npm start
 | `JIRA_EMAIL` | Jira 账号邮箱 |
 | `JIRA_API_TOKEN` | Jira API Token |
 
-父任务编号默认写在 `analyzer/config.py` → `DEFAULT_REPORTS`（当前 Q3=`KAT-11542`，Q2=`KAT-10938`），Actions 无 `config.json` 时使用，无需 Secret。本地可在自己的 `config.json` → `reports` 覆盖。
+父任务编号默认写在 `analyzer/config.py` → `DEFAULT_REPORTS`（当前 Q4=`KAT-12205`，Q3=`KAT-11542`），Actions 无 `config.json` 时使用，无需 Secret。本地可在自己的 `config.json` → `reports` 覆盖。
 
 ### 3. 启用 GitHub Pages
 
@@ -214,8 +214,8 @@ export GITHUB_TOKEN=你的PAT
 ### 6. 查看报告
 
 部署完成后，访问：
-- Q3：`https://your-username.github.io/jira-analyzer/`
-- Q2：`https://your-username.github.io/jira-analyzer/2026q2/`
+- Q4：`https://your-username.github.io/jira-analyzer/`
+- Q3：`https://your-username.github.io/jira-analyzer/2026q3/`
 
 ## 维护已排期列表
 

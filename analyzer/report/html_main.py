@@ -21,9 +21,9 @@ from analyzer.report.filters import _build_filter_js, _build_report_nav
 def generate_html_report(
     analysis,
     base_url,
-    parent_issue='KAT-11542',
+    parent_issue='KAT-12205',
     *,
-    label='Q3',
+    label='Q4',
     nav_links=None,
     daily_stats_href=None,
     favicon_href='favicon.svg',
@@ -38,7 +38,7 @@ def generate_html_report(
         analysis: analyze_issues() 返回的分析结果
         base_url: Jira 实例地址（如 https://xxx.atlassian.net）
         parent_issue: 父任务编号（用于标题展示）
-        label: 季度标签，如 Q2 / Q3
+        label: 季度标签，如 Q3 / Q4
         nav_links: 报告间导航 [{label, href}, ...]
 
     Returns:

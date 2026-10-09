@@ -95,9 +95,9 @@ def _build_owner_filter_buttons(daily_stats):
 def generate_owner_daily_html_report(
     analysis,
     base_url,
-    parent_issue='KAT-11542',
+    parent_issue='KAT-12205',
     *,
-    label='Q3',
+    label='Q4',
     back_href='./',
     favicon_href='favicon.svg',
     meeting_report=None,

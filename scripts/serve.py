@@ -205,7 +205,7 @@ def main() -> None:
         if port != start:
             print(f'端口 {start} 已被占用，改用 {port}')
         print(f'报告预览: http://localhost:{port}/')
-        print(f'Q2 报告:   http://localhost:{port}/2026q2/')
+        print(f'Q3 报告:   http://localhost:{port}/2026q3/')
         if ReportHandler.inject_live_reload:
             print('页面将在报告更新后自动刷新（无需手动 npm start）')
         print('按 Ctrl+C 停止')

@@ -10,7 +10,7 @@ from analyzer.report.common import (
 )
 
 
-def generate_markdown_report(analysis, parent_issue='KAT-11542', *, label='Q3'):
+def generate_markdown_report(analysis, parent_issue='KAT-12205', *, label='Q4'):
     """
     生成 Markdown 格式的分析报告
 

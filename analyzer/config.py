@@ -20,23 +20,23 @@ CONFIG_PATH = PROJECT_ROOT / "config.json"
 # 报告输出目录
 OUTPUT_DIR = PROJECT_ROOT / "output"
 
-DEFAULT_PARENT_ISSUE = 'KAT-11542'
+DEFAULT_PARENT_ISSUE = 'KAT-12205'
 DEFAULT_OUTPUT = {
     'format': 'html',
 }
 # GitHub Actions 无 config.json 时使用；本地模板见 README
 DEFAULT_REPORTS = [
     {
-        'id': 'q3',
-        'label': 'Q3',
-        'parent_issue': 'KAT-11542',
+        'id': 'q4',
+        'label': 'Q4',
+        'parent_issue': 'KAT-12205',
         'output': 'output/index.html',
     },
     {
-        'id': 'q2',
-        'label': 'Q2',
-        'parent_issue': 'KAT-10938',
-        'output': 'output/2026q2/index.html',
+        'id': 'q3',
+        'label': 'Q3',
+        'parent_issue': 'KAT-11542',
+        'output': 'output/2026q3/index.html',
     },
 ]
 
@@ -57,25 +57,14 @@ def get_reports(config):
     """
     返回要生成的报告列表。
 
-    优先用 config.reports；否则回退为单报告（legacy parent_issue）。
+    优先用 config.reports（跳过 enabled 为 false 的项）；否则回退为单报告（legacy parent_issue）。
     """
     reports = config.get('reports')
     if reports:
-        active_reports = []
-        for report in reports:
-            enabled = report.get('enabled')
-            if enabled is None:
-                # 兼容历史配置：季度中期默认只展示当前季度，
-                # 未显式配置时自动禁用上一季度 Q2；临时回看时把 enabled 改为 true。
-                report_id = str(report.get('id', '')).lower()
-                report_label = str(report.get('label', '')).upper()
-                enabled = not (report_id == 'q2' or report_label == 'Q2')
-            if enabled:
-                active_reports.append(report)
-        return active_reports
+        return [r for r in reports if r.get('enabled', True)]
     return [{
         'id': 'default',
-        'label': 'Q3',
+        'label': 'Q4',
         'parent_issue': config.get('parent_issue', DEFAULT_PARENT_ISSUE),
         'output': config.get('output', {}).get('path', 'output/index.html'),
     }]

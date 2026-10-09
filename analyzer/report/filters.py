@@ -264,7 +264,7 @@ def _build_filter_js(visible_owners, show_unassigned):
 
 
 def _build_report_nav(nav_links, current_label):
-    """报告间切换导航（如 Q3 ↔ Q2）。"""
+    """报告间切换导航（如 Q4 ↔ Q3）。"""
     if not nav_links or len(nav_links) < 2:
         return ''
     items = []
