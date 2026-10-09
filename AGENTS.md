@@ -51,7 +51,7 @@
 ### 2. 改活跃状态 / 排除词 / 父任务
 
 1. **本地**：改 `config.json` 的 `filters` / `reports`（模板见 README）。
-2. **Actions 默认父任务**：改 `analyzer/config.py` 的 `DEFAULT_REPORTS`。
+2. **Actions 默认父任务**：改 `analyzer/config.py` 的 `DEFAULT_REPORTS`。换季度 / 下线上季度入口按 `skills/report-quarter-switch.md` 逐项改。
 3. 口径：未处理统计只计 Jira 状态在 `active_statuses` 内的子任务（未配则用代码默认）。
 4. 验证：`npm start` 看汇总卡片数字是否符合预期。
 
