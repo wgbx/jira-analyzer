@@ -12,6 +12,17 @@ description: >
 
 ## 前置依赖
 
+## CLI（优先）
+
+使用可复用脚本替换团队负责人；`--dry-run` 只预览：
+
+```bash
+python3 scripts/jira-owner-mention.py --dry-run KAT-12244:9 --owner jiaqi
+python3 scripts/jira-owner-mention.py KAT-12244:9 --owner jiaqi
+```
+
+脚本仅替换 OWNERS 内的 mention，保留其他节点，写入前检查描述未变化，写入后重新读取校验。
+
 - 项目根目录已配置 `config.json`（或环境变量 `JIRA_BASE_URL` / `JIRA_EMAIL` / `JIRA_API_TOKEN`）
 - 负责人映射：**唯一真相来源**为 `analyzer/owners.py` 中的 `OWNERS` 与 `OWNER_DISPLAY_NAMES`
 - 列表条目编号与 Jira 界面一致，由 `analyzer.parser.parse_list_items` 计算（`orderedList.attrs.order` + 段内位置）
