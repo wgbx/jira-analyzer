@@ -31,7 +31,7 @@ OWNER_REGISTRY = {
     'june':     {'mentions': ['@June Teng'],      'display': 'June',      'team': 'wuhan',   'color': ('#ecfdf5', '#065f46')},
     'neo':      {'mentions': ['@Neo Wang'],       'display': 'Neo',       'team': 'wuhan',   'color': ('#eff6ff', '#1e3a8a')},
     'pengfei':  {'mentions': ['@Pengfei Wu'],     'display': 'Pengfei',   'team': 'wuhan',   'color': ('#f0fdf4', '#15803d')},
-    'zhengchun':{'mentions': ['@zhengchun Zhou'], 'display': 'Zhengchun', 'team': 'wuhan',   'color': ('#fff7ed', '#c2410c')},
+    'zhengchun':{'mentions': ['@zhiwen zhu'],     'display': 'Zhiwen',    'team': 'wuhan',   'color': ('#fff7ed', '#c2410c')},
     # —— 成都团队 ——
     'lory':     {'mentions': ['@Lory Jiang'],     'display': 'Lory',      'team': 'chengdu', 'color': ('#e0f2fe', '#0c4a6e')},
     'tianye':   {'mentions': ['@Tian Ye'],        'display': 'Tian Ye',   'team': 'chengdu', 'color': ('#fce7f3', '#9d174d')},
