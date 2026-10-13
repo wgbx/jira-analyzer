@@ -32,12 +32,6 @@ DEFAULT_REPORTS = [
         'parent_issue': 'KAT-12205',
         'output': 'output/index.html',
     },
-    {
-        'id': 'q3',
-        'label': 'Q3',
-        'parent_issue': 'KAT-11542',
-        'output': 'output/2026q3/index.html',
-    },
 ]
 
 
