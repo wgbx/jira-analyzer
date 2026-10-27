@@ -18,7 +18,7 @@ Owner 识别模块
 OWNER_REGISTRY = {
     # —— 武汉团队 ——
     # 前端
-    'jayce':    {'mentions': ['@Jayce'],         'display': 'Jayce',     'team': 'wuhan',   'color': ('#dbeafe', '#1e40af')},
+    'jayce':    {'mentions': ['@jayce chen', '@Jayce'], 'display': 'Jayce', 'team': 'wuhan', 'color': ('#dbeafe', '#1e40af')},
     'zhiyong':  {'mentions': ['@zhiyong song'],  'display': 'Zhiyong',   'team': 'wuhan',   'color': ('#dcfce7', '#166534')},
     'tiancheng':{'mentions': ['@Tiancheng Tang'],'display': 'Tiancheng', 'team': 'wuhan',   'color': ('#f3e8ff', '#6b21a8')},
     'jun':      {'mentions': ['@Jun Li'],         'display': 'Jun',       'team': 'wuhan',   'color': ('#fef3c7', '#92400e')},

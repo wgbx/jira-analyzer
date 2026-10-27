@@ -19,9 +19,12 @@ description: >
 ```bash
 python3 scripts/jira-owner-mention.py --dry-run KAT-12244:9 --owner jiaqi
 python3 scripts/jira-owner-mention.py KAT-12244:9 --owner jiaqi
+python3 scripts/jira-owner-mention.py KAT-12275:3 --owner zhiyong neo
 ```
 
-脚本仅替换 OWNERS 内的 mention，保留其他节点，写入前检查描述未变化，写入后重新读取校验。
+`--owner` 支持一个或多个负责人，同一次 PUT 完成替换。脚本仅替换 OWNERS 内的 mention，保留其他节点，写入前检查描述未变化，写入后重新读取校验。
+
+用户搜索无法精确匹配时，可用 `--reference KAT-12244:13` 从指定条目的同名 mention 获取真实 accountId；必须唯一匹配注册的 mention 文案，引用条目只读。
 
 - 项目根目录已配置 `config.json`（或环境变量 `JIRA_BASE_URL` / `JIRA_EMAIL` / `JIRA_API_TOKEN`）
 - 负责人映射：**唯一真相来源**为 `analyzer/owners.py` 中的 `OWNERS` 与 `OWNER_DISPLAY_NAMES`

@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-13",
+  "updated": "2026-10-13T06:06:43Z",
+  "label": "Q4",
+  "parent_issue": "KAT-12205",
+  "processed_count": 5,
+  "items": [
+    {
+      "ref": "KAT-12244:4",
+      "key": "KAT-12244",
+      "index": 4,
+      "owners": [
+        "jun"
+      ],
+      "text": "( Done ) Find a way to remove the unbalanced buttons (the screen below is a small mobile)  @Jun Li   @Xuan Hu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-12224:3",
+      "key": "KAT-12224",
+      "index": 3,
+      "owners": [
+        "lory"
+      ],
+      "text": "( Done )(Lury) Cancel and restocked unit ticket on admin tool, the unit ticket should add back to inventory  @Lory Jiang",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-12206:5",
+      "key": "KAT-12206",
+      "index": 5,
+      "owners": [
+        "zhiyong"
+      ],
+      "text": "(Done) The custom form label is of non-text type and displays errors.  @zhiyong song   @Yuxiao Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-12206:3",
+      "key": "KAT-12206",
+      "index": 3,
+      "owners": [
+        "zhengzhu"
+      ],
+      "text": "( Done )(Lury)Still show “An event address is required… “ on app side even if provided valid address  @Zheng Zhu",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    },
+    {
+      "ref": "KAT-12206:1",
+      "key": "KAT-12206",
+      "index": 1,
+      "owners": [],
+      "text": "(Done) Over communicate when trust is essential to avoid any confusion or mistakes  @Chow Xia",
+      "is_done": true,
+      "is_backlog": false,
+      "backlog_label": null,
+      "is_moved": false
+    }
+  ]
+}
